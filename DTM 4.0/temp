@@ -1,0 +1,39 @@
+[PlayerData]
+	UUID
+	Name
+	Prefix
+	Emeralds
+	KillStreak
+	
+	
+[PDSS]
+	UUID
+	SeasonStatsID
+	
+
+[SeasonStats]
+	SeasonStatsID
+	SeasonNumber
+	Kills
+	Deaths
+	MonumentsDestroyed
+	Wins
+	Losses
+	PlayTimeWon
+	PlayTimeLost
+	
+	
+// Get stats and an UUID with name	
+SELECT PD.UUID, SS.* FROM [PlayerData] PD, [SeasonStats] SS, [PDSS] WHERE PD.Name = 'Juubes' AND PDSS.UUID = PD.UUID AND PDSS.SeasonStatsID = SS.SeasonStatsID
+
+
+// Save stats
+INSERT INTO SeasonStats(SeasonStatsID, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost) VALUES () ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed = VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost)
+
+
+
+
+
+
+
+
