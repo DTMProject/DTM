@@ -8,7 +8,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/Nexus 2.0.1"/>
-	<classpathentry kind="lib" path="D:/Eclipse/Exports/DTM4.0-o.jar"/>
-	<classpathentry kind="lib" path="D:/Eclipse/Exports/Nexus2.0-o.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

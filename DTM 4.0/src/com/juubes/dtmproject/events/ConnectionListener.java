@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.ScoreboardManager;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
-import com.juubes.nexus.playerdata.AbstractPlayerData;
-import com.juubes.nexus.playerdata.PlayerDataHandler;
+import com.juubes.nexus.data.AbstractPlayerData;
+import com.juubes.nexus.data.PlayerDataHandler;
 
 public class ConnectionListener implements Listener {
 	@EventHandler

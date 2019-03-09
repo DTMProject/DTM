@@ -3,7 +3,7 @@ package com.juubes.dtmproject.playerdata;
 import java.text.NumberFormat;
 import java.util.UUID;
 
-import com.juubes.nexus.playerdata.AbstractStats;
+import com.juubes.nexus.data.AbstractStats;
 
 public class DTMStats extends AbstractStats {
 

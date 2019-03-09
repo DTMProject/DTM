@@ -40,9 +40,9 @@ import com.juubes.dtmproject.setup.TeamSettings;
 import com.juubes.nexus.InventoryUtils;
 import com.juubes.nexus.LocationUtils;
 import com.juubes.nexus.Nexus;
-import com.juubes.nexus.playerdata.AbstractPlayerData;
-import com.juubes.nexus.playerdata.AbstractStats;
-import com.juubes.nexus.setup.AbstractDatabaseManager;
+import com.juubes.nexus.data.AbstractDatabaseManager;
+import com.juubes.nexus.data.AbstractPlayerData;
+import com.juubes.nexus.data.AbstractStats;
 
 public class DTMDatabaseManager implements AbstractDatabaseManager {
 
@@ -71,8 +71,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.kickPlayer(
-							"§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
+					p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
 				}
 				Bukkit.shutdown();
 			}
@@ -220,14 +219,13 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 	@Override
 	public DTMPlayerData getPlayerData(UUID id) {
 		checkConnection();
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"SELECT * FROM PlayerData WHERE UUID = ?")) {
+		try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM PlayerData WHERE UUID = ?")) {
 			stmt.setString(1, id.toString());
 			try (ResultSet rs = stmt.executeQuery()) {
 				DTMPlayerData pd = new DTMPlayerData(id, Bukkit.getPlayer(id)) {
 					// Cache this since it's propably going to be the most requested one
-					private DTMStats seasonStats = DTM.getDatabaseManager().getSeasonStats(this
-							.getID(), Nexus.CURRENT_SEASON);
+					private DTMStats seasonStats = DTM.getDatabaseManager().getSeasonStats(this.getID(),
+							Nexus.CURRENT_SEASON);
 
 					@Override
 					public void save() {
@@ -394,8 +392,8 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			stmt.setString(1, name);
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (rs.next()) {
-					DTMStats stats = new DTMStats(rs.getInt("SeasonStatsID"), UUID.fromString(rs
-							.getString("UUID")), season);
+					DTMStats stats = new DTMStats(rs.getInt("SeasonStatsID"), UUID.fromString(rs.getString("UUID")),
+							season);
 					stats.kills = rs.getInt("KILLS");
 					stats.deaths = rs.getInt("DEATHS");
 					stats.monuments = rs.getInt("MONUMENTS_DESTROYED");
@@ -406,8 +404,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 					return stats;
 				} else {
 					// If the name hasn't been logged to stats, return null
-					Nexus.getPlugin().getLogger().warning("Didn't find any data for player "
-							+ name);
+					Nexus.getPlugin().getLogger().warning("Didn't find any data for player " + name);
 					return null;
 				}
 			}
@@ -454,8 +451,8 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 
 		// Load map settings
 		for (String mapID : mapIDs) {
-			FileConfiguration conf = YamlConfiguration.loadConfiguration(new File(Nexus
-					.getConfigFolder(), "./settings/" + mapID + ".yml"));
+			FileConfiguration conf = YamlConfiguration.loadConfiguration(new File(Nexus.getConfigFolder(), "./settings/"
+					+ mapID + ".yml"));
 
 			MapSettings settings = new MapSettings(new HashSet<>(conf.getStringList("team-names")));
 			settings.displayName = conf.getString("name");
@@ -468,35 +465,29 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 					TeamSettings ts = settings.getTeamSettings(teamID);
 					ts.color = ChatColor.valueOf(conf.getString("teams." + teamID + ".color"));
 					ts.displayName = conf.getString("teams." + teamID + ".name");
-					ts.spawn = LocationUtils.toLocation(conf.getString("teams." + teamID
-							+ ".spawn"));
+					ts.spawn = LocationUtils.toLocation(conf.getString("teams." + teamID + ".spawn"));
 
 					if (ts.spawn == null) {
-						Bukkit.broadcastMessage("§eDTM epäonnistui spawnin lataamisessa " + mapID
-								+ ":" + teamID);
-						System.err.println("DTM epäonnistui spawnin lataamisessa " + mapID + ":"
-								+ teamID);
+						Bukkit.broadcastMessage("§eDTM epäonnistui spawnin lataamisessa " + mapID + ":" + teamID);
+						System.err.println("DTM epäonnistui spawnin lataamisessa " + mapID + ":" + teamID);
 					}
 
 					HashMap<String, MonumentSettings> monumentSettings = null;
 					try {
-						Set<String> monumentNames = conf.getConfigurationSection("teams." + teamID
-								+ ".monuments").getKeys(false);
+						Set<String> monumentNames = conf.getConfigurationSection("teams." + teamID + ".monuments")
+								.getKeys(false);
 						monumentSettings = new HashMap<>(monumentNames.size());
 						for (String position : monumentNames) {
 							MonumentSettings ms = new MonumentSettings();
-							ms.loc = LocationUtils.toLocation(conf.getString("teams." + teamID
-									+ ".monuments." + position + ".loc"));
-							ms.customName = conf.getString("teams." + teamID + ".monuments."
-									+ position + ".name");
+							ms.loc = LocationUtils.toLocation(conf.getString("teams." + teamID + ".monuments."
+									+ position + ".loc"));
+							ms.customName = conf.getString("teams." + teamID + ".monuments." + position + ".name");
 							monumentSettings.put(position, ms);
 						}
 						ts.monumentSettings = monumentSettings;
 					} catch (Exception e) {
-						Bukkit.broadcastMessage("§eDTM epäonnistui monumenttien lataamisessa "
-								+ mapID + ":" + teamID);
-						System.err.println("DTM epäonnistui monumenttien lataamisessa " + mapID
-								+ ":" + teamID);
+						Bukkit.broadcastMessage("§eDTM epäonnistui monumenttien lataamisessa " + mapID + ":" + teamID);
+						System.err.println("DTM epäonnistui monumenttien lataamisessa " + mapID + ":" + teamID);
 					}
 				}
 
@@ -518,18 +509,16 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 		conf.set("name", settings.displayName);
 		conf.set("lobby", LocationUtils.toString(settings.lobby));
 		conf.set("ticks", settings.ticks);
-		conf.set("team-names", settings.getTeamIDs().toArray(new String[settings.getTeamIDs()
-				.size()]));
+		conf.set("team-names", settings.getTeamIDs().toArray(new String[settings.getTeamIDs().size()]));
 		for (String teamID : settings.getTeamIDs()) {
 			TeamSettings ts = settings.getTeamSettings(teamID);
 			conf.set("teams." + teamID + ".name", ts.displayName);
 			conf.set("teams." + teamID + ".spawn", LocationUtils.toString(ts.spawn));
 			conf.set("teams." + teamID + ".color", ts.color.name());
 			for (Entry<String, MonumentSettings> pos : ts.monumentSettings.entrySet()) {
-				conf.set("teams." + teamID + ".monuments." + pos.getKey() + ".name", pos
-						.getValue().customName);
-				conf.set("teams." + teamID + ".monuments." + pos.getKey() + ".loc", LocationUtils
-						.toString(pos.getValue().loc));
+				conf.set("teams." + teamID + ".monuments." + pos.getKey() + ".name", pos.getValue().customName);
+				conf.set("teams." + teamID + ".monuments." + pos.getKey() + ".loc", LocationUtils.toString(pos
+						.getValue().loc));
 			}
 		}
 

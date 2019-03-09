@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.juubes.nexus.playerdata.AbstractPlayerData;
+import com.juubes.nexus.data.AbstractPlayerData;
 
 public abstract class DTMPlayerData extends AbstractPlayerData {
 
@@ -36,13 +36,11 @@ public abstract class DTMPlayerData extends AbstractPlayerData {
 		else
 			str += "§b" + id.toString() + ": " + Bukkit.getOfflinePlayer(id).getName() + " \n";
 		if (prefix != null)
-			str += "§bPrefix: " + ChatColor.translateAlternateColorCodes('&', this.getPrefix())
-					+ "\n";
+			str += "§bPrefix: " + ChatColor.translateAlternateColorCodes('&', this.getPrefix()) + "\n";
 		else
 			str += "§bEi prefixiä\n";
 		str += "§bTappoputki: " + killStreak + "\n";
-		str += "§bK/D-ratio: " + this.getSeasonStats().getKDRatio() + " - " + totalStats
-				.getKDRatio() + "\n";
+		str += "§bK/D-ratio: " + this.getSeasonStats().getKDRatio() + " - " + totalStats.getKDRatio() + "\n";
 		str += "  §a§lKausi:\n";
 		str += "§b" + this.getSeasonStats().toString();
 		str += "  §a§lYhteensä:\n";

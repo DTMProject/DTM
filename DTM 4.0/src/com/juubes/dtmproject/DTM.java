@@ -18,12 +18,13 @@ import com.juubes.dtmproject.events.PreWorldLoadListener;
 import com.juubes.dtmproject.events.SpawnProtectionListener;
 import com.juubes.dtmproject.events.TeamSpleefListener;
 import com.juubes.dtmproject.playerdata.DTMDatabaseManager;
+import com.juubes.nexus.InitOptions;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.commands.CreateMapCommand;
 import com.juubes.nexus.commands.EditModeHandler;
-import com.juubes.nexus.playerdata.AbstractPlayerData;
-import com.juubes.nexus.playerdata.PlayerDataHandler;
-import com.juubes.nexus.setup.InitOptions;
+import com.juubes.nexus.data.AbstractDatabaseManager;
+import com.juubes.nexus.data.AbstractPlayerData;
+import com.juubes.nexus.data.PlayerDataHandler;
 
 public class DTM extends JavaPlugin {
 	public static DTM getPlugin() {
@@ -48,10 +49,10 @@ public class DTM extends JavaPlugin {
 		getCommand("top").setExecutor(new TopCommand());
 		getCommand("createmap").setExecutor(new CreateMapCommand());
 		Nexus nexus = (Nexus) Bukkit.getPluginManager().getPlugin("Nexus");
-		final InitOptions options 	= new InitOptions();
+		final InitOptions options = new InitOptions();
 		List<String> maps = nexus.getConfig().getStringList("maps");
 		options.setMapIDs(maps.toArray(new String[maps.size()]));
-		options.setDatabaseManager(new DTMDatabaseManager());
+		options.setDatabaseManager((AbstractDatabaseManager) new DTMDatabaseManager());
 
 		((DTMDatabaseManager) options.getDatabaseManager()).prepareMapSettings(options.getMapIDs());
 
@@ -62,8 +63,7 @@ public class DTM extends JavaPlugin {
 		// Broadcast map changes not saved
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
 			for (CommandSender sender : EditModeHandler.pendingList) {
-				sender.sendMessage(
-						"§cMappejen asetuksia ei ole tallennettu. Tallenna komennolla /DTM:DTM save");
+				sender.sendMessage("Â§cMappeja ei ole tallennettu. Tallenna komennolla /DTM:DTM save");
 			}
 		}, 20 * 20, 20 * 20);
 	}
@@ -72,8 +72,7 @@ public class DTM extends JavaPlugin {
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			PlayerDataHandler.unload(AbstractPlayerData.get(p));
-			p.kickPlayer(
-					"§e§lDTM\n§b               Palvelin uudelleenkäynnistyy teknisistä syistä.");
+			p.kickPlayer("Â§eÂ§lDTMÂ§b      \nPalvelin uudelleenkÃ¤ynnistyy teknisistÃ¤ syistÃ¤.");
 		}
 	}
 
