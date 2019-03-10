@@ -11,12 +11,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
+import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.nexus.events.StartCountdownEvent;
 
 public class TeamSpleefListener implements Listener {
 
-	private static HashMap<Block, Long> antiSpleef = new HashMap<>();
+	private HashMap<Block, Long> antiSpleef = new HashMap<>();
+	private final DTM pl;
+	public TeamSpleefListener(DTM pl) {
+		this.pl = pl;
+	}
 
 	@EventHandler
 	public void stopSpleef(BlockBreakEvent e) {
@@ -48,7 +53,7 @@ public class TeamSpleefListener implements Listener {
 			e.setCancelled(true);
 			p.sendMessage("§cEt voi rikkoa palikoita omien tiimiläisten alta.");
 			if (p.getHealth() <= 6) {
-				DeathHandler.fakeKillPlayer(p);
+				pl.getDeathHandler().fakeKillPlayer(p);
 				Bukkit.broadcastMessage("§e" + p.getDisplayName()
 						+ " §ekuoli yrittäessään sabotoida omaa tiimiänsä!");
 			} else {

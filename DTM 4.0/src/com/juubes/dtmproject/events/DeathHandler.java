@@ -37,10 +37,14 @@ import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 
 public class DeathHandler implements Listener {
-
+	private final DTM pl;
 	private static boolean broadcastMessages = true;
 
-	public static void fakeKillPlayer(Player p) {
+	public DeathHandler(DTM pl) {
+		this.pl = pl;
+	}
+
+	public void fakeKillPlayer(Player p) {
 		// Drop inventory
 		if (p.getGameMode().equals(GameMode.SURVIVAL))
 			for (ItemStack item : p.getInventory().getContents()) {
@@ -132,7 +136,7 @@ public class DeathHandler implements Listener {
 			p.teleport(playerData.getLastDamager());
 
 		// Respawn after 6 seconds
-		Bukkit.getScheduler().runTaskLater(DTM.getPlugin(), () -> {
+		Bukkit.getScheduler().runTaskLater(pl, () -> {
 			if (GameLogic.getGameState() != GameState.RUNNING)
 				return;
 			if (!p.isOnline())
@@ -203,8 +207,7 @@ public class DeathHandler implements Listener {
 			if (Math.random() < 0.005)
 				return;
 			if (broadcastMessages)
-				Bukkit.broadcastMessage(shooter.getCustomName() + " §eampui pelaajan " + target
-						.getCustomName());
+				Bukkit.broadcastMessage(shooter.getCustomName() + " §eampui pelaajan " + target.getCustomName());
 			else {
 				target.sendMessage("§eSinut ampui pelaaja " + shooter.getDisplayName());
 				shooter.sendMessage("§eAmmuit pelaajan " + target.getDisplayName());
@@ -243,9 +246,8 @@ public class DeathHandler implements Listener {
 			ScoreboardManager.updateScoreboard();
 		} else if (e.getMessage().equals("/ram") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
-			e.getPlayer().sendMessage("§e" + ((int) ((Runtime.getRuntime().maxMemory() - Runtime
-					.getRuntime().freeMemory()) / 1000000)) + "/" + (int) (Runtime.getRuntime()
-							.maxMemory() / 1000000));
+			e.getPlayer().sendMessage("§e" + ((int) ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime()
+					.freeMemory()) / 1000000)) + "/" + (int) (Runtime.getRuntime().maxMemory() / 1000000));
 		}
 	}
 
@@ -294,8 +296,8 @@ public class DeathHandler implements Listener {
 
 		if (target.getHealth() - e.getFinalDamage() < 0) {
 			if (broadcastMessages)
-				Bukkit.broadcastMessage(attackerData.getNick() + " §eteurasti pelaajan "
-						+ targetData.getNick() + "§e.");
+				Bukkit.broadcastMessage(attackerData.getNick() + " §eteurasti pelaajan " + targetData.getNick()
+						+ "§e.");
 			else {
 				target.sendMessage("§eSinut tappoi pelaaja " + attackerData.getNick() + "§e.");
 				attacker.sendMessage("§eTapoit pelaajan " + targetData.getNick() + "§e.");
@@ -349,8 +351,7 @@ public class DeathHandler implements Listener {
 	public void onVoid(PlayerMoveEvent e) {
 		if (e.getTo().getY() < 0) {
 			if (e.getPlayer().getGameMode() == GameMode.SURVIVAL)
-				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(),
-						DamageCause.VOID, 100));
+				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(), DamageCause.VOID, 100));
 			else
 				e.getPlayer().teleport(GameLogic.getCurrentGame().getLobby());
 		}
@@ -377,11 +378,10 @@ public class DeathHandler implements Listener {
 				if (damager != null) {
 					DTMPlayerData damagerData = DTMPlayerData.get(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + "§e putosi maailmasta. "
-								+ damagerData.getNick() + " §esai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + "§e putosi maailmasta. " + damagerData.getNick()
+								+ " §esai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName()
-								+ "§e.");
+						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
 						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
 					}
 
@@ -402,9 +402,8 @@ public class DeathHandler implements Listener {
 				if (damager != null) {
 					DTMPlayerData damagerData = DTMPlayerData.get(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick()
-								+ " §eosui maahan liian kovaa. " + damagerData.getNick()
-								+ " §esai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + " §eosui maahan liian kovaa. " + damagerData
+								.getNick() + " §esai kunnian.");
 					else {
 						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName());
 						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName());
@@ -416,21 +415,18 @@ public class DeathHandler implements Listener {
 					targetData.getSeasonStats().deaths++;
 				} else {
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick()
-								+ " §eosui maahan liian kovaa.");
+						Bukkit.broadcastMessage(targetData.getNick() + " §eosui maahan liian kovaa.");
 				}
 			} else if (e.getCause() == DamageCause.STARVATION) {
-				Bukkit.broadcastMessage(targetData.getNick()
-						+ " §eei viitsinyt syödä ja kuoli nälkään.");
+				Bukkit.broadcastMessage(targetData.getNick() + " §eei viitsinyt syödä ja kuoli nälkään.");
 			} else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
 				if (damager != null) {
 					DTMPlayerData damagerData = DTMPlayerData.get(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §eräjähti. " + damagerData
-								.getNick() + "§e sai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + " §eräjähti. " + damagerData.getNick()
+								+ "§e sai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName()
-								+ "§e.");
+						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
 						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
 					}
 					damagerData.setEmeralds(damagerData.getEmeralds() + 1);
@@ -456,17 +452,15 @@ public class DeathHandler implements Listener {
 					Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä.");
 			} else if (e.getCause() == DamageCause.SUFFOCATION) {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(target.getDisplayName()
-							+ "§e haisteli maata ja tukehtui palikkaan");
+					Bukkit.broadcastMessage(target.getDisplayName() + "§e haisteli maata ja tukehtui palikkaan");
 			} else if (e.getCause() == DamageCause.FIRE_TICK) {
 				if (damager != null) {
 					DTMPlayerData damagerData = DTMPlayerData.get(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä. "
-								+ damagerData.getNick() + " §esai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä. " + damagerData.getNick()
+								+ " §esai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName()
-								+ "§e.");
+						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
 						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
 					}
 
@@ -481,8 +475,7 @@ public class DeathHandler implements Listener {
 				}
 			} else {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(target.getDisplayName()
-							+ " §edied but we don't know why");
+					Bukkit.broadcastMessage(target.getDisplayName() + " §edied but we don't know why");
 				System.out.println("The player died to " + e.getCause().name());
 			}
 		}

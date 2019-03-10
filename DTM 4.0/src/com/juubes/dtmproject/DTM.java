@@ -22,37 +22,37 @@ import com.juubes.nexus.InitOptions;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.commands.CreateMapCommand;
 import com.juubes.nexus.commands.EditModeHandler;
-import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractPlayerData;
 import com.juubes.nexus.data.PlayerDataHandler;
 
 public class DTM extends JavaPlugin {
-	public static DTM getPlugin() {
-		return (DTM) Bukkit.getPluginManager().getPlugin("DTM");
-	}
+
+	private DeathHandler deathHandler;
 
 	@Override
 	public void onEnable() {
+		this.deathHandler = new DeathHandler(this);
+
 		Bukkit.getPluginManager().registerEvents(new ConnectionListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ChatHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new DestroyMonumentListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ScoreboardManager(), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtectionListener(), this);
-		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(), this);
-		Bukkit.getPluginManager().registerEvents(new DeathHandler(), this);
+		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
+		Bukkit.getPluginManager().registerEvents(deathHandler, this);
 
 		// Events from Nexus
 		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(), this);
 
 		getCommand("setmonument").setExecutor(new SetMonumentCommand());
-		getCommand("DTM").setExecutor(new DTMCommand());
+		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand());
 		getCommand("createmap").setExecutor(new CreateMapCommand());
 		Nexus nexus = (Nexus) Bukkit.getPluginManager().getPlugin("Nexus");
 		final InitOptions options = new InitOptions();
 		List<String> maps = nexus.getConfig().getStringList("maps");
 		options.setMapIDs(maps.toArray(new String[maps.size()]));
-		options.setDatabaseManager((AbstractDatabaseManager) new DTMDatabaseManager());
+		options.setDatabaseManager(new DTMDatabaseManager());
 
 		((DTMDatabaseManager) options.getDatabaseManager()).prepareMapSettings(options.getMapIDs());
 
@@ -78,5 +78,9 @@ public class DTM extends JavaPlugin {
 
 	public static DTMDatabaseManager getDatabaseManager() {
 		return (DTMDatabaseManager) Nexus.getDatabaseManager();
+	}
+
+	public DeathHandler getDeathHandler() {
+		return deathHandler;
 	}
 }

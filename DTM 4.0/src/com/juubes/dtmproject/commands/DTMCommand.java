@@ -15,12 +15,16 @@ import com.juubes.nexus.logic.GameLogic;
 import com.juubes.nexus.logic.Team;
 
 public class DTMCommand implements CommandExecutor {
+	private final DTM pl;
+
+	public DTMCommand(DTM pl) {
+		this.pl = pl;
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
 		if (!sender.isOp()) {
-			sender.sendMessage("§aDTM §fversion §a" + DTM.getPlugin().getDescription()
-					.getVersion());
+			sender.sendMessage("§aDTM §fversion §a" + pl.getDescription().getVersion());
 			sender.sendMessage("§fAuthor: §aJuubes");
 			return true;
 		}

@@ -11,12 +11,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -50,8 +47,6 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 	 * <mapID, settings>
 	 */
 	private HashMap<String, MapSettings> mapSettings;
-	private HashMap<UUID, DTMPlayerData> playerData = new HashMap<>();
-	private HashMap<UUID, HashMap<Integer, DTMStats>> stats = new HashMap<>();
 
 	public File mapConfFolder;
 	public File kitFile;
@@ -330,7 +325,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			e.printStackTrace();
 		}
 
-		return this.stats.get(id).get(season);
+		return new DTMStats(0, id, season);
 	}
 
 	@Override
@@ -554,15 +549,28 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 		}
 	}
 
-	public LinkedList<DTMPlayerData> getLeaderboard(int length) {
-		List<DTMPlayerData> val = new ArrayList<>();
-		val.addAll(playerData.values());
-		val.sort(new Comparator<DTMPlayerData>() {
-			@Override
-			public int compare(DTMPlayerData pd1, DTMPlayerData pd2) {
-				return pd1.getSeasonStats().getSum() - pd2.getSeasonStats().getSum();
+	public LinkedList<DTMStats> getLeaderboard(int length, int season) {
+		LinkedList<DTMStats> topData = new LinkedList<>();
+		try (PreparedStatement stmt = conn.prepareStatement(
+				"SELECT *, KILLS * 3 + DEATHS + MONUMENTS_DESTROYED * 10 + PLAY_TIME_WON / 1000 / 60 * 5 + PLAY_TIME_LOST / 1000 / 60 AS SUM FROM SeasonStats WHERE SEASON = ? ORDER BY SUM DESC LIMIT ?")) {
+			stmt.setInt(1, season);
+			stmt.setInt(2, length);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					DTMStats stats = new DTMStats(rs.getInt("STATS_ID"), UUID.fromString(rs.getString("UUID")), season);
+					stats.kills = rs.getInt("KILLS");
+					stats.deaths = rs.getInt("DEATHS");
+					stats.monuments = rs.getInt("MONUMENTS_DESTROYED");
+					stats.wins = rs.getInt("WINS");
+					stats.losses = rs.getInt("LOSSES");
+					stats.playTimeWon = rs.getLong("PLAY_TIME_WON");
+					stats.playTimeLost = rs.getLong("PLAY_TIME_LOST");
+					topData.add(stats);
+				}
 			}
-		});
-		return new LinkedList<>(val.subList(0, length));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return topData;
 	}
 }
