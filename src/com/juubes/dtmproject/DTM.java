@@ -32,7 +32,7 @@ public class DTM extends JavaPlugin {
 
 	public DTM() {
 		this.nexus = (Nexus) Bukkit.getPluginManager().getPlugin("Nexus");
-		this.dbManager = new DTMDatabaseManager(nexus);
+		this.dbManager = new DTMDatabaseManager(this);
 		this.sbManager = new ScoreboardManager(this);
 		this.deathHandler = new DeathHandler(this);
 		this.gameLogic = new GameLogic(nexus);
@@ -57,7 +57,7 @@ public class DTM extends JavaPlugin {
 		getCommand("top").setExecutor(new TopCommand(this));
 
 		List<String> maps = nexus.getConfig().getStringList("maps");
-		InitOptions options = new InitOptions(new DTMLoader(), dbManager, maps, "&eDTM-Jonne");
+		InitOptions options = new InitOptions(new DTMLoader(nexus), dbManager, maps, "&eDTM-Jonne");
 
 		((DTMDatabaseManager) options.getDatabaseManager()).prepareMapSettings(options.getMapIDs());
 

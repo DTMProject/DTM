@@ -3,9 +3,9 @@ package com.juubes.dtmproject.playerdata;
 import java.text.NumberFormat;
 import java.util.UUID;
 
-import com.juubes.nexus.data.AbstractStats;
+import com.juubes.nexus.data.AbstractSeasonStats;
 
-public class DTMSeasonStats extends AbstractStats {
+public class DTMSeasonStats extends AbstractSeasonStats {
 
 	public int kills, deaths;
 	public int wins, losses;

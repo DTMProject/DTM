@@ -38,7 +38,7 @@ import com.juubes.nexus.LocationUtils;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractPlayerData;
-import com.juubes.nexus.data.AbstractStats;
+import com.juubes.nexus.data.AbstractSeasonStats;
 import com.juubes.nexus.data.AbstractTotalStats;
 
 public class DTMDatabaseManager3 extends AbstractDatabaseManager {
@@ -334,7 +334,7 @@ public class DTMDatabaseManager3 extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public AbstractStats getSeasonStats(String name, int season) {
+	public AbstractSeasonStats getSeasonStats(String name, int season) {
 		checkConnection();
 		// TODO: get correct season
 		try (PreparedStatement stmt = conn.prepareStatement(
@@ -365,7 +365,7 @@ public class DTMDatabaseManager3 extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public void saveSeasonStats(AbstractStats stats) {
+	public void saveSeasonStats(AbstractSeasonStats stats) {
 		// TODO
 	}
 

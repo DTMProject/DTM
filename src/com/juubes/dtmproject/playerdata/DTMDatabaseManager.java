@@ -3,10 +3,10 @@ package com.juubes.dtmproject.playerdata;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
+import java.io.InputStreamReader;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.time.Instant;
 import java.util.HashMap;
@@ -26,6 +26,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.MapSettings;
 import com.juubes.dtmproject.setup.Monument;
@@ -36,35 +37,66 @@ import com.juubes.nexus.LocationUtils;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractPlayerData;
-import com.juubes.nexus.data.AbstractStats;
+import com.juubes.nexus.data.AbstractSeasonStats;
 import com.juubes.nexus.data.AbstractTotalStats;
-import com.mysql.jdbc.Statement;
+import com.zaxxer.hikari.HikariDataSource;
 
 public class DTMDatabaseManager extends AbstractDatabaseManager {
+	private final DTM dtm;
 	private final Nexus nexus;
-	private final HashMap<String, MapSettings> mapSettings;
 
+	private final HashMap<String, MapSettings> mapSettings;
 	private final HashMap<UUID, DTMPlayerData> playerDataCache = new HashMap<>();
 	private final HashMap<UUID, HashMap<Integer, DTMSeasonStats>> seasonStatsCache = new HashMap<>();
 
-	public File mapConfFolder;
-	public File kitFile;
-	private Connection conn;
+	public final File mapConfFolder;
+	public final File kitFile;
 
-	public DTMDatabaseManager(Nexus nexus) {
-		this.nexus = nexus;
+	private HikariDataSource HDS;
+
+	public DTMDatabaseManager(DTM dtm) {
+		this.dtm = dtm;
+		this.nexus = dtm.getNexus();
 		this.mapSettings = new HashMap<>();
-		this.mapConfFolder = new File("../Nexus/settings/");
-		this.kitFile = new File("../Nexus/kits.yml");
+		this.mapConfFolder = new File(nexus.getConfigFolder(), "settings");
+		this.kitFile = new File(nexus.getConfigFolder(), "kits.yml");
 	}
 
+	/**
+	 * Loads all playerdata and other important stuff to memory from MySQL.
+	 */
 	public void loadCache() {
-		checkConnection();
-		// Load data
+		// Load config for MySQL credentials
+		FileConfiguration conf = dtm.getConfig();
+		String pw = conf.getString("mysql.password");
+		String user = conf.getString("mysql.user");
+		String server = conf.getString("mysql.server");
+		String db = conf.getString("mysql.database");
 
+		System.out.println("Connecting to " + server + "/" + db + " as user " + user);
+
+		// Initialize HikariCP connection pooling
+		this.HDS = new HikariDataSource();
+		HDS.setPassword(pw);
+		HDS.setUsername(user);
+		HDS.setJdbcUrl("jdbc:mysql://" + server + "/" + db);
+		HDS.addDataSourceProperty("cachePrepStmts", "true");
+		HDS.addDataSourceProperty("prepStmtCacheSize", "250");
+		HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+		try {
+			HDS.getConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				p.kickPlayer("�e�lDTM\n�b      Palvelin uudelleenk�ynnistyy teknisist� syist�.");
+			}
+			Bukkit.shutdown();
+
+		}
 		// Create tables
 		try (Statement stmt = HDS.getConnection().createStatement()) {
-			BufferedReader in = new BufferedReader(new InputStreamReader(nova.getResource("create-tables.sql")));
+			BufferedReader in = new BufferedReader(new InputStreamReader(dtm.getResource("create-tables.sql")));
 			String sql;
 			while ((sql = in.readLine()) != null) {
 				stmt.addBatch(sql);
@@ -72,38 +104,6 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 			stmt.executeBatch();
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	private void checkConnection() {
-		if (conn == null) {
-			FileConfiguration conf = nexus.getConfig();
-			String pw = conf.getString("mysql.password");
-			String user = conf.getString("mysql.user");
-			String server = conf.getString("mysql.server");
-			String db = conf.getString("mysql.database");
-
-			System.out.println("Connecting to " + server + "/" + db + " as user " + user);
-			try {
-				conn = DriverManager.getConnection("jdbc:mysql://" + server + "/" + db, user, pw);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.kickPlayer("�e�lDTM\n�b      Palvelin uudelleenk�ynnistyy teknisist� syist�.");
-				}
-				Bukkit.shutdown();
-			}
-		} else {
-			try {
-				if (!conn.isValid(0)) {
-					conn.close();
-					conn = null;
-					checkConnection();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return;
 		}
 	}
 
@@ -348,7 +348,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public AbstractStats getSeasonStats(UUID id, int currentSeason) {
+	public AbstractSeasonStats getSeasonStats(UUID id, int currentSeason) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -360,7 +360,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public AbstractStats getSeasonStats(String name, int currentSeason) {
+	public AbstractSeasonStats getSeasonStats(String name, int currentSeason) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -372,7 +372,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public void saveSeasonStats(AbstractStats stats) {
+	public void saveSeasonStats(AbstractSeasonStats stats) {
 		HashMap<Integer, DTMSeasonStats> seasonStats = seasonStatsCache.getOrDefault(stats.getUUID(),
 				new HashMap<Integer, DTMSeasonStats>());
 		seasonStats.put(stats.getSeason(), (DTMSeasonStats) stats);
@@ -380,7 +380,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public LinkedList<DTMSeasonStats> getLeaderboard(int count, int season) {
+	public LinkedList<? extends AbstractSeasonStats> getLeaderboard(int count, int season) {
 		// TODO Auto-generated method stub
 		return null;
 	}
