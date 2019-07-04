@@ -8,28 +8,34 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
-import com.juubes.nexus.logic.GameLogic;
+import com.juubes.dtmproject.DTM;
 import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 
 public class SpawnProtectionListener implements Listener {
+	private final DTM dtm;
+
+	public SpawnProtectionListener(DTM dtm) {
+		this.dtm = dtm;
+	}
+
 	@EventHandler
 	public void spawnProtection(BlockBreakEvent e) {
-		if (GameLogic.getGameState() != GameState.RUNNING)
+		if (dtm.getNexus().getGameLogic().getGameState() != GameState.RUNNING)
 			return;
 		Player p = e.getPlayer();
 
-		if (p.getWorld() != GameLogic.getCurrentGame().getWorld())
+		if (p.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
 			return;
 		// Spawnprotection
-		for (Team team : GameLogic.getCurrentGame().getTeams()) {
+		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().clone();
 			spawn.subtract(new Vector(0.5, 0, 0.5));
 			if (spawn.distance(e.getBlock().getLocation()) < 4) {
 				e.setCancelled(true);
-				p.sendMessage("§eEt voi tuhota " + team.getDisplayName() + "§e spawnia.");
+				p.sendMessage("ï¿½eEt voi tuhota " + team.getDisplayName() + "ï¿½e spawnia.");
 				return;
 			}
 		}
@@ -37,20 +43,20 @@ public class SpawnProtectionListener implements Listener {
 
 	@EventHandler
 	public void spawnProtection(BlockPlaceEvent e) {
-		if (GameLogic.getGameState() != GameState.RUNNING)
+		if (dtm.getNexus().getGameLogic().getGameState() != GameState.RUNNING)
 			return;
 		Player p = e.getPlayer();
-		if (p.getWorld() != GameLogic.getCurrentGame().getWorld())
+		if (p.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
 			return;
 		// Spawnprotection
-		for (Team team : GameLogic.getCurrentGame().getTeams()) {
+		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().clone();
 			spawn.subtract(new Vector(0.5, 0, 0.5));
 			if (spawn.distance(e.getBlock().getLocation()) < 4) {
 				e.setCancelled(true);
-				p.sendMessage("§eEt voi rakentaa tiimin " + team.getDisplayName() + "§e spawnille");
+				p.sendMessage("ï¿½eEt voi rakentaa tiimin " + team.getDisplayName() + "ï¿½e spawnille");
 				return;
 			}
 		}

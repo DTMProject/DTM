@@ -6,20 +6,27 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
+import com.juubes.dtmproject.DTM;
+import com.juubes.nexus.data.AbstractPlayerData;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class ChatHandler implements Listener {
+	private final DTM dtm;
+
+	public ChatHandler(DTM dtm) {
+		this.dtm = dtm;
+	}
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onChat(AsyncPlayerChatEvent e) {
 		Player p = e.getPlayer();
-		DTMPlayerData pd = DTMPlayerData.get(p);
+		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 
-		int points = pd.getSeasonStats().getSum();
+		int points = pd.getSeasonStats().getPoints();
 		String prefix = pd.getPrefix();
 		prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-		e.setFormat("§8[§b" + points + "§8] §8[" + prefix + "§8] " + pd.getNick() + "§8: §f" + ChatColor
+		e.setFormat("ï¿½8[ï¿½b" + points + "ï¿½8] ï¿½8[" + prefix + "ï¿½8] " + pd.getNick() + "ï¿½8: ï¿½f" + ChatColor
 				.translateAlternateColorCodes('&', e.getMessage()));
 	}
 }

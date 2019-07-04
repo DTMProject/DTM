@@ -21,48 +21,53 @@ import com.juubes.dtmproject.playerdata.DTMDatabaseManager;
 import com.juubes.nexus.InitOptions;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.commands.CreateMapCommand;
-import com.juubes.nexus.commands.EditModeHandler;
-import com.juubes.nexus.data.AbstractPlayerData;
-import com.juubes.nexus.data.PlayerDataHandler;
+import com.juubes.nexus.logic.GameLogic;
 
 public class DTM extends JavaPlugin {
+	private final Nexus nexus;
+	private final GameLogic gameLogic;
+	private final DeathHandler deathHandler;
+	private final ScoreboardManager sbManager;
+	private final DTMDatabaseManager dbManager;
 
-	private DeathHandler deathHandler;
+	public DTM() {
+		this.nexus = (Nexus) Bukkit.getPluginManager().getPlugin("Nexus");
+		this.dbManager = new DTMDatabaseManager(nexus);
+		this.sbManager = new ScoreboardManager(this);
+		this.deathHandler = new DeathHandler(this);
+		this.gameLogic = new GameLogic(nexus);
+	}
 
 	@Override
 	public void onEnable() {
-		this.deathHandler = new DeathHandler(this);
-
-		Bukkit.getPluginManager().registerEvents(new ConnectionListener(), this);
-		Bukkit.getPluginManager().registerEvents(new ChatHandler(), this);
-		Bukkit.getPluginManager().registerEvents(new DestroyMonumentListener(), this);
-		Bukkit.getPluginManager().registerEvents(new ScoreboardManager(), this);
-		Bukkit.getPluginManager().registerEvents(new SpawnProtectionListener(), this);
+		Bukkit.getPluginManager().registerEvents(new DestroyMonumentListener(this), this);
+		Bukkit.getPluginManager().registerEvents(new SpawnProtectionListener(this), this);
+		Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
+		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
 		Bukkit.getPluginManager().registerEvents(deathHandler, this);
+		Bukkit.getPluginManager().registerEvents(sbManager, this);
 
 		// Events from Nexus
-		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(), this);
+		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(this), this);
 
-		getCommand("setmonument").setExecutor(new SetMonumentCommand());
+		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
+		getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
 		getCommand("DTM").setExecutor(new DTMCommand(this));
-		getCommand("top").setExecutor(new TopCommand());
-		getCommand("createmap").setExecutor(new CreateMapCommand());
-		Nexus nexus = (Nexus) Bukkit.getPluginManager().getPlugin("Nexus");
-		final InitOptions options = new InitOptions();
+		getCommand("top").setExecutor(new TopCommand(this));
+
 		List<String> maps = nexus.getConfig().getStringList("maps");
-		options.setMapIDs(maps.toArray(new String[maps.size()]));
-		options.setDatabaseManager(new DTMDatabaseManager());
+		InitOptions options = new InitOptions(new DTMLoader(), dbManager, maps, "&eDTM-Jonne");
 
 		((DTMDatabaseManager) options.getDatabaseManager()).prepareMapSettings(options.getMapIDs());
 
-		Nexus.init(options);
+		nexus.init(options);
 
-		ScoreboardManager.updateScoreboard();
+		sbManager.updateScoreboard();
 
 		// Broadcast map changes not saved
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-			for (CommandSender sender : EditModeHandler.pendingList) {
+			for (CommandSender sender : nexus.getEditModeHandler().getPendingList()) {
 				sender.sendMessage("§cMappeja ei ole tallennettu. Tallenna komennolla /DTM:DTM save");
 			}
 		}, 20 * 20, 20 * 20);
@@ -71,16 +76,28 @@ public class DTM extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			PlayerDataHandler.unload(AbstractPlayerData.get(p));
+			getDatabaseManager().getPlayerData(p).save();
 			p.kickPlayer("§e§lDTM§b      \nPalvelin uudelleenkäynnistyy teknisistä syistä.");
 		}
 	}
 
-	public static DTMDatabaseManager getDatabaseManager() {
-		return (DTMDatabaseManager) Nexus.getDatabaseManager();
-	}
-
 	public DeathHandler getDeathHandler() {
 		return deathHandler;
+	}
+
+	public Nexus getNexus() {
+		return nexus;
+	}
+
+	public GameLogic getGameLogic() {
+		return gameLogic;
+	}
+
+	public DTMDatabaseManager getDatabaseManager() {
+		return dbManager;
+	}
+
+	public ScoreboardManager getScoreboardManager() {
+		return sbManager;
 	}
 }

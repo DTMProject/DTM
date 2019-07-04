@@ -9,27 +9,28 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMStats;
-import com.juubes.nexus.Nexus;
+import com.juubes.dtmproject.playerdata.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
 
-	public TopCommand() {
+	private final DTM dtm;
+
+	public TopCommand(DTM dtm) {
+		this.dtm = dtm;
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
-
 		int count = 10;
 		if (args.length > 0) {
 			try {
 				count = Integer.parseInt(args[0]);
 			} catch (Exception e) {
-				sender.sendMessage("/top [määrä] [season]");
+				sender.sendMessage("/top [mï¿½ï¿½rï¿½] [season]");
 			}
 		}
 
-		int season = Nexus.CURRENT_SEASON;
+		int season = dtm.getNexus().getCurrentSeason();
 		if (args.length > 1) {
 			try {
 				season = Integer.parseInt(args[1]);
@@ -38,10 +39,10 @@ public class TopCommand implements CommandExecutor {
 			}
 		}
 
-		sender.sendMessage("§eParhaat pelaajat " + season + ". kaudelta: ");
-		LinkedList<DTMStats> topStats = DTM.getDatabaseManager().getLeaderboard(count, season);
+		sender.sendMessage("ï¿½eParhaat pelaajat " + season + ". kaudelta: ");
+		LinkedList<DTMSeasonStats> topStats = dtm.getDatabaseManager().getLeaderboard(count, season);
 		int i = 1;
-		for (DTMStats stats : topStats) {
+		for (DTMSeasonStats stats : topStats) {
 			OfflinePlayer p = Bukkit.getOfflinePlayer(stats.getUUID());
 			if (p != null) {
 				String name;
@@ -50,8 +51,8 @@ public class TopCommand implements CommandExecutor {
 					name = p.getPlayer().getDisplayName();
 				else
 					name = p.getName();
-				sender.sendMessage("§e" + (i++) + ". " + name + ": §a" + stats.getSum() + " §c" + stats.kills + " §4"
-						+ stats.deaths + " §7" + stats.getKDRatio());
+				sender.sendMessage("ï¿½e" + (i++) + ". " + name + ": ï¿½a" + stats.getSum() + " ï¿½c" + stats.kills + " ï¿½4"
+						+ stats.deaths + " ï¿½7" + stats.getKDRatio());
 			}
 		}
 

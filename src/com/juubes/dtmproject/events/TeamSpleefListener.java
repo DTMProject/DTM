@@ -18,22 +18,22 @@ import com.juubes.nexus.events.StartCountdownEvent;
 public class TeamSpleefListener implements Listener {
 
 	private HashMap<Block, Long> antiSpleef = new HashMap<>();
-	private final DTM pl;
+	private final DTM dtm;
 	public TeamSpleefListener(DTM pl) {
-		this.pl = pl;
+		this.dtm = pl;
 	}
 
 	@EventHandler
 	public void stopSpleef(BlockBreakEvent e) {
 		Player p = e.getPlayer();
 		Location blockBroken = e.getBlock().getLocation();
-		DTMPlayerData pd = DTMPlayerData.get(p);
+		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 
 		if (pd.getTeam() == null)
 			return;
 		if (antiSpleef.containsKey(e.getBlock())) {
 			if (antiSpleef.get(e.getBlock()) + 500 > System.currentTimeMillis()) {
-				p.sendMessage("§cEt voi vielä rikkoa tuota.");
+				p.sendMessage("ï¿½cEt voi vielï¿½ rikkoa tuota.");
 				e.setCancelled(true);
 				return;
 			} else {
@@ -51,11 +51,11 @@ public class TeamSpleefListener implements Listener {
 			if (blockBroken.distance(blockBelowPlayer.getLocation()) != 0)
 				continue;
 			e.setCancelled(true);
-			p.sendMessage("§cEt voi rikkoa palikoita omien tiimiläisten alta.");
+			p.sendMessage("ï¿½cEt voi rikkoa palikoita omien tiimilï¿½isten alta.");
 			if (p.getHealth() <= 6) {
-				pl.getDeathHandler().fakeKillPlayer(p);
-				Bukkit.broadcastMessage("§e" + p.getDisplayName()
-						+ " §ekuoli yrittäessään sabotoida omaa tiimiänsä!");
+				dtm.getDeathHandler().fakeKillPlayer(p);
+				Bukkit.broadcastMessage("ï¿½e" + p.getDisplayName()
+						+ " ï¿½ekuoli yrittï¿½essï¿½ï¿½n sabotoida omaa tiimiï¿½nsï¿½!");
 			} else {
 				p.setHealth(p.getHealth() - 5);
 				p.damage(-1);

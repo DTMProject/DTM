@@ -28,20 +28,18 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.ScoreboardManager;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
-import com.juubes.nexus.logic.GameLogic;
 import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 
 public class DeathHandler implements Listener {
-	private final DTM pl;
+	private final DTM dtm;
 	private static boolean broadcastMessages = true;
 
-	public DeathHandler(DTM pl) {
-		this.pl = pl;
+	public DeathHandler(DTM dtm) {
+		this.dtm = dtm;
 	}
 
 	public void fakeKillPlayer(Player p) {
@@ -126,18 +124,18 @@ public class DeathHandler implements Listener {
 			e.printStackTrace();
 		}
 
-		DTMPlayerData playerData = DTMPlayerData.get(p);
+		DTMPlayerData playerData = dtm.getDatabaseManager().getPlayerData(p);
 
 		// Reset
-		GameLogic.sendPlayerToGame(p, playerData.getTeam());
+		dtm.getNexus().getGameLogic().sendPlayerToGame(p, playerData.getTeam());
 		p.setGameMode(GameMode.SPECTATOR);
 
 		if (playerData.getLastDamager() != null)
 			p.teleport(playerData.getLastDamager());
 
 		// Respawn after 6 seconds
-		Bukkit.getScheduler().runTaskLater(pl, () -> {
-			if (GameLogic.getGameState() != GameState.RUNNING)
+		Bukkit.getScheduler().runTaskLater(dtm, () -> {
+			if (dtm.getNexus().getGameLogic().getGameState() != GameState.RUNNING)
 				return;
 			if (!p.isOnline())
 				return;
@@ -188,8 +186,8 @@ public class DeathHandler implements Listener {
 		Player shooter = (Player) arrow.getShooter();
 		Player target = (Player) e.getEntity();
 
-		DTMPlayerData shooterData = DTMPlayerData.get(shooter);
-		DTMPlayerData targetData = DTMPlayerData.get(target);
+		DTMPlayerData shooterData = dtm.getDatabaseManager().getPlayerData(shooter);
+		DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
 
 		// Shot one of their teammate -> cancel event
 		if (shooterData.getTeam() == targetData.getTeam()) {
@@ -207,10 +205,10 @@ public class DeathHandler implements Listener {
 			if (Math.random() < 0.005)
 				return;
 			if (broadcastMessages)
-				Bukkit.broadcastMessage(shooter.getCustomName() + " §eampui pelaajan " + target.getCustomName());
+				Bukkit.broadcastMessage(shooter.getCustomName() + " ï¿½eampui pelaajan " + target.getCustomName());
 			else {
-				target.sendMessage("§eSinut ampui pelaaja " + shooter.getDisplayName());
-				shooter.sendMessage("§eAmmuit pelaajan " + target.getDisplayName());
+				target.sendMessage("ï¿½eSinut ampui pelaaja " + shooter.getDisplayName());
+				shooter.sendMessage("ï¿½eAmmuit pelaajan " + target.getDisplayName());
 			}
 			fakeKillPlayer(target);
 			e.setCancelled(true);
@@ -218,7 +216,7 @@ public class DeathHandler implements Listener {
 			// Add point to killer
 			if (shooter != target) {
 				shooterData.setEmeralds(shooterData.getEmeralds() + 1);
-				shooter.sendMessage("§a+1 emerald");
+				shooter.sendMessage("ï¿½a+1 emerald");
 			}
 
 			// Update stats
@@ -232,21 +230,21 @@ public class DeathHandler implements Listener {
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		if (e.getMessage().equals("/teams")) {
 			e.setCancelled(true);
-			e.getPlayer().sendMessage("§ePelaajamäärät:");
-			for (Team team : GameLogic.getCurrentGame().getTeams())
+			e.getPlayer().sendMessage("ï¿½ePelaajamï¿½ï¿½rï¿½t:");
+			for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams())
 				e.getPlayer().sendMessage(team.getDisplayName() + ": " + team.getPlayers().size());
 		} else if (e.getMessage().equals("/restoremonuments") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
-			for (Team team : GameLogic.getCurrentGame().getTeams()) {
+			for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 				for (Monument mon : ((DTMTeam) team).getMonuments()) {
 					mon.repair();
 				}
 			}
 
-			ScoreboardManager.updateScoreboard();
+			dtm.getScoreboardManager().updateScoreboard();
 		} else if (e.getMessage().equals("/ram") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
-			e.getPlayer().sendMessage("§e" + ((int) ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime()
+			e.getPlayer().sendMessage("ï¿½e" + ((int) ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime()
 					.freeMemory()) / 1000000)) + "/" + (int) (Runtime.getRuntime().maxMemory() / 1000000));
 		}
 	}
@@ -255,7 +253,7 @@ public class DeathHandler implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onSwordPVP(EntityDamageByEntityEvent e) {
-		if (GameLogic.getGameState() != GameState.RUNNING) {
+		if (dtm.getNexus().getGameLogic().getGameState() != GameState.RUNNING) {
 			e.setCancelled(true);
 			return;
 		}
@@ -264,10 +262,9 @@ public class DeathHandler implements Listener {
 		Player attacker = (Player) e.getDamager();
 		Player target = (Player) e.getEntity();
 
-		DTMPlayerData attackerData = DTMPlayerData.get(attacker);
-		DTMPlayerData targetData = DTMPlayerData.get(target);
+		DTMPlayerData attackerData = dtm.getDatabaseManager().getPlayerData(attacker);
+		DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
 
-		// TODO: test - remove later
 		if (lastHits.containsKey(attacker)) {
 			// 10 CPS limit lolzzzz
 			if (lastHits.get(attacker) + 1E8 > System.nanoTime()) {
@@ -296,11 +293,11 @@ public class DeathHandler implements Listener {
 
 		if (target.getHealth() - e.getFinalDamage() < 0) {
 			if (broadcastMessages)
-				Bukkit.broadcastMessage(attackerData.getNick() + " §eteurasti pelaajan " + targetData.getNick()
-						+ "§e.");
+				Bukkit.broadcastMessage(attackerData.getNick() + " ï¿½eteurasti pelaajan " + targetData.getNick()
+						+ "ï¿½e.");
 			else {
-				target.sendMessage("§eSinut tappoi pelaaja " + attackerData.getNick() + "§e.");
-				attacker.sendMessage("§eTapoit pelaajan " + targetData.getNick() + "§e.");
+				target.sendMessage("ï¿½eSinut tappoi pelaaja " + attackerData.getNick() + "ï¿½e.");
+				attacker.sendMessage("ï¿½eTapoit pelaajan " + targetData.getNick() + "ï¿½e.");
 			}
 
 			fakeKillPlayer(target);
@@ -308,7 +305,7 @@ public class DeathHandler implements Listener {
 
 			// Add point to killer
 			attackerData.setEmeralds(attackerData.getEmeralds() + 1);
-			attacker.sendMessage("§a+1 emerald");
+			attacker.sendMessage("ï¿½a+1 emerald");
 
 			// Update stats
 			attackerData.getSeasonStats().kills++;
@@ -325,7 +322,7 @@ public class DeathHandler implements Listener {
 		if (e.getItem().getType().equals(Material.EXPLOSIVE_MINECART)) {
 			if (Math.random() < 0.1)
 				e.getPlayer().sendMessage(
-						"§cTNT-Minecarttei ei voi laittaa enää, koska eräät nimeltä mainitsemattomat JEDI ja xVolt tuhosivat spawnin!");
+						"ï¿½cTNT-Minecarttei ei voi laittaa enï¿½ï¿½, koska erï¿½ï¿½t nimeltï¿½ mainitsemattomat JEDI ja xVolt tuhosivat spawnin!");
 			e.setCancelled(true);
 		}
 	}
@@ -353,7 +350,7 @@ public class DeathHandler implements Listener {
 			if (e.getPlayer().getGameMode() == GameMode.SURVIVAL)
 				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(), DamageCause.VOID, 100));
 			else
-				e.getPlayer().teleport(GameLogic.getCurrentGame().getLobby());
+				e.getPlayer().teleport(dtm.getNexus().getGameLogic().getCurrentGame().getLobby());
 		}
 	}
 
@@ -372,110 +369,110 @@ public class DeathHandler implements Listener {
 		if (target.getHealth() - e.getFinalDamage() <= 0) {
 			e.setDamage(0);
 			fakeKillPlayer(target);
-			Player damager = DTMPlayerData.get(target).getLastDamager();
-			DTMPlayerData targetData = DTMPlayerData.get(target);
+			Player damager = dtm.getDatabaseManager().getPlayerData(target).getLastDamager();
+			DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
 			if (e.getCause() == DamageCause.VOID) {
 				if (damager != null) {
-					DTMPlayerData damagerData = DTMPlayerData.get(damager);
+					DTMPlayerData damagerData = dtm.getDatabaseManager().getPlayerData(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + "§e putosi maailmasta. " + damagerData.getNick()
-								+ " §esai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + "ï¿½e putosi maailmasta. " + damagerData.getNick()
+								+ " ï¿½esai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
-						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
+						target.sendMessage("ï¿½eSinut tappoi pelaaja " + damager.getDisplayName() + "ï¿½e.");
+						damager.sendMessage("ï¿½eTapoit pelaajan " + target.getDisplayName() + "ï¿½e.");
 					}
 
 					if (damagerData != null) {
 						damagerData.setEmeralds(damagerData.getEmeralds() + 1);
 
-						damager.sendMessage("§a+1 emerald");
+						damager.sendMessage("ï¿½a+1 emerald");
 						// Update stats
 						damagerData.getSeasonStats().kills++;
 						targetData.getSeasonStats().deaths++;
 					}
 				} else {
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §eputosi maailmasta.");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½eputosi maailmasta.");
 
 				}
 			} else if (e.getCause() == DamageCause.FALL) {
 				if (damager != null) {
-					DTMPlayerData damagerData = DTMPlayerData.get(damager);
+					DTMPlayerData damagerData = dtm.getDatabaseManager().getPlayerData(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §eosui maahan liian kovaa. " + damagerData
-								.getNick() + " §esai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½eosui maahan liian kovaa. " + damagerData
+								.getNick() + " ï¿½esai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName());
-						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName());
+						target.sendMessage("ï¿½eSinut tappoi pelaaja " + damager.getDisplayName());
+						damager.sendMessage("ï¿½eTapoit pelaajan " + target.getDisplayName());
 					}
 					/* TODO: error */ damagerData.setEmeralds(damagerData.getEmeralds() + 1);
-					damager.sendMessage("§a+1 emerald");
+					damager.sendMessage("ï¿½a+1 emerald");
 					// Update stats
 					damagerData.getSeasonStats().kills++;
 					targetData.getSeasonStats().deaths++;
 				} else {
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §eosui maahan liian kovaa.");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½eosui maahan liian kovaa.");
 				}
 			} else if (e.getCause() == DamageCause.STARVATION) {
-				Bukkit.broadcastMessage(targetData.getNick() + " §eei viitsinyt syödä ja kuoli nälkään.");
+				Bukkit.broadcastMessage(targetData.getNick() + " ï¿½eei viitsinyt syï¿½dï¿½ ja kuoli nï¿½lkï¿½ï¿½n.");
 			} else if (e.getCause() == DamageCause.ENTITY_EXPLOSION) {
 				if (damager != null) {
-					DTMPlayerData damagerData = DTMPlayerData.get(damager);
+					DTMPlayerData damagerData = dtm.getDatabaseManager().getPlayerData(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §eräjähti. " + damagerData.getNick()
-								+ "§e sai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½erï¿½jï¿½hti. " + damagerData.getNick()
+								+ "ï¿½e sai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
-						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
+						target.sendMessage("ï¿½eSinut tappoi pelaaja " + damager.getDisplayName() + "ï¿½e.");
+						damager.sendMessage("ï¿½eTapoit pelaajan " + target.getDisplayName() + "ï¿½e.");
 					}
 					damagerData.setEmeralds(damagerData.getEmeralds() + 1);
-					damager.sendMessage("§a+1 emerald");
+					damager.sendMessage("ï¿½a+1 emerald");
 					// Update stats
 					damagerData.getSeasonStats().kills++;
 					targetData.getSeasonStats().deaths++;
 				} else {
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §eräjähti. ");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½erï¿½jï¿½hti. ");
 				}
 			} else if (e.getCause() == DamageCause.DROWNING) {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(targetData.getNick() + " §eyritti hengittää vettä.");
+					Bukkit.broadcastMessage(targetData.getNick() + " ï¿½eyritti hengittï¿½ï¿½ vettï¿½.");
 			} else if (e.getCause() == DamageCause.CONTACT) {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(targetData.getNick() + " §ehalasi kaktusta ja kuoli.");
+					Bukkit.broadcastMessage(targetData.getNick() + " ï¿½ehalasi kaktusta ja kuoli.");
 			} else if (e.getCause() == DamageCause.LAVA) {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä.");
+					Bukkit.broadcastMessage(targetData.getNick() + " ï¿½epaloi hengiltï¿½.");
 			} else if (e.getCause() == DamageCause.FIRE) {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä.");
+					Bukkit.broadcastMessage(targetData.getNick() + " ï¿½epaloi hengiltï¿½.");
 			} else if (e.getCause() == DamageCause.SUFFOCATION) {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(target.getDisplayName() + "§e haisteli maata ja tukehtui palikkaan");
+					Bukkit.broadcastMessage(target.getDisplayName() + "ï¿½e haisteli maata ja tukehtui palikkaan");
 			} else if (e.getCause() == DamageCause.FIRE_TICK) {
 				if (damager != null) {
-					DTMPlayerData damagerData = DTMPlayerData.get(damager);
+					DTMPlayerData damagerData = dtm.getDatabaseManager().getPlayerData(damager);
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä. " + damagerData.getNick()
-								+ " §esai kunnian.");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½epaloi hengiltï¿½. " + damagerData.getNick()
+								+ " ï¿½esai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
-						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
+						target.sendMessage("ï¿½eSinut tappoi pelaaja " + damager.getDisplayName() + "ï¿½e.");
+						damager.sendMessage("ï¿½eTapoit pelaajan " + target.getDisplayName() + "ï¿½e.");
 					}
 
 					damagerData.setEmeralds(damagerData.getEmeralds() + 1);
-					damager.sendMessage("§a+1 emerald");
+					damager.sendMessage("ï¿½a+1 emerald");
 					// Update stats
 					damagerData.getSeasonStats().kills++;
 					targetData.getSeasonStats().deaths++;
 				} else {
 					if (broadcastMessages)
-						Bukkit.broadcastMessage(targetData.getNick() + " §epaloi hengiltä.");
+						Bukkit.broadcastMessage(targetData.getNick() + " ï¿½epaloi hengiltï¿½.");
 				}
 			} else {
 				if (broadcastMessages)
-					Bukkit.broadcastMessage(target.getDisplayName() + " §edied but we don't know why");
+					Bukkit.broadcastMessage(target.getDisplayName() + " ï¿½edied but we don't know why");
 				System.out.println("The player died to " + e.getCause().name());
 			}
 		}

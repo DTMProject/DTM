@@ -28,7 +28,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.MapSettings;
 import com.juubes.dtmproject.setup.Monument;
@@ -40,9 +39,10 @@ import com.juubes.nexus.Nexus;
 import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractPlayerData;
 import com.juubes.nexus.data.AbstractStats;
+import com.juubes.nexus.data.AbstractTotalStats;
 
-public class DTMDatabaseManager implements AbstractDatabaseManager {
-
+public class DTMDatabaseManager3 extends AbstractDatabaseManager {
+	private final Nexus nexus;
 	/**
 	 * <mapID, settings>
 	 */
@@ -52,9 +52,23 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 	public File kitFile;
 	private Connection conn;
 
+	public DTMDatabaseManager3(Nexus nexus) {
+		this.nexus = nexus;
+		this.mapConfFolder = new File("../Nexus/settings/");
+		this.kitFile = new File("../Nexus/kits.yml");
+
+		checkConnection();
+		// Load data
+		try (Statement stmt = conn.createStatement()) {
+			stmt.executeQuery("SELECT * FROM PlayerData");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void checkConnection() {
 		if (conn == null) {
-			FileConfiguration conf = Nexus.getPlugin().getConfig();
+			FileConfiguration conf = nexus.getConfig();
 			String pw = conf.getString("mysql.password");
 			String user = conf.getString("mysql.user");
 			String server = conf.getString("mysql.server");
@@ -66,7 +80,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
+					p.kickPlayer("ï¿½eï¿½lDTM\nï¿½b      Palvelin uudelleenkï¿½ynnistyy teknisistï¿½ syistï¿½.");
 				}
 				Bukkit.shutdown();
 			}
@@ -81,19 +95,6 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 				e.printStackTrace();
 			}
 			return;
-		}
-	}
-
-	public DTMDatabaseManager() {
-		this.mapConfFolder = new File("../Nexus/settings/");
-		this.kitFile = new File("../Nexus/kits.yml");
-
-		checkConnection();
-		// Load data
-		try (Statement stmt = conn.createStatement()) {
-			stmt.executeQuery("SELECT * FROM PlayerData");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -211,35 +212,35 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 	/**
 	 * Creates and loads playerdata from database
 	 */
-	@Override
 	public DTMPlayerData getPlayerData(UUID id) {
 		checkConnection();
 		try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM PlayerData WHERE UUID = ?")) {
 			stmt.setString(1, id.toString());
 			try (ResultSet rs = stmt.executeQuery()) {
-				DTMPlayerData pd = new DTMPlayerData(id, Bukkit.getPlayer(id)) {
-					// Cache this since it's propably going to be the most requested one
-					private DTMStats seasonStats = DTM.getDatabaseManager().getSeasonStats(this.getID(),
-							Nexus.CURRENT_SEASON);
+				DTMPlayerData pd = new DTMPlayerData(null, null, null, null, 0, null, 0) {
+
+					@Override
+					public DTMSeasonStats getTotalStats() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public DTMSeasonStats getSeasonStats() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public DTMSeasonStats getSeasonStats(int season) {
+						// TODO Auto-generated method stub
+						return null;
+					}
 
 					@Override
 					public void save() {
-						DTM.getDatabaseManager().savePlayerData(this);
-					}
+						// TODO Auto-generated method stub
 
-					@Override
-					public DTMStats getSeasonStats() {
-						return this.seasonStats;
-					}
-
-					@Override
-					public DTMStats getSeasonStats(int season) {
-						return DTM.getDatabaseManager().getSeasonStats(this.getID(), season);
-					}
-
-					@Override
-					public DTMStats getTotalStats() {
-						return DTM.getDatabaseManager().getTotalStats(this.getID());
 					}
 
 				};
@@ -269,8 +270,8 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 		// Save playerdata
 		try (PreparedStatement stmt = conn.prepareStatement(
 				"INSERT INTO PlayerData(UUID, NAME, PREFIX, EMERALDS, KILLSTREAK) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE NAME = VALUES(NAME), PREFIX = VALUES(PREFIX), EMERALDS = VALUES(EMERALDS), KILLSTREAK = VALUES(KILLSTREAK)")) {
-			stmt.setString(1, data.getID().toString());
-			stmt.setString(2, data.getName());
+			stmt.setString(1, data.getUUID().toString());
+			stmt.setString(2, data.getLastSeenName());
 			stmt.setString(3, data.getPrefix());
 			stmt.setInt(4, data.getEmeralds());
 			stmt.setInt(5, data.getKillStreak());
@@ -279,11 +280,11 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 		}
 		// Save monthly and total stats
 
-		DTMStats m = (DTMStats) data.getSeasonStats();
+		DTMSeasonStats m = (DTMSeasonStats) data.getSeasonStats();
 		try (PreparedStatement stmt = conn.prepareStatement(
 				"INSERT INTO `SeasonStats`(`STATS_ID`, `SEASON`, `UUID`, `KILLS`, `DEATHS`, `MONUMENTS_DESTROYED`, `WINS`, `LOSSES`, `PLAY_TIME_WON`, `PLAY_TIME_LOST`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE KILLS = VALUES(KILLS), DEATHS = VALUES(DEATHS), MONUMENTS_DESTROYED = VALUES(MONUMENTS_DESTROYED), WINS = VALUES(WINS), LOSSES = VALUES(LOSSES), PLAY_TIME_WON = VALUES(PLAY_TIME_WON), PLAY_TIME_LOST = VALUES(PLAY_TIME_LOST)")) {
-			stmt.setInt(1, m.getStatsID());
-			stmt.setInt(2, Nexus.CURRENT_SEASON);
+			stmt.setInt(1, m.getSeasonStatsID());
+			stmt.setInt(2, nexus.getCurrentSeason());
 			stmt.setString(3, m.getUUID().toString());
 			stmt.setInt(4, m.kills);
 			stmt.setInt(5, m.deaths);
@@ -299,7 +300,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 	}
 
 	@Override
-	public DTMStats getSeasonStats(UUID id, int season) {
+	public DTMSeasonStats getSeasonStats(UUID id, int season) {
 		checkConnection();
 		try (PreparedStatement stmt = conn.prepareStatement(
 				"SELECT * FROM SeasonStats WHERE UUID = ? AND SEASON = ?")) {
@@ -307,7 +308,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			stmt.setInt(2, season);
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (rs.next()) {
-					DTMStats stats = new DTMStats(rs.getInt("STATS_ID"), id, season);
+					DTMSeasonStats stats = new DTMSeasonStats(rs.getInt("STATS_ID"), id, season);
 					stats.kills = rs.getInt("KILLS");
 					stats.deaths = rs.getInt("DEATHS");
 					stats.monuments = rs.getInt("MONUMENTS_DESTROYED");
@@ -317,65 +318,19 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 					stats.playTimeLost = rs.getLong("PLAY_TIME_LOST");
 					return stats;
 				} else {
-					Nexus.getPlugin().getLogger().warning("Didn't find any data for player " + id);
-					return new DTMStats(0, id, season);
+					nexus.getLogger().warning("Didn't find any data for player " + id);
+					return new DTMSeasonStats(0, id, season);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return new DTMStats(0, id, season);
+		return new DTMSeasonStats(0, id, season);
 	}
 
 	@Override
-	public void saveSeasonStats(AbstractStats absStats, int season) {
-		// TODO: currentSeason var not used
-		checkConnection();
-		DTMStats stats = (DTMStats) absStats;
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"INSERT INTO SeasonStats(SeasonStatsID, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, SEASON) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed = VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost)")) {
-			stmt.setInt(1, absStats.getStatsID());
-			stmt.setInt(2, stats.kills);
-			stmt.setInt(3, stats.deaths);
-			stmt.setInt(4, stats.monuments);
-			stmt.setInt(5, stats.wins);
-			stmt.setInt(6, stats.losses);
-			stmt.setLong(7, stats.playTimeWon);
-			stmt.setLong(8, stats.playTimeLost);
-			stmt.setInt(9, season);
-			stmt.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public DTMStats getTotalStats(UUID id) {
-		checkConnection();
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"SELECT SUM(KILLS), SUM(DEATHS), SUM(MONUMENTS_DESTROYED), SUM(WINS), SUM(LOSSES), SUM(PLAY_TIME_WON), SUM(PLAY_TIME_LOST) FROM SeasonStats WHERE UUID = ?")) {
-			stmt.setString(1, id.toString());
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					DTMStats stats = new DTMStats(0, id, 0);
-					stats.kills = rs.getInt("SUM(KILLS)");
-					stats.deaths = rs.getInt("SUM(DEATHS)");
-					stats.monuments = rs.getInt("SUM(MONUMENTS_DESTROYED)");
-					stats.wins = rs.getInt("SUM(WINS)");
-					stats.losses = rs.getInt("SUM(LOSSES)");
-					stats.playTimeWon = rs.getLong("SUM(PLAY_TIME_WON)");
-					stats.playTimeLost = rs.getLong("SUM(PLAY_TIME_LOST)");
-					return stats;
-				} else {
-					throw new SQLException("Didn't find any data for player " + id);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// Return empty stats - possibly a new player
-		return new DTMStats(0, id, -1);
+	public DTMTotalStats getTotalStats(UUID id) {
+		return null;
 	}
 
 	@Override
@@ -387,8 +342,8 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			stmt.setString(1, name);
 			try (ResultSet rs = stmt.executeQuery()) {
 				if (rs.next()) {
-					DTMStats stats = new DTMStats(rs.getInt("SeasonStatsID"), UUID.fromString(rs.getString("UUID")),
-							season);
+					DTMSeasonStats stats = new DTMSeasonStats(rs.getInt("SeasonStatsID"), UUID.fromString(rs.getString(
+							"UUID")), season);
 					stats.kills = rs.getInt("KILLS");
 					stats.deaths = rs.getInt("DEATHS");
 					stats.monuments = rs.getInt("MONUMENTS_DESTROYED");
@@ -399,7 +354,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 					return stats;
 				} else {
 					// If the name hasn't been logged to stats, return null
-					Nexus.getPlugin().getLogger().warning("Didn't find any data for player " + name);
+					nexus.getLogger().warning("Didn't find any data for player " + name);
 					return null;
 				}
 			}
@@ -410,29 +365,12 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 	}
 
 	@Override
-	public AbstractStats getTotalStats(String name) {
-		checkConnection();
-		try (PreparedStatement stmt = conn.prepareStatement(
-				"SELECT SUM(KILLS), SUM(DEATHS), SUM(MONUMENTS_DESTROYED), SUM(WINS), SUM(LOSSES), SUM(PLAY_TIME_WON), SUM(PLAY_TIME_LOST) FROM SeasonStats WHERE NAME = ?")) {
-			stmt.setString(1, name);
-			try (ResultSet rs = stmt.executeQuery()) {
-				if (rs.next()) {
-					DTMStats stats = new DTMStats(0, /* TODO: idk man */null, -1);
-					stats.kills = rs.getInt("SUM(KILLS)");
-					stats.deaths = rs.getInt("SUM(DEATHS)");
-					stats.monuments = rs.getInt("SUM(MONUMENTS_DESTROYED)");
-					stats.wins = rs.getInt("SUM(WINS)");
-					stats.losses = rs.getInt("SUM(LOSSES)");
-					stats.playTimeWon = rs.getLong("SUM(PLAY_TIME_WON)");
-					stats.playTimeLost = rs.getLong("SUM(PLAY_TIME_LOST)");
-					return stats;
-				} else {
-					throw new SQLException("Didn't find any data for player " + name);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void saveSeasonStats(AbstractStats stats) {
+		// TODO
+	}
+
+	@Override
+	public AbstractTotalStats getTotalStats(String name) {
 		return null;
 	}
 
@@ -446,7 +384,7 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 
 		// Load map settings
 		for (String mapID : mapIDs) {
-			FileConfiguration conf = YamlConfiguration.loadConfiguration(new File(Nexus.getConfigFolder(), "./settings/"
+			FileConfiguration conf = YamlConfiguration.loadConfiguration(new File(nexus.getConfigFolder(), "./settings/"
 					+ mapID + ".yml"));
 
 			MapSettings settings = new MapSettings(new HashSet<>(conf.getStringList("team-names")));
@@ -463,8 +401,8 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 					ts.spawn = LocationUtils.toLocation(conf.getString("teams." + teamID + ".spawn"));
 
 					if (ts.spawn == null) {
-						Bukkit.broadcastMessage("§eDTM epäonnistui spawnin lataamisessa " + mapID + ":" + teamID);
-						System.err.println("DTM epäonnistui spawnin lataamisessa " + mapID + ":" + teamID);
+						Bukkit.broadcastMessage("ï¿½eDTM epï¿½onnistui spawnin lataamisessa " + mapID + ":" + teamID);
+						System.err.println("DTM epï¿½onnistui spawnin lataamisessa " + mapID + ":" + teamID);
 					}
 
 					HashMap<String, MonumentSettings> monumentSettings = null;
@@ -481,14 +419,14 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 						}
 						ts.monumentSettings = monumentSettings;
 					} catch (Exception e) {
-						Bukkit.broadcastMessage("§eDTM epäonnistui monumenttien lataamisessa " + mapID + ":" + teamID);
-						System.err.println("DTM epäonnistui monumenttien lataamisessa " + mapID + ":" + teamID);
+						Bukkit.broadcastMessage("ï¿½eDTM epï¿½onnistui monumenttien lataamisessa " + mapID + ":" + teamID);
+						System.err.println("DTM epï¿½onnistui monumenttien lataamisessa " + mapID + ":" + teamID);
 					}
 				}
 
 			} catch (Exception e) {
-				Bukkit.broadcastMessage("§eDTM epäonnistui tiimien lataamisessa mapille " + mapID);
-				System.err.println("DTM epäonnistui tiimien lataamisessa mapille " + mapID);
+				Bukkit.broadcastMessage("ï¿½eDTM epï¿½onnistui tiimien lataamisessa mapille " + mapID);
+				System.err.println("DTM epï¿½onnistui tiimien lataamisessa mapille " + mapID);
 				e.printStackTrace();
 			}
 			this.mapSettings.put(mapID, settings);
@@ -549,15 +487,17 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 		}
 	}
 
-	public LinkedList<DTMStats> getLeaderboard(int length, int season) {
-		LinkedList<DTMStats> topData = new LinkedList<>();
+	@Override
+	public LinkedList<DTMSeasonStats> getLeaderboard(int length, int season) {
+		LinkedList<DTMSeasonStats> topData = new LinkedList<>();
 		try (PreparedStatement stmt = conn.prepareStatement(
 				"SELECT *, KILLS * 3 + DEATHS + MONUMENTS_DESTROYED * 10 + PLAY_TIME_WON / 1000 / 60 * 5 + PLAY_TIME_LOST / 1000 / 60 AS SUM FROM SeasonStats WHERE SEASON = ? ORDER BY SUM DESC LIMIT ?")) {
 			stmt.setInt(1, season);
 			stmt.setInt(2, length);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
-					DTMStats stats = new DTMStats(rs.getInt("STATS_ID"), UUID.fromString(rs.getString("UUID")), season);
+					DTMSeasonStats stats = new DTMSeasonStats(rs.getInt("STATS_ID"), UUID.fromString(rs.getString(
+							"UUID")), season);
 					stats.kills = rs.getInt("KILLS");
 					stats.deaths = rs.getInt("DEATHS");
 					stats.monuments = rs.getInt("MONUMENTS_DESTROYED");
@@ -572,5 +512,21 @@ public class DTMDatabaseManager implements AbstractDatabaseManager {
 			e.printStackTrace();
 		}
 		return topData;
+	}
+
+	@Override
+	public AbstractPlayerData getPlayerData(Player p) {
+		return null;
+	}
+
+	@Override
+	public UUID getUUIDByLastSeenName(String name) {
+		return null;
+	}
+
+	@Override
+	public LinkedList<? extends AbstractTotalStats> getAlltimeLeaderboard(int count) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

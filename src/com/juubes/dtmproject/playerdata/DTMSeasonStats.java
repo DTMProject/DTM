@@ -5,13 +5,13 @@ import java.util.UUID;
 
 import com.juubes.nexus.data.AbstractStats;
 
-public class DTMStats extends AbstractStats {
+public class DTMSeasonStats extends AbstractStats {
 
 	public int kills, deaths;
 	public int wins, losses;
 	public int monuments;
 
-	public DTMStats(int statsID, UUID uuid, int season) {
+	public DTMSeasonStats(int statsID, UUID uuid, int season) {
 		super(statsID, uuid, season);
 	}
 
@@ -29,13 +29,13 @@ public class DTMStats extends AbstractStats {
 	@Override
 	public String toString() {
 		String str = "";
-		str += "§bTapot: " + kills + "\n";
-		str += "§bKuolemat: " + deaths + "\n";
-		str += "§bMonumenttejä tuhottu: " + monuments + "\n";
-		str += "§bVoitot: " + wins + "\n";
-		str += "§bHäviöt: " + losses + "\n";
-		str += "§bPelejä voitettu: " + playTimeWon / 1000 / 60 + " minuuttia\n";
-		str += "§bPelejä hävitty: " + playTimeLost / 1000 / 60 + " minuuttia\n";
+		str += "ï¿½bTapot: " + kills + "\n";
+		str += "ï¿½bKuolemat: " + deaths + "\n";
+		str += "ï¿½bMonumenttejï¿½ tuhottu: " + monuments + "\n";
+		str += "ï¿½bVoitot: " + wins + "\n";
+		str += "ï¿½bHï¿½viï¿½t: " + losses + "\n";
+		str += "ï¿½bPelejï¿½ voitettu: " + playTimeWon / 1000 / 60 + " minuuttia\n";
+		str += "ï¿½bPelejï¿½ hï¿½vitty: " + playTimeLost / 1000 / 60 + " minuuttia\n";
 		return str;
 	}
 
