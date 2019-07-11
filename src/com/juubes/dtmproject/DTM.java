@@ -56,10 +56,13 @@ public class DTM extends JavaPlugin {
 		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
 
-		List<String> maps = nexus.getConfig().getStringList("maps");
-		InitOptions options = new InitOptions(new DTMLoader(nexus), dbManager, maps, "&eDTM-Jonne");
+		saveDefaultConfig();
 
-		((DTMDatabaseManager) options.getDatabaseManager()).prepareMapSettings(options.getMapIDs());
+		List<String> maps = nexus.getConfig().getStringList("maps");
+		InitOptions options = new InitOptions(new DTMGameLoader(this), dbManager, maps, "&eDTM-Jonne");
+
+		dbManager.prepareMapSettings(options.getMapIDs());
+		dbManager.loadCache();
 
 		nexus.init(options);
 

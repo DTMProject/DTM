@@ -4,13 +4,21 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.data.AbstractPlayerData;
 
-public abstract class DTMPlayerData extends AbstractPlayerData {
+public class DTMPlayerData extends AbstractPlayerData {
 
 	private long lastRespawn;
+
+	/**
+	 * Creates new playerdata for player, defaults all other values.
+	 */
+	public DTMPlayerData(Nexus nexus, Player p) {
+		super(nexus, p.getUniqueId(), p.getName(), null, 0, null, 0);
+	}
 
 	public DTMPlayerData(Nexus nexus, UUID uuid, String lastSeenName, String prefix, int emeralds, String nick,
 			int killStreak) {
@@ -18,17 +26,31 @@ public abstract class DTMPlayerData extends AbstractPlayerData {
 	}
 
 	@Override
-	public abstract DTMSeasonStats getTotalStats();
+	public DTMTotalStats getTotalStats() {
+		return (DTMTotalStats) nexus.getDatabaseManager().getTotalStats(uuid);
+	}
 
 	@Override
-	public abstract DTMSeasonStats getSeasonStats();
+	public DTMSeasonStats getSeasonStats() {
+		return this.getSeasonStats(nexus.getCurrentSeason());
+	}
 
 	@Override
-	public abstract DTMSeasonStats getSeasonStats(int season);
+	public DTMSeasonStats getSeasonStats(int season) {
+		return (DTMSeasonStats) nexus.getDatabaseManager().getSeasonStats(this.uuid, season);
+	}
+
+	/**
+	 * Calls Nexus#getDatabaseManager().savePlayerData(this)
+	 */
+	@Override
+	public void save() {
+		nexus.getDatabaseManager().savePlayerData(this);
+	}
 
 	@Override
 	public String toString() {
-		DTMSeasonStats totalStats = this.getTotalStats();
+		DTMTotalStats totalStats = this.getTotalStats();
 
 		String str = "";
 		if (Bukkit.getPlayer(uuid) != null)

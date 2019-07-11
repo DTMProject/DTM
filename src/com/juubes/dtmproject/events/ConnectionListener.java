@@ -23,6 +23,8 @@ public class ConnectionListener implements Listener {
 
 		Player p = e.getPlayer();
 		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
+
+		dtm.getDatabaseManager().createNonExistingPlayerData(p);
 		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 
 		if (pd.getPrefix() == null)
@@ -44,6 +46,6 @@ public class ConnectionListener implements Listener {
 			Bukkit.broadcastMessage("�8[�c-�8] �e" + pd.getNick());
 
 		pd.setTeam(null);
-		dtm.getDatabaseManager().savePlayerData(pd);
+		pd.save();
 	}
 }

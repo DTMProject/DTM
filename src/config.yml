@@ -1,0 +1,5 @@
+mysql:
+   server: localhost:3306
+   database: DTM
+   user: DTM
+   password: password

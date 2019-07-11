@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 
 import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMSeasonStats;
+import com.juubes.nexus.data.AbstractSeasonStats;
 
 public class TopCommand implements CommandExecutor {
 
@@ -40,9 +41,10 @@ public class TopCommand implements CommandExecutor {
 		}
 
 		sender.sendMessage("�eParhaat pelaajat " + season + ". kaudelta: ");
-		LinkedList<DTMSeasonStats> topStats = dtm.getDatabaseManager().getLeaderboard(count, season);
+		LinkedList<? extends AbstractSeasonStats> topStats = dtm.getDatabaseManager().getLeaderboard(count, season);
 		int i = 1;
-		for (DTMSeasonStats stats : topStats) {
+		for (AbstractSeasonStats s : topStats) {
+			DTMSeasonStats stats = (DTMSeasonStats) s;
 			OfflinePlayer p = Bukkit.getOfflinePlayer(stats.getUUID());
 			if (p != null) {
 				String name;

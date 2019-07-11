@@ -20,4 +20,11 @@ public class DTMTotalStats extends AbstractTotalStats {
 		return sum;
 	}
 
+	public int getSum() {
+		int sum = 0;
+		for (AbstractSeasonStats stats : allStats.values()) {
+			sum += ((DTMSeasonStats) stats).getSum();
+		}
+		return sum;
+	}
 }
