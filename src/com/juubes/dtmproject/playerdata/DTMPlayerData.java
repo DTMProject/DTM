@@ -54,20 +54,20 @@ public class DTMPlayerData extends AbstractPlayerData {
 
 		String str = "";
 		if (Bukkit.getPlayer(uuid) != null)
-			str += "�b" + uuid.toString() + ": " + Bukkit.getPlayer(uuid).getName() + "\n";
+			str += "§b" + uuid.toString() + ": " + Bukkit.getPlayer(uuid).getName() + "\n";
 		else
-			str += "�b" + uuid.toString() + ": " + Bukkit.getOfflinePlayer(uuid).getName() + " \n";
+			str += "§b" + uuid.toString() + ": " + Bukkit.getOfflinePlayer(uuid).getName() + " \n";
 		if (prefix != null)
-			str += "�bPrefix: " + ChatColor.translateAlternateColorCodes('&', this.getPrefix()) + "\n";
+			str += "§bPrefix: " + ChatColor.translateAlternateColorCodes('&', this.getPrefix()) + "\n";
 		else
-			str += "�bEi prefixi�\n";
-		str += "�bTappoputki: " + killStreak + "\n";
-		str += "�bK/D-ratio: " + this.getSeasonStats().getKDRatio() + " - " + totalStats.getKDRatio() + "\n";
-		str += "  �a�lKausi:\n";
-		str += "�b" + this.getSeasonStats().toString();
-		str += "  �a�lYhteens�:\n";
-		str += "�b" + totalStats.toString();
-		str += "�bEmeraldeja: " + emeralds;
+			str += "§bEi prefixiä\n";
+		str += "§bTappoputki: " + killStreak + "\n";
+		str += "§bK/D-ratio: " + this.getSeasonStats().getKDRatio() + " - " + totalStats.getKDRatio() + "\n";
+		str += "  §a§lKausi:\n";
+		str += "§b" + this.getSeasonStats().toString();
+		str += "  §a§lYhteensä:\n";
+		str += "§b" + totalStats.toString();
+		str += "§bEmeraldeja: " + emeralds;
 		return str;
 	}
 

@@ -33,13 +33,13 @@ public class DTMSeasonStats extends AbstractSeasonStats {
 	@Override
 	public String toString() {
 		String str = "";
-		str += "�bTapot: " + kills + "\n";
-		str += "�bKuolemat: " + deaths + "\n";
-		str += "�bMonumenttej� tuhottu: " + monuments + "\n";
-		str += "�bVoitot: " + wins + "\n";
-		str += "�bH�vi�t: " + losses + "\n";
-		str += "�bPelej� voitettu: " + playTimeWon / 1000 / 60 + " minuuttia\n";
-		str += "�bPelej� h�vitty: " + playTimeLost / 1000 / 60 + " minuuttia\n";
+		str += "§bTapot: " + kills + "\n";
+		str += "§bKuolemat: " + deaths + "\n";
+		str += "§bMonumentteja tuhottu: " + monuments + "\n";
+		str += "§bVoitot: " + wins + "\n";
+		str += "§bHäviöt: " + losses + "\n";
+		str += "§bPelejä voitettu: " + playTimeWon / 1000 / 60 / 60 + " tuntia\n";
+		str += "§bPelejä hävitty: " + playTimeLost / 1000 / 60 / 60 + " tuntia\n";
 		return str;
 	}
 

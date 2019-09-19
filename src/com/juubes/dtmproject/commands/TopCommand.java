@@ -27,7 +27,7 @@ public class TopCommand implements CommandExecutor {
 			try {
 				count = Integer.parseInt(args[0]);
 			} catch (Exception e) {
-				sender.sendMessage("/top [m��r�] [season]");
+				sender.sendMessage("/top [määrä] [season]");
 			}
 		}
 
@@ -40,7 +40,7 @@ public class TopCommand implements CommandExecutor {
 			}
 		}
 
-		sender.sendMessage("�eParhaat pelaajat " + season + ". kaudelta: ");
+		sender.sendMessage("§eParhaat pelaajat " + season + ". kaudelta: ");
 		LinkedList<? extends AbstractSeasonStats> topStats = dtm.getDatabaseManager().getLeaderboard(count, season);
 		int i = 1;
 		for (AbstractSeasonStats s : topStats) {
@@ -53,8 +53,8 @@ public class TopCommand implements CommandExecutor {
 					name = p.getPlayer().getDisplayName();
 				else
 					name = p.getName();
-				sender.sendMessage("�e" + (i++) + ". " + name + ": �a" + stats.getSum() + " �c" + stats.kills + " �4"
-						+ stats.deaths + " �7" + stats.getKDRatio());
+				sender.sendMessage("§e" + (i++) + ". " + name + ": §a" + stats.getSum() + " §c" + stats.kills + " §4"
+						+ stats.deaths + " §7" + stats.getKDRatio());
 			}
 		}
 

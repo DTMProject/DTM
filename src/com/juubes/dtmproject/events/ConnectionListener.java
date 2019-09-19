@@ -31,7 +31,7 @@ public class ConnectionListener implements Listener {
 			pd.setPrefix("&eDTM-Jonne");
 
 		if (Bukkit.getOnlinePlayers().size() <= 15)
-			Bukkit.broadcastMessage("�8[�a+�8] �e" + pd.getNick());
+			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getNick());
 
 		pd.setTeam(null);
 	}
@@ -43,7 +43,7 @@ public class ConnectionListener implements Listener {
 		Player p = e.getPlayer();
 		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 		if (Bukkit.getOnlinePlayers().size() <= 15)
-			Bukkit.broadcastMessage("�8[�c-�8] �e" + pd.getNick());
+			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getNick());
 
 		pd.setTeam(null);
 		pd.save();

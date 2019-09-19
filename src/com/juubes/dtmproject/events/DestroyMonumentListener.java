@@ -40,12 +40,12 @@ public class DestroyMonumentListener implements Listener {
 		// Destroyer is a spectator
 		if (data.getTeam() == null) {
 			if (!p.isOp()) {
-				p.sendMessage("�eEt voi tuhota monumenttia spectatessa.");
+				p.sendMessage("§eEt voi tuhota monumenttia spectatessa.");
 				e.setCancelled(true);
 			} else {
 				if (p.getGameMode() != GameMode.CREATIVE) {
 					p.sendMessage(
-							"�eEt ole tiimiss�. Ole hyv�, ja laita gamemode 1, jos haluat muokata mappia, kun peli on k�ynniss�.");
+							"§eEt ole tiimissä. Ole hyv§, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
 					e.setCancelled(true);
 				}
 			}
@@ -67,13 +67,13 @@ public class DestroyMonumentListener implements Listener {
 				// Monument destroyed
 				// Test if own
 				if (data.getTeam().equals(team)) {
-					p.sendMessage("�eT�m� on oman tiimisi monumentti.");
+					p.sendMessage("§eTämä on oman tiimisi monumentti.");
 					e.setCancelled(true);
 					return;
 				}
 
 				if (!mon.broken) {
-					Bukkit.broadcastMessage(data.getNick() + " �etuhosi monumentin " + team.getChatColor()
+					Bukkit.broadcastMessage(data.getNick() + " §etuhosi monumentin " + team.getChatColor()
 							+ mon.customName);
 					DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 					pd.getSeasonStats().monuments++;
@@ -81,7 +81,7 @@ public class DestroyMonumentListener implements Listener {
 						player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 					handleBrokenMonument(mon);
 				} else {
-					p.sendMessage("�eT�m� monumentti on jo kerran tuhottu.");
+					p.sendMessage("§eTämä monumentti on jo kerran tuhottu.");
 				}
 				e.setCancelled(true);
 				e.getBlock().setType(Material.AIR);
@@ -106,12 +106,12 @@ public class DestroyMonumentListener implements Listener {
 				winnerList += players.get(i).getDisplayName() + ", ";
 			}
 			winnerList = winnerList.substring(0, winnerList.length() - 2);
-			winnerList += "�e ja " + players.get(players.size() - 1).getDisplayName();
+			winnerList += "§e ja " + players.get(players.size() - 1).getDisplayName();
 		} else {
 			if (players.size() == 1)
 				winnerList += players.get(0).getDisplayName();
 		}
-		Bukkit.broadcastMessage(winner.getDisplayName() + " �e�lvoitti pelin!");
+		Bukkit.broadcastMessage(winner.getDisplayName() + " §e§lvoitti pelin!");
 		for (Player p : Bukkit.getOnlinePlayers())
 			p.setGameMode(GameMode.SPECTATOR);
 
@@ -126,9 +126,9 @@ public class DestroyMonumentListener implements Listener {
 				int winnerPoints = minutesPlayed * 25;
 
 				if (team == winner) {
-					p.sendTitle("�a�lVoitto", "�aSait " + winnerPoints + " pistett�!");
+					p.sendTitle("§a§lVoitto", "§aSait " + winnerPoints + " pistettä!");
 				} else if (data.getTeam() != null) {
-					p.sendTitle("�c�lH�vi�", "�aSait " + loserPoints + " pistett�!");
+					p.sendTitle("§c§lHäviö", "§aSait " + loserPoints + " pistettä!");
 				}
 
 				if (team == winner)

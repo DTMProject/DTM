@@ -1,0 +1,12 @@
+main: com.juubes.dtmproject.DTM
+name: DTM
+version: ${project.version}
+author: Juubes
+depends:
+  - Nexus
+database: true
+commands:
+  setmonument: {}
+  DTM: {}
+  top: {}
+  createmap: {}

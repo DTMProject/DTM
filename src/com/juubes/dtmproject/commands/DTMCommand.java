@@ -9,7 +9,10 @@ import org.bukkit.command.CommandSender;
 import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
+import com.juubes.nexus.Lang;
 import com.juubes.nexus.logic.Team;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class DTMCommand implements CommandExecutor {
 	private final DTM dtm;
@@ -21,37 +24,39 @@ public class DTMCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
 		if (!sender.isOp()) {
-			sender.sendMessage("�aDTM �fversion �a" + dtm.getDescription().getVersion());
-			sender.sendMessage("�fAuthor: �aJuubes");
+			sender.sendMessage(ChatColor.GREEN + "DTM" + ChatColor.WHITE + " version " + ChatColor.GREEN + dtm
+					.getDescription().getVersion());
+			sender.sendMessage(ChatColor.WHITE + "Author: " + ChatColor.GREEN + "Juubes");
 			return true;
 		}
 
 		if (args.length == 0) {
-			sender.sendMessage("�c/DTM <reload|status|save>");
+			sender.sendMessage(ChatColor.RED + "/DTM <reload|status|save>");
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("reload")) {
 				reloadConfig();
-				sender.sendMessage("�eAsetukset ja configurointi-tiedostot uudelleenladattu.");
+				sender.sendMessage(Lang.get("settings-reloaded"));
 			} else if (args[0].equalsIgnoreCase("status")) {
-				sender.sendMessage("�bDTM gamestatus: �a" + dtm.getGameLogic().getGameState().name());
-				sender.sendMessage("�b  Teams:");
+				sender.sendMessage(ChatColor.AQUA + "DTM gamestatus: " + ChatColor.GREEN + dtm.getGameLogic()
+						.getGameState().name());
+				sender.sendMessage(ChatColor.AQUA + "  Teams:");
 				for (Team nexusTeam : dtm.getGameLogic().getCurrentGame().getTeams()) {
 					DTMTeam team = (DTMTeam) nexusTeam;
-					sender.sendMessage("    " + team.getChatColor() + "�l" + team.getDisplayName());
+					sender.sendMessage("    " + team.getChatColor() + ChatColor.BOLD + team.getDisplayName());
 					for (Monument mon : team.getMonuments()) {
 						sender.sendMessage("        " + team.getChatColor() + mon.customName);
 					}
 					sender.sendMessage("");
 				}
 			} else if (args[0].equalsIgnoreCase("save")) {
-				sender.sendMessage("�eTallennetaan configurointia...");
+				sender.sendMessage(Lang.get("saving-config"));
 				for (String mapID : dtm.getDatabaseManager().getMaps()) {
 					dtm.getDatabaseManager().saveMapSettings(mapID);
-					sender.sendMessage("�eTallennettu configurointi mapille " + mapID);
+					sender.sendMessage(String.format(Lang.get("config-saved-for-map"), mapID));
 				}
-				sender.sendMessage("�eUudelleenladataan...");
+				sender.sendMessage("§eUudelleenladataan...");
 				reloadConfig();
-				sender.sendMessage("�eValmis.");
+				sender.sendMessage(Lang.get("ready"));
 
 			}
 		}
