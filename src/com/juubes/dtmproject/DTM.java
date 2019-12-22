@@ -65,6 +65,8 @@ public class DTM extends JavaPlugin {
         dbManager.prepareMapSettings(options.getMapIDs());
         dbManager.loadCache();
 
+        Nexus.getAPI().getLang().loadTranslations(this.getResource("lang.yml"));
+
         nexus.init(options);
 
         sbManager.updateScoreboard();
@@ -72,7 +74,7 @@ public class DTM extends JavaPlugin {
         // Broadcast map changes not saved
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             for (CommandSender sender : nexus.getEditModeHandler().getPendingList()) {
-                sender.sendMessage(Lang.get("maps-settings-pending"));
+                sender.sendMessage(Lang.get("map-settings-pending"));
             }
         }, 20 * 20, 20 * 20);
     }
