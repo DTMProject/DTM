@@ -14,7 +14,7 @@ public class DTMSeasonStats extends AbstractSeasonStats {
 	}
 
 	public DTMSeasonStats(int statsID, UUID uuid, int season, int kills, int deaths, int monuments, int wins,
-			int losses, int playTimeWon, int playTimeLost, int biggestKillStreak) {
+			int losses, long playTimeWon, long playTimeLost, int biggestKillStreak) {
 		super(statsID, uuid, season, kills, deaths, wins, losses, playTimeWon, playTimeLost, biggestKillStreak);
 		this.monuments = monuments;
 	}

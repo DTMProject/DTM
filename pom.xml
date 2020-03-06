@@ -30,6 +30,7 @@
                 <configuration>
                     <artifactSet>
                         <includes>
+                            <include>com.juubes:dtmproject</include>
                             <include>com.juubes:nexus</include>
                             <include>org.spigotmc:spigot-api</include>
                             <include>com.zaxxer:HikariCP</include>

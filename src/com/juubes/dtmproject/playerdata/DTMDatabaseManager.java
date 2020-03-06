@@ -4,7 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.time.Instant;
 import java.util.Comparator;
@@ -165,8 +170,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
                         int monuments = rs.getInt("MonumentsDestroyed");
                         int wins = rs.getInt("Wins");
                         int losses = rs.getInt("Losses");
-                        int playTimeWon = rs.getInt("PlayTimeWon");
-                        int playTimeLost = rs.getInt("PlayTimeLost");
+                        long playTimeWon = rs.getLong("PlayTimeWon");
+                        long playTimeLost = rs.getLong("PlayTimeLost");
                         int longestKillStreak = rs.getInt("LongestKillStreak");
 
                         stats.add(new DTMSeasonStats(statsID, uuid, season, kills, monuments, deaths, wins, losses,
