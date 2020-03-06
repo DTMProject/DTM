@@ -124,8 +124,8 @@ public class DestroyMonumentListener implements Listener {
         for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
             for (Player p : team.getPlayers()) {
                 DTMPlayerData data = dtm.getDatabaseManager().getPlayerData(p);
-                int minutesPlayed = (int) ((System.currentTimeMillis() - dtm.getNexus().getGameLogic().getCurrentGame()
-                        .getStartTime()) / 1000 / 60);
+                int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - dtm.getNexus().getGameLogic().getCurrentGame()
+                        .getStartTime()) / 1000 / 60), 60);
 
                 int loserPoints = minutesPlayed * 5;
                 int winnerPoints = minutesPlayed * 25;
@@ -137,9 +137,9 @@ public class DestroyMonumentListener implements Listener {
                 }
 
                 if (team == winner)
-                    data.getSeasonStats().playTimeWon += winnerPoints * 60 * 1000;
+                    data.getSeasonStats().playTimeWon += loserPoints * 60 * 1000;
                 else
-                    data.getSeasonStats().playTimeLost += winnerPoints * 60 * 1000;
+                    data.getSeasonStats().playTimeLost += loserPoints * 60 * 1000;
             }
         }
         dtm.getNexus().getGameLogic().restartGame();

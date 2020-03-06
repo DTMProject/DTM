@@ -34,6 +34,7 @@ public class ConnectionListener implements Listener {
 			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getNick());
 
 		pd.setTeam(null);
+
 	}
 
 	@EventHandler
