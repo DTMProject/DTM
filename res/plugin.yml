@@ -10,3 +10,6 @@ commands:
   DTM: {}
   top: {}
   createmap: {}
+  shop:
+    aliases:
+    - s
