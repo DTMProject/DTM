@@ -18,6 +18,8 @@ import com.juubes.dtmproject.events.PreWorldLoadListener;
 import com.juubes.dtmproject.events.SpawnProtectionListener;
 import com.juubes.dtmproject.events.TeamSpleefListener;
 import com.juubes.dtmproject.playerdata.DTMDatabaseManager;
+import com.juubes.dtmproject.shop.ShopCommand;
+import com.juubes.dtmproject.shop.ShopHandler;
 import com.juubes.nexus.InitOptions;
 import com.juubes.nexus.Lang;
 import com.juubes.nexus.Nexus;
@@ -27,6 +29,7 @@ import com.juubes.nexus.logic.GameLogic;
 public class DTM extends JavaPlugin {
 	private final Nexus nexus;
 	private final GameLogic gameLogic;
+	private final ShopHandler shopHandler;
 	private final DeathHandler deathHandler;
 	private final ScoreboardManager sbManager;
 	private final DTMDatabaseManager dbManager;
@@ -37,6 +40,7 @@ public class DTM extends JavaPlugin {
 		this.sbManager = new ScoreboardManager(this);
 		this.deathHandler = new DeathHandler(this);
 		this.gameLogic = new GameLogic(nexus);
+		this.shopHandler = new ShopHandler(this);
 	}
 
 	@Override
@@ -48,6 +52,7 @@ public class DTM extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
 		Bukkit.getPluginManager().registerEvents(deathHandler, this);
 		Bukkit.getPluginManager().registerEvents(sbManager, this);
+		Bukkit.getPluginManager().registerEvents(shopHandler, this);
 
 		// Events from Nexus
 		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(this), this);
@@ -56,6 +61,7 @@ public class DTM extends JavaPlugin {
 		getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
 		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
+		getCommand("shop").setExecutor(new ShopCommand(this));
 
 		saveDefaultConfig();
 
@@ -105,5 +111,9 @@ public class DTM extends JavaPlugin {
 
 	public ScoreboardManager getScoreboardManager() {
 		return sbManager;
+	}
+
+	public ShopHandler getShopHandler() {
+		return shopHandler;
 	}
 }

@@ -3,6 +3,7 @@ package com.juubes.dtmproject.events;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ public class TeamSpleefListener implements Listener {
 
 	private HashMap<Block, Long> antiSpleef = new HashMap<>();
 	private final DTM dtm;
+
 	public TeamSpleefListener(DTM pl) {
 		this.dtm = pl;
 	}
@@ -44,8 +46,10 @@ public class TeamSpleefListener implements Listener {
 		for (Player playerOntop : pd.getTeam().getPlayers()) {
 			if (p.equals(playerOntop))
 				continue;
-			Block blockBelowPlayer = playerOntop.getWorld().getBlockAt(playerOntop.getLocation()
-					.subtract(new Vector(0, 0.2, 0)));
+			Block blockBelowPlayer = playerOntop.getWorld().getBlockAt(playerOntop.getLocation().subtract(new Vector(0,
+					0.2, 0)));
+			if (!playerOntop.getGameMode().equals(GameMode.SURVIVAL))
+				continue;
 			if (!blockBroken.getWorld().equals(blockBelowPlayer.getWorld()))
 				continue;
 			if (blockBroken.distance(blockBelowPlayer.getLocation()) != 0)
@@ -54,8 +58,7 @@ public class TeamSpleefListener implements Listener {
 			p.sendMessage("§cEt voi rikkoa palikoita omien tiimiläisten alta.");
 			if (p.getHealth() <= 6) {
 				dtm.getDeathHandler().fakeKillPlayer(p);
-				Bukkit.broadcastMessage("§e" + p.getDisplayName()
-						+ " §ekuoli yrittäessään sabotoida omaa tiimiänsä!");
+				Bukkit.broadcastMessage("§e" + p.getDisplayName() + " §ekuoli yrittäessään sabotoida omaa tiimiänsä!");
 			} else {
 				p.setHealth(p.getHealth() - 5);
 				p.damage(-1);
