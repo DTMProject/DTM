@@ -27,6 +27,7 @@ public class ChatHandler implements Listener {
 		int points = ((DTMSeasonStats) pd.getSeasonStats()).getSum();
 		String prefix = pd.getPrefix();
 		prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+
 		e.setFormat("§8[§b" + points + "§8] §8[" + prefix + "§8] " + pd.getNick() + "§8: §f" + ChatColor
 				.translateAlternateColorCodes('&', e.getMessage()));
 	}

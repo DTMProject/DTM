@@ -352,8 +352,8 @@ public class DeathHandler implements Listener {
 								+ " §esai kunnian.");
 
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName() + "§e.");
-						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName() + "§e.");
+						target.sendMessage("§eSinut tappoi pelaaja " + damagerData.getNick() + "§e.");
+						damager.sendMessage("§eTapoit pelaajan " + targetData.getNick() + "§e.");
 					}
 
 					if (damagerData != null) {
@@ -376,8 +376,8 @@ public class DeathHandler implements Listener {
 						Bukkit.broadcastMessage(targetData.getNick() + " §eosui maahan liian kovaa. " + damagerData
 								.getNick() + " §esai kunnian.");
 					else {
-						target.sendMessage("§eSinut tappoi pelaaja " + damager.getDisplayName());
-						damager.sendMessage("§eTapoit pelaajan " + target.getDisplayName());
+						target.sendMessage("§eSinut tappoi pelaaja " + damagerData.getNick());
+						damager.sendMessage("§eTapoit pelaajan " + targetData.getNick());
 					}
 					/* TODO: error */
 					damagerData.setEmeralds(damagerData.getEmeralds() + 1);
