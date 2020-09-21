@@ -5,6 +5,7 @@ import java.util.Comparator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -86,6 +87,17 @@ public class ScoreboardManager implements Listener {
 			ready += " ";
 
 		return ready;
+	}
+
+	public void changeNameTag(Player p, org.bukkit.ChatColor color) {
+		String teamName = color + "";
+
+		if (globalScoreboard.getTeam(teamName) == null)
+			globalScoreboard.registerNewTeam(teamName);
+
+		globalScoreboard.getTeam(teamName).setPrefix("Yeet " + teamName);
+		globalScoreboard.getTeam(teamName).addPlayer(p);
+		p.setScoreboard(globalScoreboard);
 	}
 
 	public Scoreboard getGlobalScoreboard() {

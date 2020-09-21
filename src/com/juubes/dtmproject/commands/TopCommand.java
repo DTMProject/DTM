@@ -3,12 +3,13 @@ package com.juubes.dtmproject.commands;
 import java.util.LinkedList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.juubes.dtmproject.DTM;
+import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.playerdata.DTMSeasonStats;
 import com.juubes.nexus.data.AbstractSeasonStats;
 
@@ -45,17 +46,15 @@ public class TopCommand implements CommandExecutor {
 		int i = 1;
 		for (AbstractSeasonStats s : topStats) {
 			DTMSeasonStats stats = (DTMSeasonStats) s;
-			OfflinePlayer p = Bukkit.getOfflinePlayer(stats.getUUID());
-			if (p != null) {
-				String name;
-
-				if (p.isOnline())
-					name = p.getPlayer().getDisplayName();
-				else
-					name = p.getName();
-				sender.sendMessage("§e" + (i++) + ". " + name + ": §a" + stats.getSum() + " §c" + stats.kills + " §4"
-						+ stats.deaths + " §7" + stats.getKDRatio());
-			}
+			DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(stats.getUUID());
+			Player p = Bukkit.getPlayer(pd.getUUID());
+			String name;
+			if (p != null && p.isOnline())
+				name = p.getDisplayName();
+			else
+				name = pd.getNick();
+			sender.sendMessage("§e" + (i++) + ". " + name + ": §a" + stats.getSum() + " §c" + stats.kills + " §4"
+					+ stats.deaths + " §7" + stats.getKDRatio());
 		}
 
 		sender.sendMessage("");

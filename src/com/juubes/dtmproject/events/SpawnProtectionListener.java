@@ -31,7 +31,7 @@ public class SpawnProtectionListener implements Listener {
 		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
-			Location spawn = team.getSpawn().clone();
+			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
 			spawn.subtract(new Vector(0.5, 0, 0.5));
 			if (spawn.distance(e.getBlock().getLocation()) < 4) {
 				e.setCancelled(true);
@@ -52,7 +52,7 @@ public class SpawnProtectionListener implements Listener {
 		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
-			Location spawn = team.getSpawn().clone();
+			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
 			spawn.subtract(new Vector(0.5, 0, 0.5));
 			if (spawn.distance(e.getBlock().getLocation()) < 4) {
 				e.setCancelled(true);

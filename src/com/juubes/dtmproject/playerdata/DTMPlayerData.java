@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.data.AbstractPlayerData;
@@ -16,8 +15,8 @@ public class DTMPlayerData extends AbstractPlayerData {
 	/**
 	 * Creates new playerdata for player, defaults all other values.
 	 */
-	public DTMPlayerData(Nexus nexus, Player p) {
-		super(nexus, p.getUniqueId(), p.getName(), null, 0, null, 0);
+	public DTMPlayerData(Nexus nexus, UUID uuid, String lastSeenName) {
+		super(nexus, uuid, lastSeenName, null, 0, null, 0);
 	}
 
 	public DTMPlayerData(Nexus nexus, UUID uuid, String lastSeenName, String prefix, int emeralds, String nick,

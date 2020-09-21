@@ -1,11 +1,14 @@
 package com.juubes.dtmproject.events;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -31,6 +34,7 @@ import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
+import com.juubes.nexus.NexusLocation;
 import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 
@@ -126,7 +130,10 @@ public class DeathHandler implements Listener {
 			if (p.getGameMode() != GameMode.SPECTATOR)
 				return;
 			else {
-				p.teleport(playerData.getTeam().getSpawn());
+				World world = Bukkit.getWorld(dtm.getNexus().getGameWorldManager().getCurrentMapID());
+				NexusLocation spawn = playerData.getTeam().getSpawn();
+				Location realSpawn = spawn.toLocation(world);
+				p.teleport(realSpawn);
 			}
 			// Reset killstreak
 			playerData.setKillStreak(0);
@@ -212,7 +219,7 @@ public class DeathHandler implements Listener {
 			e.setCancelled(true);
 			for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 				for (Monument mon : ((DTMTeam) team).getMonuments()) {
-					mon.repair();
+					mon.repair(dtm.getNexus().getGameLogic().getCurrentGame().getWorld());
 				}
 			}
 
@@ -224,7 +231,7 @@ public class DeathHandler implements Listener {
 		}
 	}
 
-	private static HashMap<Player, Long> lastHits = new HashMap<>();
+	private HashMap<UUID, Long> lastHits = new HashMap<>();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onSwordPVP(EntityDamageByEntityEvent e) {
@@ -240,15 +247,15 @@ public class DeathHandler implements Listener {
 		DTMPlayerData attackerData = dtm.getDatabaseManager().getPlayerData(attacker);
 		DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
 
-		if (lastHits.containsKey(attacker)) {
+		if (lastHits.containsKey(attacker.getUniqueId())) {
 			// 10 CPS limit lolzzzz
-			if (lastHits.get(attacker) + 1E8 > System.nanoTime()) {
+			if (lastHits.get(attacker.getUniqueId()) + 5E8 > System.nanoTime()) {
 				e.setCancelled(true);
 				return;
 			}
 		}
 
-		lastHits.put(attacker, System.nanoTime());
+		lastHits.put(attacker.getUniqueId(), System.nanoTime());
 
 		// Hit one of their teammate -> cancel event
 		if (attackerData.getTeam() == targetData.getTeam()) {
@@ -322,7 +329,8 @@ public class DeathHandler implements Listener {
 			if (e.getPlayer().getGameMode() == GameMode.SURVIVAL)
 				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(), DamageCause.VOID, 100));
 			else
-				e.getPlayer().teleport(dtm.getNexus().getGameLogic().getCurrentGame().getLobby());
+				e.getPlayer().teleport(dtm.getNexus().getGameLogic().getCurrentGame().getLobby().toLocation(dtm
+						.getNexus().getGameLogic().getCurrentGame().getWorld()));
 		}
 	}
 
@@ -466,11 +474,8 @@ public class DeathHandler implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		if (Bukkit.getOnlinePlayers().size() > 14) {
-			broadcastMessages = false;
-		} else {
-			broadcastMessages = true;
-		}
+		// Broadcast if less than 15 players
+		broadcastMessages = Bukkit.getOnlinePlayers().size() < 15;
 	}
 
 	@EventHandler
@@ -480,5 +485,9 @@ public class DeathHandler implements Listener {
 		} else {
 			broadcastMessages = true;
 		}
+	}
+
+	public void clearLastHits(Player p) {
+		lastHits.remove(p.getUniqueId());
 	}
 }

@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,12 +21,11 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.inventory.Inventory;
 
 import com.juubes.dtmproject.DTM;
@@ -39,6 +37,8 @@ import com.juubes.dtmproject.setup.TeamSettings;
 import com.juubes.nexus.InventoryUtils;
 import com.juubes.nexus.LocationUtils;
 import com.juubes.nexus.Nexus;
+import com.juubes.nexus.NexusBlockLocation;
+import com.juubes.nexus.NexusLocation;
 import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractPlayerData;
 import com.juubes.nexus.data.AbstractSeasonStats;
@@ -125,10 +125,6 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 			seasonStatsCache.put(stats.getUUID(), allSeasons);
 		}
 		System.out.println("All playerdata loaded to memory.");
-
-		for (DTMPlayerData data : playerData) {
-			data.setNick(null);
-		}
 	}
 
 	private Set<DTMPlayerData> getAllPlayerDataSync() {
@@ -190,10 +186,9 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 	@Override
 	public void createMap(String mapID, String displayName, int ticks) {
-		MapSettings settings = new MapSettings(new HashSet<>());
-		settings.id = mapID;
-		settings.displayName = displayName;
-		settings.ticks = ticks;
+		MapSettings settings = new MapSettings(mapID, new HashSet<>());
+		settings.setDisplayName(displayName);
+		settings.setTicks(ticks);
 		this.mapSettings.put(mapID, settings);
 	}
 
@@ -213,13 +208,13 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public Location getLobbyForMap(String mapID) {
-		return mapSettings.get(mapID).lobby;
+	public NexusLocation getLobbyForMap(String mapID) {
+		return mapSettings.get(mapID).getLobby();
 	}
 
 	@Override
-	public void saveLobbyForMap(String mapID, Location lobby) {
-		this.mapSettings.get(mapID).lobby = lobby;
+	public void saveLobbyForMap(String mapID, NexusLocation lobby) {
+		this.mapSettings.get(mapID).setLobby(lobby);
 	}
 
 	@Override
@@ -229,7 +224,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 	@Override
 	public void setTeamList(String mapID, Set<String> teamIDs) {
-		this.mapSettings.get(mapID).setTeamIDs(teamIDs);
+		this.mapSettings.get(mapID).loadTeamSettings(teamIDs);
 	}
 
 	@Override
@@ -254,7 +249,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 			int j = 0;
 			for (Entry<String, MonumentSettings> monSet : ts.monumentSettings.entrySet()) {
 				String id = monSet.getKey();
-				Block block = monSet.getValue().loc.getBlock();
+				NexusBlockLocation block = monSet.getValue().loc.getBlock();
 				String customName = monSet.getValue().customName;
 				monuments[j++] = new Monument(block, id, customName);
 			}
@@ -300,7 +295,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public void saveTeamSpawn(String mapID, String teamID, Location spawn) {
+	public void saveTeamSpawn(String mapID, String teamID, NexusLocation spawn) {
 		this.mapSettings.get(mapID).getTeamSettings(teamID).spawn = spawn;
 	}
 
@@ -310,11 +305,11 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 			FileConfiguration conf = YamlConfiguration.loadConfiguration(new File(nexus.getConfigFolder(), "./settings/"
 					+ mapID + ".yml"));
 
-			MapSettings settings = new MapSettings(new HashSet<>(conf.getStringList("team-names")));
-			settings.displayName = conf.getString("name");
-			settings.lobby = LocationUtils.toLocation(conf.getString("lobby"));
-			settings.ticks = conf.getInt("ticks");
-			settings.id = mapID;
+			String displayName = conf.getString("name");
+			NexusLocation lobby = LocationUtils.toLocation(conf.getString("lobby"));
+			int ticks = conf.getInt("ticks");
+			MapSettings settings = new MapSettings(mapID, new HashSet<>(conf.getStringList("team-names")), displayName,
+					lobby, ticks, true);
 
 			try {
 				for (String teamID : settings.getTeamIDs()) {
@@ -395,30 +390,33 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		this.mapSettings.get(mapID).getTeamSettings(teamID).monumentSettings.put(pos, ms);
 	}
 
-	public void updateLocationWorlds(World w) {
-		MapSettings ms = this.mapSettings.get(w.getName());
-		if (ms.lobby != null)
-			ms.lobby.setWorld(w);
-		for (String teamID : this.getTeamList(w.getName())) {
-			TeamSettings ts = ms.getTeamSettings(teamID);
-			if (ts.spawn != null)
-				ts.spawn.setWorld(w);
-			for (Entry<String, MonumentSettings> monSet : ts.monumentSettings.entrySet()) {
-				if (monSet.getValue().loc != null)
-					monSet.getValue().loc.setWorld(w);
-			}
-		}
-	}
+	// TODO: Dead code
+	// @Deprecated
+	// private void updateLocationWorlds(World w) {
+	// MapSettings ms = this.mapSettings.get(w.getName());
+	// if (ms.lobby != null)
+	// ms.lobby.setWorld(w);
+	// for (String teamID : this.getTeamList(w.getName())) {
+	// TeamSettings ts = ms.getTeamSettings(teamID);
+	// if (ts.spawn != null)
+	// ts.spawn.setWorld(w);
+	// for (Entry<String, MonumentSettings> monSet : ts.monumentSettings.entrySet())
+	// {
+	// if (monSet.getValue().loc != null)
+	// monSet.getValue().loc.setWorld(w);
+	// }
+	// }
+	// }
 
-	public void createNonExistingPlayerData(Player p) {
+	public void createNonExistingPlayerDataSync(UUID uuid, String lastSeenName) {
 		// Create default playerdata
-		if (!playerDataCache.containsKey(p.getUniqueId())) {
-			playerDataCache.put(p.getUniqueId(), new DTMPlayerData(nexus, p));
+		if (!playerDataCache.containsKey(uuid)) {
+			playerDataCache.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName));
 			try (Connection conn = HDS.getConnection()) {
 				try (PreparedStatement stmt = conn.prepareStatement(
 						"INSERT INTO PlayerData (UUID, LastSeenName) VALUES (?, ?)")) {
-					stmt.setString(1, p.getUniqueId().toString());
-					stmt.setString(2, p.getName());
+					stmt.setString(1, uuid.toString());
+					stmt.setString(2, lastSeenName);
 					stmt.execute();
 				}
 			} catch (SQLException e) {
@@ -427,25 +425,26 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		}
 
 		// Create empty seasonstats if not exists already
-		if (!seasonStatsCache.containsKey(p.getUniqueId())) {
-			seasonStatsCache.put(p.getUniqueId(), new HashMap<Integer, DTMSeasonStats>());
+		if (!seasonStatsCache.containsKey(uuid)) {
+			seasonStatsCache.put(uuid, new HashMap<Integer, DTMSeasonStats>());
 		}
 
 		// Make sure seasonstats for current season exist
-		if (seasonStatsCache.get(p.getUniqueId()).get(nexus.getCurrentSeason()) == null) {
+		if (seasonStatsCache.get(uuid).get(nexus.getCurrentSeason()) == null) {
 			// Defaults all the stats to 0
 			try (Connection conn = HDS.getConnection()) {
 				try (PreparedStatement stmt = conn.prepareStatement(
 						"INSERT INTO SeasonStats (UUID, Season) VALUES (?, ?)",
 						PreparedStatement.RETURN_GENERATED_KEYS)) {
-					stmt.setString(1, p.getUniqueId().toString());
+					stmt.setString(1, uuid.toString());
 					stmt.setInt(2, nexus.getCurrentSeason());
 					stmt.execute();
+
 					try (ResultSet rs = stmt.getGeneratedKeys()) {
 						if (rs.next()) {
 							int statsID = rs.getInt(1);
-							seasonStatsCache.get(p.getUniqueId()).put(nexus.getCurrentSeason(), new DTMSeasonStats(
-									statsID, p.getUniqueId(), nexus.getCurrentSeason()));
+							seasonStatsCache.get(uuid).put(nexus.getCurrentSeason(), new DTMSeasonStats(statsID, uuid,
+									nexus.getCurrentSeason()));
 						} else {
 							throw new RuntimeException("Something went wrong creating seasonstats.");
 						}
@@ -457,9 +456,17 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		}
 	}
 
-	@Override
+	@EventHandler
+	public void onLogin(AsyncPlayerPreLoginEvent e) {
+	}
+
 	public DTMPlayerData getPlayerData(Player p) {
-		return playerDataCache.get(p.getUniqueId());
+		return getPlayerData(p.getUniqueId());
+	}
+
+	@Override
+	public DTMPlayerData getPlayerData(UUID uuid) {
+		return playerDataCache.get(uuid);
 	}
 
 	/**
@@ -511,8 +518,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public DTMTotalStats getTotalStats(String name) {
-		UUID idForName = getUUIDByLastSeenName(name);
+	public DTMTotalStats getTotalStats(String lastSeenName) {
+		UUID idForName = getUUIDByLastSeenName(lastSeenName);
 		return getTotalStats(idForName);
 	}
 
@@ -528,6 +535,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	public void saveSeasonStats(AbstractSeasonStats stats) {
 		HashMap<Integer, DTMSeasonStats> seasonStats = seasonStatsCache.getOrDefault(stats.getUUID(),
 				new HashMap<Integer, DTMSeasonStats>());
+		seasonStats.size();
+		stats.getSeason();
 		seasonStats.put(stats.getSeason(), (DTMSeasonStats) stats);
 		this.seasonStatsCache.put(stats.getUUID(), seasonStats);
 
@@ -556,25 +565,25 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	@Override
 	public LinkedList<DTMSeasonStats> getLeaderboard(int count, int season) {
 		// TODO: CPU optimization possible - just cache the results for like 5 minutes
-		LinkedList<DTMSeasonStats> topBoard = new LinkedList<>();
 
-		for (HashMap<Integer, DTMSeasonStats> stats : seasonStatsCache.values()) {
-			if (stats.containsKey(season))
-				topBoard.add(stats.get(season));
+		LinkedList<DTMSeasonStats> allStatsSorted = new LinkedList<>();
+		for (Entry<UUID, HashMap<Integer, DTMSeasonStats>> seasonStatsEntry : seasonStatsCache.entrySet()) {
+			DTMSeasonStats seasonStats = seasonStatsEntry.getValue().get(season);
+			// Only add if player has played on the season
+			if (seasonStats != null)
+				allStatsSorted.add(seasonStats);
 		}
 
-		// TODO: This can be optimized
-		// Sort list
-		topBoard.sort(new Comparator<DTMSeasonStats>() {
-			@Override
-			public int compare(DTMSeasonStats o1, DTMSeasonStats o2) {
-				return o2.getSum() - o1.getSum();
-			}
+		// TODO: Optimize by not sorting the entire list. Only add *count* amount of
+		// entries.
+		allStatsSorted.sort((DTMSeasonStats stats1, DTMSeasonStats stats2) -> {
+			return stats2.getSum() - stats1.getSum();
 		});
 
-		return new LinkedList<>(topBoard.subList(0, Math.min(count, topBoard.size())));
+		return new LinkedList<>(allStatsSorted.subList(0, Math.min(count, allStatsSorted.size())));
 	}
 
+	// Method not used anywhere in the DTM code
 	@Override
 	public LinkedList<DTMTotalStats> getAlltimeLeaderboard(int count) {
 		// TODO: CPU optimization possible - just cache the results for like 5 minutes
@@ -586,11 +595,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 		// TODO: This can be optimized
 		// Sort list
-		topBoard.sort(new Comparator<DTMTotalStats>() {
-			@Override
-			public int compare(DTMTotalStats o1, DTMTotalStats o2) {
-				return o2.getSum() - o1.getSum();
-			}
+		topBoard.sort((DTMTotalStats o1, DTMTotalStats o2) -> {
+			return o2.getSum() - o1.getSum();
 		});
 
 		return new LinkedList<>(topBoard.subList(0, Math.min(count, topBoard.size())));

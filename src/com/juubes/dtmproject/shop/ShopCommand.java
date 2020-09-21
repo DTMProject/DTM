@@ -25,7 +25,7 @@ public class ShopCommand implements CommandExecutor {
 
 		Player p = (Player) sender;
 		DTMPlayerData pd = pl.getDatabaseManager().getPlayerData(p);
-		if (pl.getGameLogic().getGameState() != GameState.RUNNING) {
+		if (pl.getNexus().getGameLogic().getGameState() != GameState.RUNNING) {
 			p.sendMessage("§ePeli ei ole käynnissä.");
 			return true;
 		}

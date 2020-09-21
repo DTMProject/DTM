@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -18,14 +19,22 @@ public class ConnectionListener implements Listener {
 	}
 
 	@EventHandler
+	public void onAsyncJoin(AsyncPlayerPreLoginEvent e) {
+		dtm.getDatabaseManager().createNonExistingPlayerDataSync(e.getUniqueId(), e.getName());
+	}
+
+	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
 
 		Player p = e.getPlayer();
+		p.getActivePotionEffects().clear();
 		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
 
-		dtm.getDatabaseManager().createNonExistingPlayerData(p);
 		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+
+		if (pd.getLastSeenName() != p.getName())
+			pd.setLastSeenName(p.getName());
 
 		if (pd.getPrefix() == null)
 			pd.setPrefix("&eDTM-Jonne");
@@ -34,7 +43,6 @@ public class ConnectionListener implements Listener {
 			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getNick());
 
 		pd.setTeam(null);
-
 	}
 
 	@EventHandler
@@ -42,11 +50,14 @@ public class ConnectionListener implements Listener {
 		e.setQuitMessage(null);
 
 		Player p = e.getPlayer();
+		p.getActivePotionEffects().clear();
 		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getNick());
 
 		pd.setTeam(null);
 		pd.save();
+
+		dtm.getDeathHandler().clearLastHits(p);
 	}
 }

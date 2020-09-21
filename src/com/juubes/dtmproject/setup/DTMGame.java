@@ -9,7 +9,6 @@ public class DTMGame extends Game {
 
 	public DTMGame(DTM dtm, String mapRequest) {
 		super(dtm.getNexus(), mapRequest);
-
 	}
 
 }

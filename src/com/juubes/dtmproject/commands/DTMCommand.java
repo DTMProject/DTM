@@ -37,10 +37,10 @@ public class DTMCommand implements CommandExecutor {
 				reloadConfig();
 				sender.sendMessage(Lang.get("settings-reloaded"));
 			} else if (args[0].equalsIgnoreCase("status")) {
-				sender.sendMessage(ChatColor.AQUA + "DTM gamestatus: " + ChatColor.GREEN + dtm.getGameLogic()
+				sender.sendMessage(ChatColor.AQUA + "DTM gamestatus: " + ChatColor.GREEN + dtm.getNexus().getGameLogic()
 						.getGameState().name());
 				sender.sendMessage(ChatColor.AQUA + "  Teams:");
-				for (Team nexusTeam : dtm.getGameLogic().getCurrentGame().getTeams()) {
+				for (Team nexusTeam : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 					DTMTeam team = (DTMTeam) nexusTeam;
 					sender.sendMessage("    " + team.getChatColor() + ChatColor.BOLD + team.getDisplayName());
 					for (Monument mon : team.getMonuments()) {

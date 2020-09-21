@@ -10,12 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.juubes.dtmproject.commands.DTMCommand;
 import com.juubes.dtmproject.commands.SetMonumentCommand;
 import com.juubes.dtmproject.commands.TopCommand;
+import com.juubes.dtmproject.events.AnvilPlaceEvent;
 import com.juubes.dtmproject.events.ChatHandler;
 import com.juubes.dtmproject.events.ConnectionListener;
 import com.juubes.dtmproject.events.DeathHandler;
 import com.juubes.dtmproject.events.DestroyMonumentListener;
 import com.juubes.dtmproject.events.PreWorldLoadListener;
 import com.juubes.dtmproject.events.SpawnProtectionListener;
+import com.juubes.dtmproject.events.StartGameListener;
 import com.juubes.dtmproject.events.TeamSpleefListener;
 import com.juubes.dtmproject.playerdata.DTMDatabaseManager;
 import com.juubes.dtmproject.shop.ShopCommand;
@@ -24,11 +26,9 @@ import com.juubes.nexus.InitOptions;
 import com.juubes.nexus.Lang;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.commands.CreateMapCommand;
-import com.juubes.nexus.logic.GameLogic;
 
 public class DTM extends JavaPlugin {
 	private final Nexus nexus;
-	private final GameLogic gameLogic;
 	private final ShopHandler shopHandler;
 	private final DeathHandler deathHandler;
 	private final ScoreboardManager sbManager;
@@ -39,7 +39,6 @@ public class DTM extends JavaPlugin {
 		this.dbManager = new DTMDatabaseManager(this);
 		this.sbManager = new ScoreboardManager(this);
 		this.deathHandler = new DeathHandler(this);
-		this.gameLogic = new GameLogic(nexus);
 		this.shopHandler = new ShopHandler(this);
 	}
 
@@ -50,13 +49,16 @@ public class DTM extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
+		Bukkit.getPluginManager().registerEvents(new AnvilPlaceEvent(), this);
 		Bukkit.getPluginManager().registerEvents(deathHandler, this);
 		Bukkit.getPluginManager().registerEvents(sbManager, this);
 		Bukkit.getPluginManager().registerEvents(shopHandler, this);
 
 		// Events from Nexus
 		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(this), this);
-
+		Bukkit.getPluginManager().registerEvents(new StartGameListener(this), this);
+		
+		
 		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
 		getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
 		getCommand("DTM").setExecutor(new DTMCommand(this));
@@ -99,10 +101,6 @@ public class DTM extends JavaPlugin {
 
 	public Nexus getNexus() {
 		return nexus;
-	}
-
-	public GameLogic getGameLogic() {
-		return gameLogic;
 	}
 
 	public DTMDatabaseManager getDatabaseManager() {

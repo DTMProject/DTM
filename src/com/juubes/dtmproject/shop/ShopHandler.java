@@ -48,8 +48,10 @@ public class ShopHandler implements Listener {
 		itemsInShop[inventoryIndex++] = new ShopItem(100, new ItemStackBuilder(Material.GOLDEN_APPLE, 1, (byte) 1)
 				.hideEnchantments(true).setLore("§c§lOMG-OMENA").build());
 
-		itemsInShop[inventoryIndex++] = new ShopItem(3, new ItemStackBuilder(Material.FISHING_ROD).enchant(
-				Enchantment.DAMAGE_ALL, 5).addLore("§e500 metrinen siima vihollisen tuhoamiseen.").build());
+		// itemsInShop[inventoryIndex++] = new ShopItem(3, new
+		// ItemStackBuilder(Material.FISHING_ROD).enchant(
+		// Enchantment.DAMAGE_ALL, 5).addLore("§e500 metrinen siima vihollisen
+		// tuhoamiseen.").build());
 
 		inventoryIndex = 9;
 		itemsInShop[inventoryIndex++] = new ShopItem(1, new ItemStack(Material.LOG, 4));
@@ -57,7 +59,7 @@ public class ShopHandler implements Listener {
 		// itemsInShop[inventoryIndex++] = new ShopItem(5, new
 		// ItemStack(Material.WATER_BUCKET, 1));
 		itemsInShop[inventoryIndex++] = new ShopItem(10, new ItemStack(Material.ENDER_STONE, 64));
-		itemsInShop[inventoryIndex++] = new ShopItem(20, new ItemStack(Material.OBSIDIAN, 6));
+		itemsInShop[inventoryIndex++] = new ShopItem(25, new ItemStack(Material.OBSIDIAN, 6));
 		itemsInShop[inventoryIndex++] = new ShopItem(20, new ItemStack(Material.DIAMOND_BLOCK, 3));
 
 		// inventoryIndex = 18;
@@ -93,6 +95,7 @@ public class ShopHandler implements Listener {
 		ShopItem shopItem = itemsInShop[slot];
 		DTMPlayerData pd = pl.getDatabaseManager().getPlayerData(p);
 
+		// TODO: Nullpointer below
 		if (shopItem.getPrice() > pd.getEmeralds()) {
 			p.sendMessage("§eSinulla ei ole tarpeeksi emeraldeja.");
 			p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1, 1);

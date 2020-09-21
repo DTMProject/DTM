@@ -1,11 +1,13 @@
 package com.juubes.dtmproject.setup;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.World;
+
+import com.juubes.nexus.NexusBlockLocation;
 
 public class Monument {
 
-	public Block block;
+	public NexusBlockLocation block;
 	public String position;
 	public String customName;
 
@@ -15,14 +17,18 @@ public class Monument {
 		return (char) 0x1f844;
 	}
 
-	public Monument(Block block, String position, String customName) {
+	public Monument(NexusBlockLocation block, String position, String customName) {
 		this.block = block;
 		this.position = position;
 		this.customName = customName;
 	}
 
-	public void repair() {
-		this.block.setType(Material.OBSIDIAN);
+	/**
+	 * @param world
+	 *            is the world where the block is.
+	 **/
+	public void repair(World world) {
+		this.block.getBlock(world).setType(Material.OBSIDIAN);
 		this.broken = false;
 	}
 }

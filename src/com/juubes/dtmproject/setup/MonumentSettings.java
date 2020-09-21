@@ -1,8 +1,8 @@
 package com.juubes.dtmproject.setup;
 
-import org.bukkit.Location;
+import com.juubes.nexus.NexusLocation;
 
 public class MonumentSettings {
-	public Location loc;
+	public NexusLocation loc;
 	public String customName;
 }

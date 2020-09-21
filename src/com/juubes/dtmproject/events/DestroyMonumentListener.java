@@ -19,14 +19,6 @@ import com.juubes.dtmproject.setup.Monument;
 import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
-
 public class DestroyMonumentListener implements Listener {
 	private final DTM dtm;
 
@@ -69,24 +61,13 @@ public class DestroyMonumentListener implements Listener {
 		for (Team nt : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 			DTMTeam team = (DTMTeam) nt;
 			for (Monument mon : team.getMonuments()) {
-				if (!e.getBlock().equals(mon.block))
+				if (!e.getBlock().equals(mon.block.getBlock(e.getBlock().getWorld())))
 					continue;
 
 				// Monument destroyed
 				// Test if own
 				if (data.getTeam().equals(team)) {
 					p.sendMessage("§eTämä on oman tiimisi monumentti.");
-
-					ComponentBuilder builder = new ComponentBuilder("¤dtm_fell_from_world¤");
-
-					BaseComponent[] hoverText = TextComponent.fromLegacyText("§eLeijuva teksti");
-					builder.event(new HoverEvent(Action.SHOW_TEXT, hoverText));
-					builder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "join"));
-					builder.append("moi¤").color(ChatColor.BLUE);
-					builder.append("oon¤").color(ChatColor.YELLOW);
-					builder.append("juubes¤").color(ChatColor.DARK_AQUA);
-
-					p.spigot().sendMessage(builder.create());
 					e.setCancelled(true);
 					return;
 				}
@@ -152,10 +133,13 @@ public class DestroyMonumentListener implements Listener {
 					p.sendTitle("§c§lHäviö", "§aSait " + loserPoints + " pistettä!");
 				}
 
-				if (team == winner)
+				if (team == winner) {
 					data.getSeasonStats().playTimeWon += loserPoints * 60 * 1000;
-				else
+					data.getSeasonStats().wins++;
+				} else {
 					data.getSeasonStats().playTimeLost += loserPoints * 60 * 1000;
+					data.getSeasonStats().losses++;
+				}
 			}
 		}
 		dtm.getNexus().getGameLogic().restartGame();
