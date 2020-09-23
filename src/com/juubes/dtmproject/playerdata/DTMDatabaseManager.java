@@ -173,7 +173,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 						long playTimeLost = rs.getLong("PlayTimeLost");
 						int longestKillStreak = rs.getInt("LongestKillStreak");
 
-						stats.add(new DTMSeasonStats(statsID, uuid, season, kills, monuments, deaths, wins, losses,
+						stats.add(new DTMSeasonStats(statsID, uuid, season, kills, deaths, monuments, wins, losses,
 								playTimeWon, playTimeLost, longestKillStreak));
 					}
 				}
@@ -389,24 +389,6 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		ms.loc = monument.block.getLocation();
 		this.mapSettings.get(mapID).getTeamSettings(teamID).monumentSettings.put(pos, ms);
 	}
-
-	// TODO: Dead code
-	// @Deprecated
-	// private void updateLocationWorlds(World w) {
-	// MapSettings ms = this.mapSettings.get(w.getName());
-	// if (ms.lobby != null)
-	// ms.lobby.setWorld(w);
-	// for (String teamID : this.getTeamList(w.getName())) {
-	// TeamSettings ts = ms.getTeamSettings(teamID);
-	// if (ts.spawn != null)
-	// ts.spawn.setWorld(w);
-	// for (Entry<String, MonumentSettings> monSet : ts.monumentSettings.entrySet())
-	// {
-	// if (monSet.getValue().loc != null)
-	// monSet.getValue().loc.setWorld(w);
-	// }
-	// }
-	// }
 
 	public void createNonExistingPlayerDataSync(UUID uuid, String lastSeenName) {
 		// Create default playerdata

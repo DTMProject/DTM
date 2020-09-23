@@ -35,6 +35,7 @@ public class DTMCommand implements CommandExecutor {
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("reload")) {
 				reloadConfig();
+
 				sender.sendMessage(Lang.get("settings-reloaded"));
 			} else if (args[0].equalsIgnoreCase("status")) {
 				sender.sendMessage(ChatColor.AQUA + "DTM gamestatus: " + ChatColor.GREEN + dtm.getNexus().getGameLogic()
