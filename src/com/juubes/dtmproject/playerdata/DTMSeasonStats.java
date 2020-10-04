@@ -9,13 +9,13 @@ public class DTMSeasonStats extends AbstractSeasonStats {
 
 	public int monuments;
 
-	public DTMSeasonStats(int statsID, UUID uuid, int season) {
-		this(statsID, uuid, season, 0, 0, 0, 0, 0, 0, 0, 0);
+	public DTMSeasonStats(UUID uuid, int season) {
+		this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0);
 	}
 
-	public DTMSeasonStats(int statsID, UUID uuid, int season, int kills, int deaths, int monuments, int wins,
+	public DTMSeasonStats(UUID uuid, int season, int kills, int deaths, int monuments, int wins,
 			int losses, long playTimeWon, long playTimeLost, int biggestKillStreak) {
-		super(statsID, uuid, season, kills, deaths, wins, losses, playTimeWon, playTimeLost, biggestKillStreak);
+		super(uuid, season, kills, deaths, wins, losses, playTimeWon, playTimeLost, biggestKillStreak);
 		this.monuments = monuments;
 	}
 

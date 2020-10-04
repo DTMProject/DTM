@@ -1,9 +1,7 @@
 package com.juubes.dtmproject.playerdata;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -19,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -88,6 +87,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		HDS.setConnectionTimeout(10000);
 		HDS.setLeakDetectionThreshold(5000);
+		HDS.setMinimumIdle(1);
 		HDS.setMaximumPoolSize(20);
 		try {
 			Connection conn = HDS.getConnection();
@@ -101,15 +101,13 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 		}
 		// Create tables
-		try (Connection conn = HDS.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				BufferedReader in = new BufferedReader(new InputStreamReader(dtm.getResource("create-tables.sql")));
-				String sql;
-				while ((sql = in.readLine()) != null) {
-					stmt.addBatch(sql);
-				}
-				stmt.executeBatch();
+		try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
+			String createTables = IOUtils.toString(dtm.getResource("create-tables.sql"));
+			String[] sqlStatements = createTables.split(";");
+			for (String sql : sqlStatements) {
+				stmt.addBatch(sql);
 			}
+			stmt.executeBatch();
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
@@ -164,9 +162,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 			try (Statement stmt = conn.createStatement()) {
 				try (ResultSet rs = stmt.executeQuery("SELECT * FROM SeasonStats")) {
 					while (rs.next()) {
-						int statsID = rs.getInt("StatsID");
-						int season = rs.getInt("Season");
 						UUID uuid = UUID.fromString(rs.getString("UUID"));
+						int season = rs.getInt("Season");
 						int kills = rs.getInt("Kills");
 						int deaths = rs.getInt("Deaths");
 						int monuments = rs.getInt("MonumentsDestroyed");
@@ -176,8 +173,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 						long playTimeLost = rs.getLong("PlayTimeLost");
 						int longestKillStreak = rs.getInt("LongestKillStreak");
 
-						stats.add(new DTMSeasonStats(statsID, uuid, season, kills, deaths, monuments, wins, losses,
-								playTimeWon, playTimeLost, longestKillStreak));
+						stats.add(new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses, playTimeWon,
+								playTimeLost, longestKillStreak));
 					}
 				}
 			}
@@ -417,24 +414,15 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		// Make sure seasonstats for current season exist
 		if (seasonStatsCache.get(uuid).get(nexus.getCurrentSeason()) == null) {
 			// Defaults all the stats to 0
-			try (Connection conn = HDS.getConnection()) {
-				try (PreparedStatement stmt = conn.prepareStatement(
-						"INSERT INTO SeasonStats (UUID, Season) VALUES (?, ?)",
-						PreparedStatement.RETURN_GENERATED_KEYS)) {
-					stmt.setString(1, uuid.toString());
-					stmt.setInt(2, nexus.getCurrentSeason());
-					stmt.execute();
+			try (Connection conn = HDS.getConnection();
+					PreparedStatement stmt = conn.prepareStatement(
+							"INSERT INTO SeasonStats (UUID, Season) VALUES (?, ?)")) {
+				stmt.setString(1, uuid.toString());
+				stmt.setInt(2, nexus.getCurrentSeason());
+				stmt.execute();
 
-					try (ResultSet rs = stmt.getGeneratedKeys()) {
-						if (rs.next()) {
-							int statsID = rs.getInt(1);
-							seasonStatsCache.get(uuid).put(nexus.getCurrentSeason(), new DTMSeasonStats(statsID, uuid,
-									nexus.getCurrentSeason()));
-						} else {
-							throw new RuntimeException("Something went wrong creating seasonstats.");
-						}
-					}
-				}
+				seasonStatsCache.get(uuid).put(nexus.getCurrentSeason(), new DTMSeasonStats(uuid, nexus
+						.getCurrentSeason()));
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -460,6 +448,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	 */
 	@Override
 	public void savePlayerData(AbstractPlayerData data) {
+		System.out.println("Saving DTM playerdata for " + data.getLastSeenName() + ".");
 		saveSeasonStats(data.getSeasonStats());
 
 		try (Connection conn = HDS.getConnection()) {
@@ -490,7 +479,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	public DTMSeasonStats getSeasonStats(UUID id, int season) {
 		if (!seasonStatsCache.containsKey(id)) {
 			HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
-			stats.put(season, new DTMSeasonStats(0, id, season));
+			stats.put(season, new DTMSeasonStats(id, season));
 			seasonStatsCache.put(id, stats);
 		}
 		return seasonStatsCache.get(id).get(season);
@@ -525,23 +514,22 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		seasonStats.put(stats.getSeason(), (DTMSeasonStats) stats);
 		this.seasonStatsCache.put(stats.getUUID(), seasonStats);
 
-		try (Connection conn = HDS.getConnection()) {
-			try (PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO `SeasonStats`(`StatsID`, `Season`, `UUID`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)")) {
-
-				stmt.setInt(1, stats.getSeasonStatsID());
-				stmt.setInt(2, nexus.getCurrentSeason());
-				stmt.setString(3, stats.getUUID().toString());
-				stmt.setInt(4, stats.kills);
-				stmt.setInt(5, stats.deaths);
-				stmt.setInt(6, ((DTMSeasonStats) stats).monuments);
-				stmt.setInt(7, stats.wins);
-				stmt.setInt(8, stats.losses);
-				stmt.setLong(9, stats.playTimeWon);
-				stmt.setLong(10, stats.playTimeLost);
-				stmt.setInt(11, stats.longestKillStreak);
-				stmt.execute();
-			}
+		try (Connection conn = HDS.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(
+						"INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`)"
+								+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
+								+ "Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)")) {
+			stmt.setString(1, stats.getUUID().toString());
+			stmt.setInt(2, nexus.getCurrentSeason());
+			stmt.setInt(3, stats.kills);
+			stmt.setInt(4, stats.deaths);
+			stmt.setInt(5, ((DTMSeasonStats) stats).monuments);
+			stmt.setInt(6, stats.wins);
+			stmt.setInt(7, stats.losses);
+			stmt.setLong(8, stats.playTimeWon);
+			stmt.setLong(9, stats.playTimeLost);
+			stmt.setInt(10, stats.longestKillStreak);
+			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
