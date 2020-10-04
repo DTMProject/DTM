@@ -62,12 +62,10 @@ public class ShopHandler implements Listener {
 		itemsInShop[inventoryIndex++] = new ShopItem(25, new ItemStack(Material.OBSIDIAN, 6));
 		itemsInShop[inventoryIndex++] = new ShopItem(20, new ItemStack(Material.DIAMOND_BLOCK, 3));
 
-		// inventoryIndex = 18;
-		// itemsInShop[inventoryIndex++] = new ShopItem(15, new
-		// ItemStackBuilder(Material.TNT, 2).setLore(
-		// "§cIsi sano, että", "§cälä leiki tulella", "§cmut mä en
-		// kuunnellu!").setDisplayName("§c§lPUMPUM")
-		// .build());
+//		inventoryIndex = 18;
+//		itemsInShop[inventoryIndex++] = new ShopItem(15, new ItemStackBuilder(Material.TNT, 2).setLore(
+//				"§cIsi sano, että", "§cälä leiki tulella", "§cmut mä en kuunnellu!").setDisplayName("§c§lPUMPUM")
+//				.build());
 
 		itemsInShop[inventoryIndex++] = new ShopItem(20, new ItemStackBuilder(Material.GOLD_SPADE).setLore(
 				"§eTuu tänne niin", "§epelaan sulla pesistä!").enchant(Enchantment.KNOCKBACK, 2).hideEnchantments(true)
@@ -102,16 +100,20 @@ public class ShopHandler implements Listener {
 			return;
 		}
 
-		// Handle the 1000 emerald suprise
-		if (shopItem.getDisplayedItem().getEnchantments().containsKey(Enchantment.DEPTH_STRIDER)) {
-			Bukkit.broadcastMessage("§e§l" + p.getName() + " käytti " + shopItem.getPrice() + " emeraldia kaupassa?!");
-			for (Player target : p.getWorld().getPlayers()) {
-				target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5000, 9));
-				target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5000, 4));
-				target.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 5000, 1));
-			}
-
-		}
+		// // Handle the 1000 emerald suprise
+		// if
+		// (shopItem.getDisplayedItem().getEnchantments().containsKey(Enchantment.DEPTH_STRIDER))
+		// {
+		// Bukkit.broadcastMessage("§e§l" + p.getName() + " käytti " +
+		// shopItem.getPrice() + " emeraldia kaupassa?!");
+		// for (Player target : p.getWorld().getPlayers()) {
+		// target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5000, 9));
+		// target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5000, 4));
+		// target.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 5000,
+		// 1));
+		// }
+		//
+		// }
 
 		if (slot < 0 || slot >= shopInventory.getSize())
 			return;

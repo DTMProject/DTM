@@ -37,9 +37,9 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>com.juubes:dtmproject</include>
+							<!--include>com.juubes:dtmproject</include>
 							<include>com.juubes:nexus</include>
-							<include>org.spigotmc:spigot-api</include>
+							<include>org.spigotmc:spigot-api</include-->
 							<include>com.zaxxer:HikariCP</include>
 							<include>org.slf4j:slf4j-api</include>
 							<include>org.slf4j:slf4j-simple</include>
@@ -78,7 +78,6 @@
 			<groupId>com.juubes</groupId>
 			<artifactId>nexus</artifactId>
 			<version>2.0.2</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>

@@ -1,6 +1,8 @@
 package com.juubes.dtmproject.events;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -16,6 +18,7 @@ import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
+import com.juubes.nexus.data.AbstractPlayerData;
 import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 
@@ -72,12 +75,26 @@ public class DestroyMonumentListener implements Listener {
 					return;
 				}
 
+				// TODO: Add a statement so this only works when atleast 10 players have joined
+				if (!ownPlayerClose(p, data) && playersWhoJoined() >= 10) {
+					e.setCancelled(true);
+					p.sendMessage("§eLähelläsi täytyy olla yksi oma tiimiläisesi!");
+					return;
+				}
+
 				if (!mon.broken) {
-					Bukkit.broadcastMessage(data.getNick() + " §etuhosi monumentin " + team.getChatColor()
-							+ mon.customName);
+					// Give points to breaker and announce
 					DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
-					pd.getSeasonStats().monuments++;
-					pd.setEmeralds(pd.getEmeralds() + 5);
+					announcePlayerWhoBrokeTheMonument(p, pd, mon, team);
+					
+					// Also give points to closeby teammates
+					for (Player closeByPlayer : getCloseByTeammates(p, pd)) {
+						DTMPlayerData closeByPlayerData = dtm.getDatabaseManager().getPlayerData(closeByPlayer
+								.getUniqueId());
+						announcePlayerWhoBrokeTheMonument(closeByPlayer, closeByPlayerData, mon, team);
+					}
+
+					// Notify everyone
 					for (Player player : Bukkit.getOnlinePlayers()) {
 						player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 					}
@@ -88,9 +105,42 @@ public class DestroyMonumentListener implements Listener {
 				e.setCancelled(true);
 				e.getBlock().setType(Material.AIR);
 				return;
-
 			}
 		}
+	}
+
+	private void announcePlayerWhoBrokeTheMonument(Player p, DTMPlayerData pd, Monument mon, Team team) {
+		pd.getSeasonStats().monuments++;
+		pd.setEmeralds(pd.getEmeralds() + 5);
+		Bukkit.broadcastMessage(pd.getNick() + " §etuhosi monumentin " + team.getChatColor() + mon.customName);
+
+	}
+
+	private int playersWhoJoined() {
+		int val = 0;
+		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
+			val += team.getPlayers().size();
+		}
+		return val;
+	}
+
+	private Set<Player> getCloseByTeammates(Player p, DTMPlayerData pd) {
+		Set<Player> val = new HashSet<>();
+		for (Player p2 : pd.getTeam().getPlayers()) {
+			if (p2.getLocation().distance(p.getLocation()) < 10)
+				if (p2 != p)
+					val.add(p2);
+		}
+		return val;
+	}
+
+	private boolean ownPlayerClose(Player p, DTMPlayerData pd) {
+		for (Player p2 : pd.getTeam().getPlayers()) {
+			if (p2.getLocation().distance(p.getLocation()) < 10)
+				if (p2 != p)
+					return true;
+		}
+		return false;
 	}
 
 	private void handleBrokenMonument(Monument monument) {

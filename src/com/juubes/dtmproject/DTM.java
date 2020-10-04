@@ -17,7 +17,6 @@ import com.juubes.dtmproject.events.DeathHandler;
 import com.juubes.dtmproject.events.DestroyMonumentListener;
 import com.juubes.dtmproject.events.PreWorldLoadListener;
 import com.juubes.dtmproject.events.SpawnProtectionListener;
-import com.juubes.dtmproject.events.StartGameListener;
 import com.juubes.dtmproject.events.TeamSpleefListener;
 import com.juubes.dtmproject.playerdata.DTMDatabaseManager;
 import com.juubes.dtmproject.shop.ShopCommand;
@@ -46,19 +45,22 @@ public class DTM extends JavaPlugin {
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(new DestroyMonumentListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtectionListener(this), this);
+		// Bukkit.getPluginManager().registerEvents(new InstakillTNTHandler(this),
+		// this);
+		// Bukkit.getPluginManager().registerEvents(new ArrowsDestroyBlocks(this),
+		// this);
 		Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
 		Bukkit.getPluginManager().registerEvents(new AnvilPlaceEvent(), this);
+
 		Bukkit.getPluginManager().registerEvents(deathHandler, this);
-		Bukkit.getPluginManager().registerEvents(sbManager, this);
 		Bukkit.getPluginManager().registerEvents(shopHandler, this);
+		Bukkit.getPluginManager().registerEvents(sbManager, this);
 
 		// Events from Nexus
 		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new StartGameListener(this), this);
-		
-		
+
 		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
 		getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
 		getCommand("DTM").setExecutor(new DTMCommand(this));

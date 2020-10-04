@@ -11,8 +11,6 @@ import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
 
-import com.juubes.nexus.events.StartGameEvent;
-
 public class StartGameListener implements Listener {
 
 	private final DTM dtm;
@@ -21,16 +19,4 @@ public class StartGameListener implements Listener {
 		this.dtm = dtm;
 	}
 
-	@EventHandler
-	public void onStart(StartGameEvent e) {
-		Bukkit.getScheduler().runTaskLater(dtm, () -> {
-			for (DTMTeam team : dtm.getDatabaseManager().getTeams(e.getMapID()))
-				for (Monument mon : team.getMonuments())
-					mon.block.getBlock(e.getWorld()).setType(Material.OBSIDIAN);
-			Bukkit.broadcastMessage("§eMonumentit voi nyt tuhota!");
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-			}
-		}, 20 * 60 * 3);
-	}
 }

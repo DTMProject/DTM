@@ -86,6 +86,9 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		HDS.addDataSourceProperty("cachePrepStmts", "true");
 		HDS.addDataSourceProperty("prepStmtCacheSize", "250");
 		HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+		HDS.setConnectionTimeout(10000);
+		HDS.setLeakDetectionThreshold(5000);
+		HDS.setMaximumPoolSize(20);
 		try {
 			Connection conn = HDS.getConnection();
 			conn.close();
