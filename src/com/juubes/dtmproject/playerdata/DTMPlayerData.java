@@ -44,7 +44,7 @@ public class DTMPlayerData extends AbstractPlayerData {
 	 */
 	@Override
 	public void save() {
-		nexus.getDatabaseManager().savePlayerData(this);
+		((DTMDatabaseManager) nexus.getDatabaseManager()).savePlayerData(this);
 	}
 
 	@Override

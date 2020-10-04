@@ -18,7 +18,6 @@ import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
-import com.juubes.nexus.data.AbstractPlayerData;
 import com.juubes.nexus.logic.GameState;
 import com.juubes.nexus.logic.Team;
 

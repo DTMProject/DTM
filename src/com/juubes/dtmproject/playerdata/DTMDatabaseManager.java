@@ -39,7 +39,6 @@ import com.juubes.nexus.Nexus;
 import com.juubes.nexus.NexusBlockLocation;
 import com.juubes.nexus.NexusLocation;
 import com.juubes.nexus.data.AbstractDatabaseManager;
-import com.juubes.nexus.data.AbstractPlayerData;
 import com.juubes.nexus.data.AbstractSeasonStats;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -447,7 +446,11 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	 * {@link DTMDatabaseManager#saveSeasonStats(AbstractSeasonStats)}
 	 */
 	@Override
-	public void savePlayerData(AbstractPlayerData data) {
+	public void savePlayerData(UUID uuid) {
+		this.savePlayerData(playerDataCache.get(uuid));
+	}
+
+	public void savePlayerData(DTMPlayerData data) {
 		System.out.println("Saving DTM playerdata for " + data.getLastSeenName() + ".");
 		saveSeasonStats(data.getSeasonStats());
 
@@ -463,6 +466,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	@Override
