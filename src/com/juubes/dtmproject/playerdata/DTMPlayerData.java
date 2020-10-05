@@ -1,5 +1,7 @@
 package com.juubes.dtmproject.playerdata;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -9,6 +11,8 @@ import com.juubes.nexus.Nexus;
 import com.juubes.nexus.data.AbstractPlayerData;
 
 public class DTMPlayerData extends AbstractPlayerData {
+	private final HashMap<Integer, DTMSeasonStats> seasonStats = new HashMap<>();
+	private final DTMTotalStats totalStats = new DTMTotalStats(uuid, seasonStats);
 
 	private long lastRespawn;
 
@@ -26,25 +30,20 @@ public class DTMPlayerData extends AbstractPlayerData {
 
 	@Override
 	public DTMTotalStats getTotalStats() {
-		return (DTMTotalStats) nexus.getDatabaseManager().getTotalStats(uuid);
+		return totalStats;
 	}
 
+	/**
+	 * @return season stats for the current season.
+	 */
 	@Override
 	public DTMSeasonStats getSeasonStats() {
-		return this.getSeasonStats(nexus.getCurrentSeason());
+		return seasonStats.get(nexus.getCurrentSeason());
 	}
 
 	@Override
 	public DTMSeasonStats getSeasonStats(int season) {
-		return (DTMSeasonStats) nexus.getDatabaseManager().getSeasonStats(this.uuid, season);
-	}
-
-	/**
-	 * Calls Nexus#getDatabaseManager().savePlayerData(this)
-	 */
-	@Override
-	public void save() {
-		((DTMDatabaseManager) nexus.getDatabaseManager()).savePlayerData(this);
+		return seasonStats.get(season);
 	}
 
 	@Override
@@ -76,5 +75,11 @@ public class DTMPlayerData extends AbstractPlayerData {
 
 	public long getLastRespawn() {
 		return lastRespawn;
+	}
+
+	public void loadSeasonStats(HashMap<Integer, DTMSeasonStats> seasonStats) {
+		for (Entry<Integer, DTMSeasonStats> e : seasonStats.entrySet()) {
+			this.seasonStats.put(e.getKey(), e.getValue());
+		}
 	}
 }

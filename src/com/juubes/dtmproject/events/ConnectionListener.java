@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.juubes.dtmproject.DTM;
+import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.nexus.data.AbstractPlayerData;
 
 public class ConnectionListener implements Listener {
@@ -20,19 +21,20 @@ public class ConnectionListener implements Listener {
 
 	@EventHandler
 	public void onAsyncJoin(AsyncPlayerPreLoginEvent e) {
-		dtm.getDatabaseManager().createNonExistingPlayerDataSync(e.getUniqueId(), e.getName());
+		dtm.getDatabaseManager().loadPlayerdata(e.getUniqueId(), e.getName());
 	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
-
+		
 		Player p = e.getPlayer();
+		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		
 		p.getActivePotionEffects().clear();
 		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
 
-		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
-
+	
 		if (pd.getLastSeenName() != p.getName())
 			pd.setLastSeenName(p.getName());
 
@@ -55,9 +57,10 @@ public class ConnectionListener implements Listener {
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getNick());
 
+		// TODO: remove line?
 		pd.setTeam(null);
-		pd.save();
 
 		dtm.getDeathHandler().clearLastHits(p);
+		dtm.getDatabaseManager().unloadPlayerdata(p.getUniqueId(), true);
 	}
 }

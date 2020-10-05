@@ -92,7 +92,7 @@ public class DTM extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			getDatabaseManager().getPlayerData(p).save();
+			this.getDatabaseManager().savePlayerData(p.getUniqueId());
 			p.kickPlayer(Lang.get("server-restarting"));
 		}
 	}

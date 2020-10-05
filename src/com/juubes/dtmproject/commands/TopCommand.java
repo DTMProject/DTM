@@ -11,14 +11,20 @@ import org.bukkit.entity.Player;
 import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.playerdata.DTMSeasonStats;
-import com.juubes.nexus.data.AbstractSeasonStats;
+import com.juubes.nexus.TopListEntry;
 
 public class TopCommand implements CommandExecutor {
 
 	private final DTM dtm;
+	private LinkedList<TopListEntry> topListCache = new LinkedList<>();
 
 	public TopCommand(DTM dtm) {
 		this.dtm = dtm;
+
+		// Every 2 minutes, get all data from mysql and sort again
+		Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
+			topListCache = dtm.getDatabaseManager().getLeaderboard(100, dtm.getNexus().getCurrentSeason());
+		}, 0, 20 * 120);
 	}
 
 	@Override
@@ -42,19 +48,22 @@ public class TopCommand implements CommandExecutor {
 		}
 
 		sender.sendMessage("§eParhaat pelaajat " + season + ". kaudelta: ");
-		LinkedList<? extends AbstractSeasonStats> topStats = dtm.getDatabaseManager().getLeaderboard(count, season);
 		int i = 1;
-		for (AbstractSeasonStats s : topStats) {
-			DTMSeasonStats stats = (DTMSeasonStats) s;
-			DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(stats.getUUID());
-			Player p = Bukkit.getPlayer(pd.getUUID());
+		for (TopListEntry entry : topListCache) {
+			DTMSeasonStats stats = (DTMSeasonStats) entry.stats;
+			Player possiblePlayer = Bukkit.getPlayer(stats.getUUID());
 			String name;
-			if (p != null && p.isOnline())
-				name = p.getDisplayName();
-			else
-				name = pd.getNick();
+			if (possiblePlayer != null && possiblePlayer.isOnline()) {
+				DTMPlayerData data = dtm.getDatabaseManager().getPlayerData(possiblePlayer);
+				name = data.getNick();
+			} else {
+				name = entry.name;
+			}
+
 			sender.sendMessage("§e" + (i++) + ". " + name + ": §a" + stats.getSum() + " §c" + stats.kills + " §4"
 					+ stats.deaths + " §7" + stats.getKDRatio());
+			if (i == count + 1)
+				break;
 		}
 
 		sender.sendMessage("");

@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
@@ -23,8 +24,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.inventory.Inventory;
 
 import com.juubes.dtmproject.DTM;
@@ -38,6 +37,8 @@ import com.juubes.nexus.LocationUtils;
 import com.juubes.nexus.Nexus;
 import com.juubes.nexus.NexusBlockLocation;
 import com.juubes.nexus.NexusLocation;
+import com.juubes.nexus.TopListEntry;
+import com.juubes.nexus.TopListEntryTotal;
 import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractSeasonStats;
 import com.zaxxer.hikari.HikariDataSource;
@@ -47,8 +48,9 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	private final Nexus nexus;
 
 	private final HashMap<String, MapSettings> mapSettings;
-	private final HashMap<UUID, DTMPlayerData> playerDataCache = new HashMap<>();
-	private final HashMap<UUID, HashMap<Integer, DTMSeasonStats>> seasonStatsCache = new HashMap<>();
+	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>();
+	// private final HashMap<UUID, HashMap<Integer, DTMSeasonStats>>
+	// seasonStatsCache = new HashMap<>();
 
 	public final File mapConfFolder;
 	public final File kitFile;
@@ -97,7 +99,6 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 				p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
 			}
 			Bukkit.shutdown();
-
 		}
 		// Create tables
 		try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
@@ -110,77 +111,6 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
-
-		Set<DTMPlayerData> playerData = getAllPlayerDataSync();
-		Set<DTMSeasonStats> seasonStats = getAllSeasonStatsSync();
-
-		for (DTMPlayerData data : playerData) {
-			playerDataCache.put(data.getUUID(), data);
-		}
-
-		for (DTMSeasonStats stats : seasonStats) {
-			HashMap<Integer, DTMSeasonStats> allSeasons = seasonStatsCache.getOrDefault(stats.getUUID(),
-					new HashMap<>());
-			allSeasons.put(stats.getSeason(), stats);
-			seasonStatsCache.put(stats.getUUID(), allSeasons);
-		}
-		System.out.println("All playerdata loaded to memory.");
-	}
-
-	private Set<DTMPlayerData> getAllPlayerDataSync() {
-		Set<DTMPlayerData> data = new HashSet<>();
-		try (Connection conn = HDS.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				try (ResultSet rs = stmt.executeQuery("SELECT * FROM PlayerData")) {
-					while (rs.next()) {
-						UUID uuid = UUID.fromString(rs.getString("UUID"));
-						String lastSeenName = rs.getString("LastSeenName");
-						String prefix = rs.getString("Prefix");
-						int emeralds = rs.getInt("Emeralds");
-						String nick = rs.getString("Nick");
-						int killStreak = rs.getInt("KillStreak");
-
-						data.add(new DTMPlayerData(nexus, uuid, lastSeenName, prefix, emeralds, nick, killStreak));
-					}
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return data;
-	}
-
-	@Override
-	public HashMap<UUID, DTMPlayerData> getAllPlayerData() {
-		return playerDataCache;
-	}
-
-	private Set<DTMSeasonStats> getAllSeasonStatsSync() {
-		Set<DTMSeasonStats> stats = new HashSet<>();
-		try (Connection conn = HDS.getConnection()) {
-			try (Statement stmt = conn.createStatement()) {
-				try (ResultSet rs = stmt.executeQuery("SELECT * FROM SeasonStats")) {
-					while (rs.next()) {
-						UUID uuid = UUID.fromString(rs.getString("UUID"));
-						int season = rs.getInt("Season");
-						int kills = rs.getInt("Kills");
-						int deaths = rs.getInt("Deaths");
-						int monuments = rs.getInt("MonumentsDestroyed");
-						int wins = rs.getInt("Wins");
-						int losses = rs.getInt("Losses");
-						long playTimeWon = rs.getLong("PlayTimeWon");
-						long playTimeLost = rs.getLong("PlayTimeLost");
-						int longestKillStreak = rs.getInt("LongestKillStreak");
-
-						stats.add(new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses, playTimeWon,
-								playTimeLost, longestKillStreak));
-					}
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return stats;
 	}
 
 	@Override
@@ -389,56 +319,13 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		this.mapSettings.get(mapID).getTeamSettings(teamID).monumentSettings.put(pos, ms);
 	}
 
-	public void createNonExistingPlayerDataSync(UUID uuid, String lastSeenName) {
-		// Create default playerdata
-		if (!playerDataCache.containsKey(uuid)) {
-			playerDataCache.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName));
-			try (Connection conn = HDS.getConnection()) {
-				try (PreparedStatement stmt = conn.prepareStatement(
-						"INSERT INTO PlayerData (UUID, LastSeenName) VALUES (?, ?)")) {
-					stmt.setString(1, uuid.toString());
-					stmt.setString(2, lastSeenName);
-					stmt.execute();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		// Create empty seasonstats if not exists already
-		if (!seasonStatsCache.containsKey(uuid)) {
-			seasonStatsCache.put(uuid, new HashMap<Integer, DTMSeasonStats>());
-		}
-
-		// Make sure seasonstats for current season exist
-		if (seasonStatsCache.get(uuid).get(nexus.getCurrentSeason()) == null) {
-			// Defaults all the stats to 0
-			try (Connection conn = HDS.getConnection();
-					PreparedStatement stmt = conn.prepareStatement(
-							"INSERT INTO SeasonStats (UUID, Season) VALUES (?, ?)")) {
-				stmt.setString(1, uuid.toString());
-				stmt.setInt(2, nexus.getCurrentSeason());
-				stmt.execute();
-
-				seasonStatsCache.get(uuid).put(nexus.getCurrentSeason(), new DTMSeasonStats(uuid, nexus
-						.getCurrentSeason()));
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@EventHandler
-	public void onLogin(AsyncPlayerPreLoginEvent e) {
-	}
-
 	public DTMPlayerData getPlayerData(Player p) {
 		return getPlayerData(p.getUniqueId());
 	}
 
 	@Override
 	public DTMPlayerData getPlayerData(UUID uuid) {
-		return playerDataCache.get(uuid);
+		return loadedPlayerdata.get(uuid);
 	}
 
 	/**
@@ -447,13 +334,15 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	 */
 	@Override
 	public void savePlayerData(UUID uuid) {
-		this.savePlayerData(playerDataCache.get(uuid));
+		this.savePlayerData(loadedPlayerdata.get(uuid));
 	}
 
+	/**
+	 * Asynchronously saves playerdata.
+	 */
 	public void savePlayerData(DTMPlayerData data) {
+		// TODO: Save async, queued
 		System.out.println("Saving DTM playerdata for " + data.getLastSeenName() + ".");
-		saveSeasonStats(data.getSeasonStats());
-
 		try (Connection conn = HDS.getConnection()) {
 			try (PreparedStatement stmt = conn.prepareStatement(
 					"UPDATE PlayerData SET LastSeenName = ?, Emeralds = ?, KillStreak = ? WHERE UUID = ?")) {
@@ -461,6 +350,26 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 				stmt.setInt(2, data.getEmeralds());
 				stmt.setInt(3, data.getKillStreak());
 				stmt.setString(4, data.getUUID().toString());
+				stmt.execute();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			DTMSeasonStats stats = data.getSeasonStats();
+			try (PreparedStatement stmt = conn.prepareStatement(
+					"INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`)"
+							+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
+							+ "Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)")) {
+				stmt.setString(1, stats.getUUID().toString());
+				stmt.setInt(2, nexus.getCurrentSeason());
+				stmt.setInt(3, stats.kills);
+				stmt.setInt(4, stats.deaths);
+				stmt.setInt(5, ((DTMSeasonStats) stats).monuments);
+				stmt.setInt(6, stats.wins);
+				stmt.setInt(7, stats.losses);
+				stmt.setLong(8, stats.playTimeWon);
+				stmt.setLong(9, stats.playTimeLost);
+				stmt.setInt(10, stats.longestKillStreak);
 				stmt.execute();
 			}
 		} catch (SQLException e) {
@@ -471,7 +380,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 	@Override
 	public UUID getUUIDByLastSeenName(String name) {
-		for (DTMPlayerData pd : playerDataCache.values()) {
+		for (DTMPlayerData pd : loadedPlayerdata.values()) {
 			if (pd.getLastSeenName().equals(name)) {
 				return pd.getUUID();
 			}
@@ -480,103 +389,108 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	@Override
-	public DTMSeasonStats getSeasonStats(UUID id, int season) {
-		if (!seasonStatsCache.containsKey(id)) {
-			HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
-			stats.put(season, new DTMSeasonStats(id, season));
-			seasonStatsCache.put(id, stats);
-		}
-		return seasonStatsCache.get(id).get(season);
-	}
-
-	@Override
-	public DTMSeasonStats getSeasonStats(String name, int season) {
-		UUID idForName = getUUIDByLastSeenName(name);
-		return getSeasonStats(idForName, season);
-	}
-
-	@Override
-	public DTMTotalStats getTotalStats(String lastSeenName) {
-		UUID idForName = getUUIDByLastSeenName(lastSeenName);
-		return getTotalStats(idForName);
-	}
-
-	@Override
-	public DTMTotalStats getTotalStats(UUID id) {
-		return new DTMTotalStats(id, seasonStatsCache.get(id));
-	}
-
-	/**
-	 * Saves seasonStats to MySQL.
-	 */
-	@Override
-	public void saveSeasonStats(AbstractSeasonStats stats) {
-		HashMap<Integer, DTMSeasonStats> seasonStats = seasonStatsCache.getOrDefault(stats.getUUID(),
-				new HashMap<Integer, DTMSeasonStats>());
-		seasonStats.size();
-		stats.getSeason();
-		seasonStats.put(stats.getSeason(), (DTMSeasonStats) stats);
-		this.seasonStatsCache.put(stats.getUUID(), seasonStats);
+	public LinkedList<TopListEntry> getLeaderboard(int count, int season) {
+		LinkedList<TopListEntry> allStats = new LinkedList<>();
 
 		try (Connection conn = HDS.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(
-						"INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`)"
-								+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
-								+ "Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)")) {
-			stmt.setString(1, stats.getUUID().toString());
-			stmt.setInt(2, nexus.getCurrentSeason());
-			stmt.setInt(3, stats.kills);
-			stmt.setInt(4, stats.deaths);
-			stmt.setInt(5, ((DTMSeasonStats) stats).monuments);
-			stmt.setInt(6, stats.wins);
-			stmt.setInt(7, stats.losses);
-			stmt.setLong(8, stats.playTimeWon);
-			stmt.setLong(9, stats.playTimeLost);
-			stmt.setInt(10, stats.longestKillStreak);
-			stmt.execute();
+						"SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?")) {
+			stmt.setInt(1, season);
+			stmt.setInt(2, count);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					UUID uuid = UUID.fromString(rs.getString("UUID"));
+					int kills = rs.getInt("Kills");
+					int deaths = rs.getInt("Deaths");
+					int monuments = rs.getInt("MonumentsDestroyed");
+					int wins = rs.getInt("Wins");
+					int losses = rs.getInt("Losses");
+					long playTimeWon = rs.getLong("PlayTimeWon");
+					long playTimeLost = rs.getLong("PlayTimeLost");
+					int longestKillStreak = rs.getInt("LongestKillStreak");
+
+					String lastSeenName = rs.getString("LastSeenName");
+					DTMSeasonStats stats = new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
+							playTimeWon, playTimeLost, longestKillStreak);
+
+					allStats.add(new TopListEntry(uuid, lastSeenName, stats));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return allStats;
+	}
+
+	// Method not used anywhere in the DTM code
+	@Override
+	public LinkedList<TopListEntryTotal> getAlltimeLeaderboard(int count) {
+		// TODO: Implement method
+		return null;
+	}
+
+	/**
+	 * Loads playerdata and seasonstats to cache.
+	 */
+	public void loadPlayerdata(UUID uuid, String lastSeenName) {
+		if (loadedPlayerdata.contains(uuid))
+			throw new IllegalStateException("Playerdata already loaded!");
+
+		{
+			try (Connection conn = HDS.getConnection();
+					PreparedStatement stmt = conn.prepareStatement(
+							"SELECT Prefix, Emeralds, Nick, KillStreak FROM PlayerData WHERE UUID = ?")) {
+				stmt.setString(1, uuid.toString());
+
+				try (ResultSet rs = stmt.executeQuery()) {
+					if (rs.next()) {
+						String prefix = rs.getString("Prefix");
+						int emeralds = rs.getInt("Emeralds");
+						String nick = rs.getString("Nick");
+						int killStreak = rs.getInt("KillStreak");
+
+						loadedPlayerdata.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName, prefix, emeralds, nick,
+								killStreak));
+					} else {
+						loadedPlayerdata.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName));
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		DTMPlayerData pd = getPlayerData(uuid);
+		try (Connection conn2 = HDS.getConnection();
+				PreparedStatement stmt1 = conn2.prepareStatement("SELECT * FROM SeasonStats WHERE UUID = ?")) {
+			stmt1.setString(1, uuid.toString());
+			try (ResultSet rs = stmt1.executeQuery()) {
+				HashMap<Integer, DTMSeasonStats> stats = new HashMap<>();
+				while (rs.next()) {
+					int season = rs.getInt("Season");
+					int kills = rs.getInt("Kills");
+					int deaths = rs.getInt("Deaths");
+					int monuments = rs.getInt("MonumentsDestroyed");
+					int wins = rs.getInt("Wins");
+					int losses = rs.getInt("Losses");
+					long playTimeWon = rs.getLong("PlayTimeWon");
+					long playTimeLost = rs.getLong("PlayTimeLost");
+					int longestKillStreak = rs.getInt("LongestKillStreak");
+
+					stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
+							playTimeWon, playTimeLost, longestKillStreak));
+				}
+				pd.loadSeasonStats(stats);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public LinkedList<DTMSeasonStats> getLeaderboard(int count, int season) {
-		// TODO: CPU optimization possible - just cache the results for like 5 minutes
-
-		LinkedList<DTMSeasonStats> allStatsSorted = new LinkedList<>();
-		for (Entry<UUID, HashMap<Integer, DTMSeasonStats>> seasonStatsEntry : seasonStatsCache.entrySet()) {
-			DTMSeasonStats seasonStats = seasonStatsEntry.getValue().get(season);
-			// Only add if player has played on the season
-			if (seasonStats != null)
-				allStatsSorted.add(seasonStats);
-		}
-
-		// TODO: Optimize by not sorting the entire list. Only add *count* amount of
-		// entries.
-		allStatsSorted.sort((DTMSeasonStats stats1, DTMSeasonStats stats2) -> {
-			return stats2.getSum() - stats1.getSum();
-		});
-
-		return new LinkedList<>(allStatsSorted.subList(0, Math.min(count, allStatsSorted.size())));
-	}
-
-	// Method not used anywhere in the DTM code
-	@Override
-	public LinkedList<DTMTotalStats> getAlltimeLeaderboard(int count) {
-		// TODO: CPU optimization possible - just cache the results for like 5 minutes
-		LinkedList<DTMTotalStats> topBoard = new LinkedList<>();
-
-		for (UUID totalStats : seasonStatsCache.keySet()) {
-			topBoard.add(getTotalStats(totalStats));
-		}
-
-		// TODO: This can be optimized
-		// Sort list
-		topBoard.sort((DTMTotalStats o1, DTMTotalStats o2) -> {
-			return o2.getSum() - o1.getSum();
-		});
-
-		return new LinkedList<>(topBoard.subList(0, Math.min(count, topBoard.size())));
+	public void unloadPlayerdata(UUID uuid, boolean save) {
+		if (save)
+			savePlayerData(uuid);
+		loadedPlayerdata.remove(uuid);
 	}
 
 }

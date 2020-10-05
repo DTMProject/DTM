@@ -7,8 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMSeasonStats;
-import com.juubes.nexus.data.AbstractPlayerData;
+import com.juubes.dtmproject.playerdata.DTMPlayerData;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -22,9 +21,9 @@ public class ChatHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onChat(AsyncPlayerChatEvent e) {
 		Player p = e.getPlayer();
-		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 
-		int points = ((DTMSeasonStats) pd.getSeasonStats()).getSum();
+		int points = pd.getSeasonStats().getSum();
 		String prefix = pd.getPrefix();
 		prefix = ChatColor.translateAlternateColorCodes('&', prefix);
 
