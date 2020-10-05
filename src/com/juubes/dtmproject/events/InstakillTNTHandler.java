@@ -67,7 +67,7 @@ public class InstakillTNTHandler implements Listener {
 
 		e.setCancelled(true);
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.playSound(tnt.getLocation(), Sound.EXPLODE, 1, 1);
+			p.playSound(tnt.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
 		}
 
 		if (!tnts.containsKey(tnt.getUniqueId()))

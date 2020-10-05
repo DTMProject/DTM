@@ -94,7 +94,7 @@ public class ShopHandler implements Listener {
 		// TODO: Nullpointer below
 		if (shopItem.getPrice() > pd.getEmeralds()) {
 			p.sendMessage("§eSinulla ei ole tarpeeksi emeraldeja.");
-			p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1, 1);
+			p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
 			return;
 		}
 
@@ -120,7 +120,7 @@ public class ShopHandler implements Listener {
 
 		pd.setEmeralds(pd.getEmeralds() - shopItem.getPrice());
 		p.getInventory().addItem(shopItem.getReceivedItem().clone());
-		p.playSound(p.getLocation(), Sound.VILLAGER_YES, 1, 1);
+		p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 
 		// Update emerald
 		setIndexToEmerald(e.getInventory(), 8, pd.getEmeralds());

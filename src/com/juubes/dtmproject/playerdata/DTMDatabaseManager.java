@@ -345,11 +345,11 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		System.out.println("Saving DTM playerdata for " + data.getLastSeenName() + ".");
 		try (Connection conn = HDS.getConnection()) {
 			try (PreparedStatement stmt = conn.prepareStatement(
-					"UPDATE PlayerData SET LastSeenName = ?, Emeralds = ?, KillStreak = ? WHERE UUID = ?")) {
-				stmt.setString(1, data.getLastSeenName());
-				stmt.setInt(2, data.getEmeralds());
-				stmt.setInt(3, data.getKillStreak());
-				stmt.setString(4, data.getUUID().toString());
+					"INSERT INTO PlayerData (UUID, LastSeenName, Emeralds, KillStreak) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), KillStreak = VALUES(KillStreak)")) {
+				stmt.setString(1, data.getUUID().toString());
+				stmt.setString(2, data.getLastSeenName());
+				stmt.setInt(3, data.getEmeralds());
+				stmt.setInt(4, data.getKillStreak());
 				stmt.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -480,6 +480,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 					stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
 							playTimeWon, playTimeLost, longestKillStreak));
 				}
+				if (stats.isEmpty())
+					stats.put(1, new DTMSeasonStats(uuid, 1));
 				pd.loadSeasonStats(stats);
 			}
 		} catch (SQLException e) {

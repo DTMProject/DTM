@@ -264,7 +264,7 @@ public class DeathHandler implements Listener {
 		}
 
 		if (System.currentTimeMillis() < targetData.getLastRespawn() + 2000) {
-			attacker.playSound(target.getLocation(), Sound.ITEM_BREAK, 1, 1);
+			attacker.playSound(target.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
 			e.setCancelled(true);
 			return;
 		}

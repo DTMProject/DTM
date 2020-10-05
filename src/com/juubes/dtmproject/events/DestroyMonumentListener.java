@@ -95,7 +95,7 @@ public class DestroyMonumentListener implements Listener {
 
 					// Notify everyone
 					for (Player player : Bukkit.getOnlinePlayers()) {
-						player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+						player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 					}
 					handleBrokenMonument(mon);
 				} else {
