@@ -74,7 +74,6 @@ public class DestroyMonumentListener implements Listener {
 					return;
 				}
 
-				// TODO: Add a statement so this only works when atleast 10 players have joined
 				if (!ownPlayerClose(p, data) && playersWhoJoined() >= 10) {
 					e.setCancelled(true);
 					p.sendMessage("§eLähelläsi täytyy olla yksi oma tiimiläisesi!");
@@ -85,7 +84,7 @@ public class DestroyMonumentListener implements Listener {
 					// Give points to breaker and announce
 					DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
 					announcePlayerWhoBrokeTheMonument(p, pd, mon, team);
-					
+
 					// Also give points to closeby teammates
 					for (Player closeByPlayer : getCloseByTeammates(p, pd)) {
 						DTMPlayerData closeByPlayerData = dtm.getDatabaseManager().getPlayerData(closeByPlayer
@@ -137,7 +136,8 @@ public class DestroyMonumentListener implements Listener {
 		for (Player p2 : pd.getTeam().getPlayers()) {
 			if (p2.getLocation().distance(p.getLocation()) < 10)
 				if (p2 != p)
-					return true;
+					if (p2.getGameMode() == GameMode.SURVIVAL)
+						return true;
 		}
 		return false;
 	}

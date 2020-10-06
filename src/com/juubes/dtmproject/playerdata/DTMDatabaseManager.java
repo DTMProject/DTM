@@ -48,9 +48,9 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	private final Nexus nexus;
 
 	private final HashMap<String, MapSettings> mapSettings;
-	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>();
-	// private final HashMap<UUID, HashMap<Integer, DTMSeasonStats>>
-	// seasonStatsCache = new HashMap<>();
+	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
+
+	private final QueueDataSaver dataSaver;
 
 	public final File mapConfFolder;
 	public final File kitFile;
@@ -63,6 +63,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		this.mapSettings = new HashMap<>();
 		this.mapConfFolder = new File(nexus.getConfigFolder(), "settings");
 		this.kitFile = new File(nexus.getConfigFolder(), "kits.yml");
+		this.dataSaver = new QueueDataSaver(dtm);
 	}
 
 	/**
@@ -111,6 +112,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
+
+		dataSaver.init();
 	}
 
 	@Override
@@ -341,51 +344,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	 * Asynchronously saves playerdata.
 	 */
 	public void savePlayerData(DTMPlayerData data) {
-		// TODO: Save async, queued
-		System.out.println("Saving DTM playerdata for " + data.getLastSeenName() + ".");
-		try (Connection conn = HDS.getConnection()) {
-			try (PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO PlayerData (UUID, LastSeenName, Emeralds, KillStreak) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), KillStreak = VALUES(KillStreak)")) {
-				stmt.setString(1, data.getUUID().toString());
-				stmt.setString(2, data.getLastSeenName());
-				stmt.setInt(3, data.getEmeralds());
-				stmt.setInt(4, data.getKillStreak());
-				stmt.execute();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-
-			DTMSeasonStats stats = data.getSeasonStats();
-			try (PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`)"
-							+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
-							+ "Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)")) {
-				stmt.setString(1, stats.getUUID().toString());
-				stmt.setInt(2, nexus.getCurrentSeason());
-				stmt.setInt(3, stats.kills);
-				stmt.setInt(4, stats.deaths);
-				stmt.setInt(5, ((DTMSeasonStats) stats).monuments);
-				stmt.setInt(6, stats.wins);
-				stmt.setInt(7, stats.losses);
-				stmt.setLong(8, stats.playTimeWon);
-				stmt.setLong(9, stats.playTimeLost);
-				stmt.setInt(10, stats.longestKillStreak);
-				stmt.execute();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	@Override
-	public UUID getUUIDByLastSeenName(String name) {
-		for (DTMPlayerData pd : loadedPlayerdata.values()) {
-			if (pd.getLastSeenName().equals(name)) {
-				return pd.getUUID();
-			}
-		}
-		return null;
+		dataSaver.queue(data);
 	}
 
 	@Override
@@ -493,6 +452,10 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		if (save)
 			savePlayerData(uuid);
 		loadedPlayerdata.remove(uuid);
+	}
+
+	public Connection getConnection() throws SQLException {
+		return HDS.getConnection();
 	}
 
 }

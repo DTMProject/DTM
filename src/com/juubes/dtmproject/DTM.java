@@ -15,6 +15,7 @@ import com.juubes.dtmproject.events.ChatHandler;
 import com.juubes.dtmproject.events.ConnectionListener;
 import com.juubes.dtmproject.events.DeathHandler;
 import com.juubes.dtmproject.events.DestroyMonumentListener;
+import com.juubes.dtmproject.events.FixTeleport;
 import com.juubes.dtmproject.events.PreWorldLoadListener;
 import com.juubes.dtmproject.events.SpawnProtectionListener;
 import com.juubes.dtmproject.events.TeamSpleefListener;
@@ -53,6 +54,7 @@ public class DTM extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
 		Bukkit.getPluginManager().registerEvents(new AnvilPlaceEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new FixTeleport(), this);
 
 		Bukkit.getPluginManager().registerEvents(deathHandler, this);
 		Bukkit.getPluginManager().registerEvents(shopHandler, this);

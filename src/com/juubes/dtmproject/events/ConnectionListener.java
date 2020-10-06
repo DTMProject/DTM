@@ -57,9 +57,6 @@ public class ConnectionListener implements Listener {
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getNick());
 
-		// TODO: remove line?
-		pd.setTeam(null);
-
 		dtm.getDeathHandler().clearLastHits(p);
 		dtm.getDatabaseManager().unloadPlayerdata(p.getUniqueId(), true);
 	}
