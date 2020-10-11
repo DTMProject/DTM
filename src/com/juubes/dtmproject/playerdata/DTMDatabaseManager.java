@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -323,7 +324,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	}
 
 	public DTMPlayerData getPlayerData(Player p) {
-		return getPlayerData(p.getUniqueId());
+		return Objects.requireNonNull(getPlayerData(p.getUniqueId()));
 	}
 
 	@Override
@@ -454,8 +455,8 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		loadedPlayerdata.remove(uuid);
 	}
 
-	public Connection getConnection() throws SQLException {
-		return HDS.getConnection();
+	public HikariDataSource getHDS() {
+		return HDS;
 	}
 
 }

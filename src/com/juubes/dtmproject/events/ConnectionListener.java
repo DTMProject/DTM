@@ -34,7 +34,6 @@ public class ConnectionListener implements Listener {
 		p.getActivePotionEffects().clear();
 		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
 
-	
 		if (pd.getLastSeenName() != p.getName())
 			pd.setLastSeenName(p.getName());
 

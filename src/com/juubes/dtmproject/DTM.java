@@ -89,6 +89,12 @@ public class DTM extends JavaPlugin {
 				sender.sendMessage(Lang.get("map-settings-pending"));
 			}
 		}, 20 * 20, 20 * 20);
+
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				this.getDatabaseManager().savePlayerData(p.getUniqueId());
+			}
+		}, 3 * 60 * 20, 3 * 60 * 20);
 	}
 
 	@Override

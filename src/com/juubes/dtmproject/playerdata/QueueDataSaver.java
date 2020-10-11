@@ -22,7 +22,7 @@ public class QueueDataSaver {
 		Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
 			if (queuedData.size() == 0)
 				return;
-			try (Connection conn = dtm.getDatabaseManager().getConnection()) {
+			try (Connection conn = dtm.getDatabaseManager().getHDS().getConnection()) {
 				DTMPlayerData data;
 				while ((data = queuedData.poll()) != null) {
 					System.out.println("Saving playerdata for " + data.getLastSeenName());
