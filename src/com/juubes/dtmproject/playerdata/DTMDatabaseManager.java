@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -323,8 +322,12 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		this.mapSettings.get(mapID).getTeamSettings(teamID).monumentSettings.put(pos, ms);
 	}
 
+	/**
+	 * Might return null
+	 */
 	public DTMPlayerData getPlayerData(Player p) {
-		return Objects.requireNonNull(getPlayerData(p.getUniqueId()));
+		DTMPlayerData data = getPlayerData(p.getUniqueId());
+		return data;
 	}
 
 	@Override
@@ -397,13 +400,25 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 		if (loadedPlayerdata.contains(uuid))
 			throw new IllegalStateException("Playerdata already loaded!");
 
-		{
-			try (Connection conn = HDS.getConnection();
-					PreparedStatement stmt = conn.prepareStatement(
-							"SELECT Prefix, Emeralds, Nick, KillStreak FROM PlayerData WHERE UUID = ?")) {
-				stmt.setString(1, uuid.toString());
+		// Don't load if save is queued
+		while (true) {
+			if (dataSaver.isSavingDataFor(uuid)) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				continue;
+			}
+			break;
+		}
 
-				try (ResultSet rs = stmt.executeQuery()) {
+		try (Connection conn = HDS.getConnection()) {
+			try (PreparedStatement stmt1 = conn.prepareStatement(
+					"SELECT Prefix, Emeralds, Nick, KillStreak FROM PlayerData WHERE UUID = ?")) {
+				stmt1.setString(1, uuid.toString());
+
+				try (ResultSet rs = stmt1.executeQuery()) {
 					if (rs.next()) {
 						String prefix = rs.getString("Prefix");
 						int emeralds = rs.getInt("Emeralds");
@@ -415,34 +430,33 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 					} else {
 						loadedPlayerdata.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName));
 					}
+
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		DTMPlayerData pd = getPlayerData(uuid);
-		try (Connection conn2 = HDS.getConnection();
-				PreparedStatement stmt1 = conn2.prepareStatement("SELECT * FROM SeasonStats WHERE UUID = ?")) {
-			stmt1.setString(1, uuid.toString());
-			try (ResultSet rs = stmt1.executeQuery()) {
-				HashMap<Integer, DTMSeasonStats> stats = new HashMap<>();
-				while (rs.next()) {
-					int season = rs.getInt("Season");
-					int kills = rs.getInt("Kills");
-					int deaths = rs.getInt("Deaths");
-					int monuments = rs.getInt("MonumentsDestroyed");
-					int wins = rs.getInt("Wins");
-					int losses = rs.getInt("Losses");
-					long playTimeWon = rs.getLong("PlayTimeWon");
-					long playTimeLost = rs.getLong("PlayTimeLost");
-					int longestKillStreak = rs.getInt("LongestKillStreak");
 
-					stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
-							playTimeWon, playTimeLost, longestKillStreak));
+			DTMPlayerData pd = getPlayerData(uuid);
+			try (PreparedStatement stmt2 = conn.prepareStatement("SELECT * FROM SeasonStats WHERE UUID = ?")) {
+				stmt2.setString(1, uuid.toString());
+				try (ResultSet rs = stmt2.executeQuery()) {
+					HashMap<Integer, DTMSeasonStats> stats = new HashMap<>();
+					while (rs.next()) {
+						int season = rs.getInt("Season");
+						int kills = rs.getInt("Kills");
+						int deaths = rs.getInt("Deaths");
+						int monuments = rs.getInt("MonumentsDestroyed");
+						int wins = rs.getInt("Wins");
+						int losses = rs.getInt("Losses");
+						long playTimeWon = rs.getLong("PlayTimeWon");
+						long playTimeLost = rs.getLong("PlayTimeLost");
+						int longestKillStreak = rs.getInt("LongestKillStreak");
+
+						stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
+								playTimeWon, playTimeLost, longestKillStreak));
+					}
+					pd.loadSeasonStats(stats);
 				}
-				if (stats.isEmpty())
-					stats.put(1, new DTMSeasonStats(uuid, 1));
-				pd.loadSeasonStats(stats);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

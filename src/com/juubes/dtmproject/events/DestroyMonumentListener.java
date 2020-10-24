@@ -73,12 +73,12 @@ public class DestroyMonumentListener implements Listener {
 					e.setCancelled(true);
 					return;
 				}
-
-				if (!ownPlayerClose(p, data) && playersWhoJoined() >= 10) {
-					e.setCancelled(true);
-					p.sendMessage("§eLähelläsi täytyy olla yksi oma tiimiläisesi!");
-					return;
-				}
+				//
+				// if (!ownPlayerClose(p, data) && playersWhoJoined() >= 10) {
+				// e.setCancelled(true);
+				// p.sendMessage("§eLähelläsi täytyy olla yksi oma tiimiläisesi!");
+				// return;
+				// }
 
 				if (!mon.broken) {
 					// Give points to breaker and announce

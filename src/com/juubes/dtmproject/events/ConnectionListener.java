@@ -27,19 +27,25 @@ public class ConnectionListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
-		
+
 		Player p = e.getPlayer();
 		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
-		
+
+		if (pd == null) {
+			p.kickPlayer("§ewtf, null playerdata");
+			return;
+		}
+
+		// Clear potion effects
 		p.getActivePotionEffects().clear();
+		
+		// Setup scoreboard
 		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
 
-		if (pd.getLastSeenName() != p.getName())
-			pd.setLastSeenName(p.getName());
+		// Update LastSeenName
+		pd.setLastSeenName(p.getName());
 
-		if (pd.getPrefix() == null)
-			pd.setPrefix("&eDTM-Jonne");
-
+		// Join message
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getNick());
 

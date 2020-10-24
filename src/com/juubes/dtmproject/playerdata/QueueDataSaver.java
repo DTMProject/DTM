@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.bukkit.Bukkit;
@@ -27,11 +28,12 @@ public class QueueDataSaver {
 				while ((data = queuedData.poll()) != null) {
 					System.out.println("Saving playerdata for " + data.getLastSeenName());
 					try (PreparedStatement stmt = conn.prepareStatement(
-							"INSERT INTO PlayerData (UUID, LastSeenName, Emeralds, KillStreak) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), KillStreak = VALUES(KillStreak)")) {
+							"INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak)")) {
 						stmt.setString(1, data.getUUID().toString());
 						stmt.setString(2, data.getLastSeenName());
-						stmt.setInt(3, data.getEmeralds());
-						stmt.setInt(4, data.getKillStreak());
+						stmt.setString(3, data.getPrefix());
+						stmt.setInt(4, data.getEmeralds());
+						stmt.setInt(5, data.getKillStreak());
 						stmt.execute();
 					} catch (SQLException e) {
 						e.printStackTrace();
@@ -68,6 +70,14 @@ public class QueueDataSaver {
 
 	public void queue(DTMPlayerData data) {
 		queuedData.offer(data);
+	}
+
+	public boolean isSavingDataFor(UUID uuid) {
+		for (DTMPlayerData data : queuedData) {
+			if (data.getUUID() == uuid)
+				return true;
+		}
+		return false;
 	}
 
 }

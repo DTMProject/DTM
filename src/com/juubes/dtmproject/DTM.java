@@ -72,7 +72,7 @@ public class DTM extends JavaPlugin {
 		saveDefaultConfig();
 
 		List<String> maps = nexus.getConfig().getStringList("maps");
-		InitOptions options = new InitOptions(new DTMGameLoader(this), dbManager, maps, "&eDTM-Jonne", "./Nexus");
+		InitOptions options = new InitOptions(new DTMGameLoader(this), dbManager, maps, null, "./Nexus");
 
 		dbManager.prepareMapSettings(options.getMapIDs());
 		dbManager.loadCache();

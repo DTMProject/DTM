@@ -77,9 +77,11 @@ public class DTMPlayerData extends AbstractPlayerData {
 		return lastRespawn;
 	}
 
-	public void loadSeasonStats(HashMap<Integer, DTMSeasonStats> seasonStats) {
-		for (Entry<Integer, DTMSeasonStats> e : seasonStats.entrySet()) {
+	public void loadSeasonStats(HashMap<Integer, DTMSeasonStats> loadedSeasonStats) {
+		for (Entry<Integer, DTMSeasonStats> e : loadedSeasonStats.entrySet()) {
 			this.seasonStats.put(e.getKey(), e.getValue());
 		}
+		if (!this.seasonStats.containsKey(nexus.getCurrentSeason()))
+			this.seasonStats.put(nexus.getCurrentSeason(), new DTMSeasonStats(this.uuid, nexus.getCurrentSeason()));
 	}
 }

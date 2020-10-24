@@ -22,9 +22,12 @@ public class TopCommand implements CommandExecutor {
 		this.dtm = dtm;
 
 		// Every 2 minutes, get all data from mysql and sort again
-		Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
-			topListCache = dtm.getDatabaseManager().getLeaderboard(100, dtm.getNexus().getCurrentSeason());
-		}, 0, 20 * 120);
+		for (int i = 0; i < dtm.getNexus().getCurrentSeason(); i++) {
+			Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
+				topListCache = dtm.getDatabaseManager().getLeaderboard(100, dtm.getNexus().getCurrentSeason());
+			}, 0, 20 * 120);
+		}
+
 	}
 
 	@Override
@@ -34,7 +37,7 @@ public class TopCommand implements CommandExecutor {
 			try {
 				count = Integer.parseInt(args[0]);
 			} catch (Exception e) {
-				sender.sendMessage("/top [määrä] [season]");
+				sender.sendMessage("/top [määrä] [kausi]");
 			}
 		}
 
@@ -43,7 +46,7 @@ public class TopCommand implements CommandExecutor {
 			try {
 				season = Integer.parseInt(args[1]);
 			} catch (Exception e) {
-				sender.sendMessage("/top " + count + " [season]");
+				sender.sendMessage("/top " + count + " [kausi]");
 			}
 		}
 
