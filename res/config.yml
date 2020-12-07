@@ -1,3 +1,4 @@
+season: 1
 mysql:
    server: localhost:3306
    database: DTM

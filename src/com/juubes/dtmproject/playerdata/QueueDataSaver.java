@@ -15,6 +15,9 @@ public class QueueDataSaver {
 	private Queue<DTMPlayerData> queuedData = new LinkedBlockingQueue<>();
 	private final DTM dtm;
 
+	public static final String SAVE_STATS_SQL = "INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)";
+	public static final String SAVE_PLAYERDATA_SQL = "INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak, EloRating) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak), EloRating = VALUES(EloRating)";
+
 	public QueueDataSaver(DTM dtm) {
 		this.dtm = dtm;
 	}
@@ -23,50 +26,44 @@ public class QueueDataSaver {
 		Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
 			if (queuedData.size() == 0)
 				return;
-			try (Connection conn = dtm.getDatabaseManager().getHDS().getConnection()) {
+			try (Connection conn = dtm.getDataHandler().getHDS().getConnection()) {
 				DTMPlayerData data;
-				while ((data = queuedData.poll()) != null) {
-					System.out.println("Saving playerdata for " + data.getLastSeenName());
-					try (PreparedStatement stmt = conn.prepareStatement(
-							"INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak, EloRating) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak), EloRating = VALUES(EloRating)")) {
-						stmt.setString(1, data.getUUID().toString());
-						stmt.setString(2, data.getLastSeenName());
-						stmt.setString(3, data.getPrefix());
-						stmt.setInt(4, data.getEmeralds());
-						stmt.setInt(5, data.getKillStreak());
-						stmt.setDouble(6, data.getEloRating());
-						stmt.execute();
-					} catch (SQLException e) {
-						e.printStackTrace();
-						queuedData.offer(data);
-						break;
+				try (PreparedStatement stmt1 = conn.prepareStatement(SAVE_PLAYERDATA_SQL);
+						PreparedStatement stmt2 = conn.prepareStatement(SAVE_STATS_SQL)) {
+
+					while ((data = queuedData.poll()) != null) {
+						System.out.println("Saving playrerdata for " + data.lastSeenName);
+						stmt1.setString(1, data.uuid.toString());
+						stmt1.setString(2, data.lastSeenName);
+						stmt1.setString(3, data.prefix);
+						stmt1.setInt(4, data.emeralds);
+						stmt1.setInt(5, data.killStreak);
+						stmt1.setDouble(6, data.eloRating);
+						stmt1.addBatch();
+
+						// TODO: Only saves current season
+						DTMSeasonStats stats = data.seasonStats.get(dtm.getSeason());
+						stmt2.setString(1, stats.uuid.toString());
+						stmt2.setInt(2, dtm.getSeason());
+						stmt2.setInt(3, stats.kills);
+						stmt2.setInt(4, stats.deaths);
+						stmt2.setInt(5, stats.monuments);
+						stmt2.setInt(6, stats.wins);
+						stmt2.setInt(7, stats.losses);
+						stmt2.setLong(8, stats.playTimeWon);
+						stmt2.setLong(9, stats.playTimeLost);
+						stmt2.setInt(10, stats.longestKillStreak);
+						stmt2.addBatch();
 					}
-					DTMSeasonStats stats = data.getSeasonStats();
-					try (PreparedStatement stmt = conn.prepareStatement(
-							"INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`)"
-									+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
-									+ "Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)")) {
-						stmt.setString(1, stats.getUUID().toString());
-						stmt.setInt(2, dtm.getNexus().getCurrentSeason());
-						stmt.setInt(3, stats.kills);
-						stmt.setInt(4, stats.deaths);
-						stmt.setInt(5, stats.monuments);
-						stmt.setInt(6, stats.wins);
-						stmt.setInt(7, stats.losses);
-						stmt.setLong(8, stats.playTimeWon);
-						stmt.setLong(9, stats.playTimeLost);
-						stmt.setInt(10, stats.longestKillStreak);
-						stmt.execute();
-					} catch (SQLException e) {
-						e.printStackTrace();
-						queuedData.offer(data);
-						break;
-					}
+					stmt1.executeBatch();
+					stmt2.executeBatch();
+
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}, 20, 20);
+
 	}
 
 	public void queue(DTMPlayerData data) {
@@ -75,7 +72,7 @@ public class QueueDataSaver {
 
 	public boolean isSavingDataFor(UUID uuid) {
 		for (DTMPlayerData data : queuedData) {
-			if (data.getUUID() == uuid)
+			if (data.uuid == uuid)
 				return true;
 		}
 		return false;

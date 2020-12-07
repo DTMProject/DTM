@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.juubes.dtmproject.commands.DTMCommand;
 import com.juubes.dtmproject.commands.SetMonumentCommand;
@@ -20,24 +19,21 @@ import com.juubes.dtmproject.events.FixTeleport;
 import com.juubes.dtmproject.events.PreWorldLoadListener;
 import com.juubes.dtmproject.events.SpawnProtectionListener;
 import com.juubes.dtmproject.events.TeamSpleefListener;
-import com.juubes.dtmproject.playerdata.DTMDatabaseManager;
+import com.juubes.dtmproject.playerdata.DTMDataHandler;
+import com.juubes.dtmproject.setup.DTMGameLogic.DTMGameLogic;
 import com.juubes.dtmproject.shop.ShopCommand;
 import com.juubes.dtmproject.shop.ShopHandler;
-import com.juubes.nexus.InitOptions;
-import com.juubes.nexus.Lang;
 import com.juubes.nexus.Nexus;
-import com.juubes.nexus.commands.CreateMapCommand;
+import com.juubes.nexus.data.AbstractDataHandler;
+import com.juubes.nexus.logic.AbstractLogicHandler;
 
-public class DTM extends JavaPlugin {
-	private final Nexus nexus;
+public class DTM extends Nexus {
 	private final ShopHandler shopHandler;
 	private final DeathHandler deathHandler;
 	private final ScoreboardManager sbManager;
-	private final DTMDatabaseManager dbManager;
 
 	public DTM() {
-		this.nexus = (Nexus) Bukkit.getPluginManager().getPlugin("Nexus");
-		this.dbManager = new DTMDatabaseManager(this);
+		super(new DTMDataHandler(), new DTMGameLogic());
 		this.sbManager = new ScoreboardManager(this);
 		this.deathHandler = new DeathHandler(this);
 		this.shopHandler = new ShopHandler(this);
@@ -71,37 +67,27 @@ public class DTM extends JavaPlugin {
 
 		saveDefaultConfig();
 
-		List<String> maps = nexus.getConfig().getStringList("maps");
-		InitOptions options = new InitOptions(new DTMGameLoader(this), dbManager, maps, null, "./Nexus");
-
-		dbManager.prepareMapSettings(options.getMapIDs());
-		dbManager.initialize();
-
-		Nexus.getAPI().getLang().loadTranslations(this.getResource("lang.yml"));
-
-		nexus.init(options);
+		this.getDataHandler().init();
 
 		sbManager.updateScoreboard();
 
-		// Broadcast map changes not saved
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-			for (CommandSender sender : nexus.getEditModeHandler().getPendingList()) {
-				sender.sendMessage(Lang.get("map-settings-pending"));
-			}
-		}, 20 * 20, 20 * 20);
+		// Broadcast map changes not saved TODO
+//		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+//			for (CommandSender sender : this.getEditModeHandler().getPendingList()) {
+//				sender.sendMessage("§eDTM-mappeja ei ole tallennettu.");
+//			}
+//		}, 20 * 20, 20 * 20);
 
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				this.getDatabaseManager().savePlayerData(p.getUniqueId());
-			}
+			Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
 		}, 3 * 60 * 20, 3 * 60 * 20);
 	}
 
 	@Override
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			this.getDatabaseManager().savePlayerData(p.getUniqueId());
-			p.kickPlayer(Lang.get("server-restarting"));
+			this.getDataHandler().savePlayerData(p.getUniqueId());
+			p.kickPlayer("§ePalvelin käynnistyy uudelleen.");
 		}
 	}
 
@@ -109,12 +95,14 @@ public class DTM extends JavaPlugin {
 		return deathHandler;
 	}
 
-	public Nexus getNexus() {
-		return nexus;
+	@Override
+	public DTMGameLogic getLogicHandler() {
+		return (DTMGameLogic) super.getLogicHandler();
 	}
 
-	public DTMDatabaseManager getDatabaseManager() {
-		return dbManager;
+	@Override
+	public DTMDataHandler getDataHandler() {
+		return (DTMDataHandler) super.getDataHandler();
 	}
 
 	public ScoreboardManager getScoreboardManager() {

@@ -21,7 +21,7 @@ public class ConnectionListener implements Listener {
 
 	@EventHandler
 	public void onAsyncJoin(AsyncPlayerPreLoginEvent e) {
-		dtm.getDatabaseManager().loadPlayerdata(e.getUniqueId(), e.getName());
+		dtm.getDataHandler().loadPlayerdata(e.getUniqueId(), e.getName());
 	}
 
 	@EventHandler
@@ -29,7 +29,7 @@ public class ConnectionListener implements Listener {
 		e.setJoinMessage(null);
 
 		Player p = e.getPlayer();
-		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 
 		if (pd == null) {
 			p.kickPlayer("§ewtf, null playerdata");
@@ -38,7 +38,7 @@ public class ConnectionListener implements Listener {
 
 		// Clear potion effects
 		p.getActivePotionEffects().clear();
-		
+
 		// Setup scoreboard
 		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
 
@@ -58,11 +58,11 @@ public class ConnectionListener implements Listener {
 
 		Player p = e.getPlayer();
 		p.getActivePotionEffects().clear();
-		AbstractPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		AbstractPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getNick());
 
 		dtm.getDeathHandler().clearLastHits(p);
-		dtm.getDatabaseManager().unloadPlayerdata(p.getUniqueId(), true);
+		dtm.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
 	}
 }

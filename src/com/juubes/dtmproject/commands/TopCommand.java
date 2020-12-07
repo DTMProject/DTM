@@ -1,75 +1,75 @@
 package com.juubes.dtmproject.commands;
 
-import java.util.LinkedList;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.juubes.dtmproject.DTM;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.playerdata.DTMSeasonStats;
-import com.juubes.nexus.TopListEntry;
 
 public class TopCommand implements CommandExecutor {
 
 	private final DTM dtm;
-	private LinkedList<TopListEntry> topListCache = new LinkedList<>();
+	// private LinkedList<DTMPlayerData> topListCache = new LinkedList<>();
 
 	public TopCommand(DTM dtm) {
 		this.dtm = dtm;
 
 		// Every 2 minutes, get all data from mysql and sort again
-		for (int i = 0; i < dtm.getNexus().getCurrentSeason(); i++) {
-			Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
-				topListCache = dtm.getDatabaseManager().getLeaderboard(100, dtm.getNexus().getCurrentSeason());
-			}, 0, 20 * 120);
-		}
+		// for (int i = 0; i < dtm.getSeason(); i++) {
+		// Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
+		// topListCache = dtm.getDataHandler().getLeaderboard(100, dtm.getSeason());
+		// }, 0, 20 * 120);
+		// }
 
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
-		int count = 10;
+		int rawCount = 10;
 		if (args.length > 0) {
 			try {
-				count = Integer.parseInt(args[0]);
+				rawCount = Integer.parseInt(args[0]);
 			} catch (Exception e) {
 				sender.sendMessage("/top [määrä] [kausi]");
 			}
 		}
+		final int finalCount = rawCount;
 
-		int season = dtm.getNexus().getCurrentSeason();
+		int rawSeason = dtm.getSeason();
 		if (args.length > 1) {
 			try {
-				season = Integer.parseInt(args[1]);
+				rawSeason = Integer.parseInt(args[1]);
 			} catch (Exception e) {
-				sender.sendMessage("/top " + count + " [kausi]");
+				sender.sendMessage("/top " + finalCount + " [kausi]");
 			}
 		}
+		final int season = rawSeason;
+		// God dammit Java... Rust did shading better
 
-		sender.sendMessage("§eParhaat pelaajat " + season + ". kaudelta: ");
-		int i = 1;
-		for (TopListEntry entry : topListCache) {
-			DTMSeasonStats stats = (DTMSeasonStats) entry.stats;
-			Player possiblePlayer = Bukkit.getPlayer(stats.getUUID());
-			String name;
-			if (possiblePlayer != null && possiblePlayer.isOnline()) {
-				DTMPlayerData data = dtm.getDatabaseManager().getPlayerData(possiblePlayer);
-				name = data.getNick();
-			} else {
-				name = entry.name;
+		sender.sendMessage("§eHaetaan parhaiden pelaajien lista " + season + ". kaudelta...");
+
+		// TODO: Caching
+		Bukkit.getScheduler().runTaskAsynchronously(dtm, () -> {
+			int i = 1;
+			// for (DTMPlayerData entry : topListCache) {
+			for (DTMPlayerData entry : dtm.getDataHandler().getLeaderboard(100, season)) {
+				DTMSeasonStats stats = Objects.requireNonNull(entry.seasonStats.get(season));
+				// Player possiblePlayer = Bukkit.getPlayer(stats.uuid);
+
+				sender.sendMessage("§e" + (i++) + ". " + entry.nick + ": §a" + stats.getSum() + " §c" + stats.kills
+						+ " §4" + stats.deaths + " §7" + stats.getKDRatio());
+				if (i == finalCount + 1)
+					break;
 			}
 
-			sender.sendMessage("§e" + (i++) + ". " + name + ": §a" + stats.getSum() + " §c" + stats.kills + " §4"
-					+ stats.deaths + " §7" + stats.getKDRatio());
-			if (i == count + 1)
-				break;
-		}
+			sender.sendMessage("");
 
-		sender.sendMessage("");
+		});
 		return true;
 	}
 }
