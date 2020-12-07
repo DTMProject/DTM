@@ -1,4 +1,4 @@
-main: com.juubes.dtmproject.DTM
+main: dtmproject.DTM
 name: DTM
 version: ${project.version}
 author: Juubes
