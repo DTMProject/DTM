@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.commands;
+package dtmproject.commands;
 
 import java.util.Set;
 
@@ -9,11 +9,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.setup.Monument;
 import com.juubes.nexus.Lang;
 import com.juubes.nexus.NexusBlockLocation;
 
+import dtmproject.DTM;
+import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
 
 public class SetMonumentCommand implements CommandExecutor {
@@ -36,7 +36,7 @@ public class SetMonumentCommand implements CommandExecutor {
 		}
 
 		Player p = (Player) sender;
-		String editMode = dtm.getNexus().getEditModeHandler().getEditWorld(p);
+		String editMode = dtm.getEditModeHandler().getEditWorld(p);
 		if (args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "/setmonument <team ID> <l|m|r|bl|bm|mr|...> <custom name...>");
 		} else if (args.length == 1) {
@@ -50,13 +50,13 @@ public class SetMonumentCommand implements CommandExecutor {
 			String pos = args[1].toLowerCase();
 			String customName = Joiner.on(' ').join(args).substring(args[0].length() + 2 + args[1].length());
 
-			if (!dtm.getDatabaseManager().isMapCreated(editMode)) {
+			if (!dtm.getDataHandler().isMapCreated(editMode)) {
 				p.sendMessage(String.format(Lang.get("map-not-created"), editMode));
 				return true;
 			}
 
 			boolean found = false;
-			for (String team : dtm.getDatabaseManager().getTeamList(editMode)) {
+			for (String team : dtm.getDataHandler().getTeamList(editMode)) {
 				if (team.equals(teamID))
 					found = true;
 			}
@@ -67,9 +67,9 @@ public class SetMonumentCommand implements CommandExecutor {
 
 			Monument mon = new Monument(new NexusBlockLocation(p.getTargetBlock((Set<Material>) null, 10)), pos,
 					customName);
-			dtm.getDatabaseManager().saveMonument(editMode, teamID, mon.position, mon);
+			dtm.getDataHandler().saveMonument(editMode, teamID, mon.position, mon);
 			sender.sendMessage(Lang.get("monument-saved"));
-			dtm.getNexus().getEditModeHandler().getPendingList().add(sender);
+			dtm.getEditModeHandler().getPendingList().add(sender);
 		}
 		return true;
 	}

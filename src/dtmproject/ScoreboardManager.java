@@ -1,4 +1,4 @@
-package com.juubes.dtmproject;
+package dtmproject;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,11 +11,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
-import com.juubes.dtmproject.setup.DTMTeam;
-import com.juubes.dtmproject.setup.Monument;
 import com.juubes.nexus.events.StartCountdownEvent;
-import com.juubes.nexus.logic.Team;
+
+import dtmproject.setup.DTMTeam;
+import dtmproject.setup.Monument;
 
 public class ScoreboardManager implements Listener {
 	private final DTM dtm;
@@ -32,7 +33,7 @@ public class ScoreboardManager implements Listener {
 		if (obj != null)
 			obj.unregister();
 		obj = globalScoreboard.registerNewObjective("global", "dummy");
-		obj.setDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + dtm.getNexus().getGameLogic().getCurrentGame()
+		obj.setDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + dtm.getGameWorldHandler().getCurrentMap()
 				.getMapDisplayName());
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -41,7 +42,7 @@ public class ScoreboardManager implements Listener {
 		obj.getScore(getSpacer()).setScore(score--);
 
 		int teamSpacerCount = 0;
-		for (Team t : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
+		for (Team t : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
 			DTMTeam team = (DTMTeam) t;
 			obj.getScore(team.getChatColor() + ChatColor.BOLD.toString() + "   " + team.getDisplayName()).setScore(
 					score--);

@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -6,11 +6,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import com.juubes.dtmproject.DTM;
 import com.juubes.nexus.logic.GameState;
-import com.juubes.nexus.logic.Team;
+
+import dtmproject.DTM;
+import dtmproject.setup.DTMTeam;
 
 public class SpawnProtectionListener implements Listener {
 	private final DTM dtm;
@@ -21,14 +23,14 @@ public class SpawnProtectionListener implements Listener {
 
 	@EventHandler
 	public void spawnProtection(BlockBreakEvent e) {
-		if (dtm.getNexus().getGameLogic().getGameState() != GameState.RUNNING)
+		if (dtm.getLogicHandler().getGameState() != GameState.RUNNING)
 			return;
 		Player p = e.getPlayer();
 
-		if (p.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
+		if (p.getWorld() != dtm.getGameWorldHandler().getCurrentMap().getWorld())
 			return;
 		// Spawnprotection
-		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
+		for (DTMTeam team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
@@ -43,13 +45,13 @@ public class SpawnProtectionListener implements Listener {
 
 	@EventHandler
 	public void spawnProtection(BlockPlaceEvent e) {
-		if (dtm.getNexus().getGameLogic().getGameState() != GameState.RUNNING)
+		if (dtm.getLogicHandler().getGameState() != GameState.RUNNING)
 			return;
 		Player p = e.getPlayer();
-		if (p.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
+		if (p.getWorld() != dtm.getGameWorldHandler().getCurrentMap().getWorld())
 			return;
 		// Spawnprotection
-		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
+		for (Team team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();

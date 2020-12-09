@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,8 +12,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
 
 public class ArrowsDestroyBlocks implements Listener {
 
@@ -32,11 +32,11 @@ public class ArrowsDestroyBlocks implements Listener {
 
 		Block hitBlock = e.getHitBlock();
 
-		if (hitBlock.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
+		if (hitBlock.getWorld() != dtm.getGameWorldHandler().getCurrentMap().getWorld())
 			return;
 
 		Player p = (Player) e.getEntity().getShooter();
-		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 
 		if (p == null || !(p instanceof Player)) {
 			// If shooter can't be found, don't break blocks
@@ -44,7 +44,7 @@ public class ArrowsDestroyBlocks implements Listener {
 		} else {
 			for (Player target : Bukkit.getOnlinePlayers()) {
 				// Test if own teammate too close to arrow
-				DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
+				DTMPlayerData targetData = dtm.getDataHandler().getPlayerData(target);
 				boolean tooClose = (target.getLocation().distance(e.getEntity().getLocation()) < 2);
 				boolean ownTeammate = (pd.getTeam() == targetData.getTeam());
 				if (tooClose && ownTeammate) {
@@ -80,11 +80,11 @@ public class ArrowsDestroyBlocks implements Listener {
 
 		Block original = e.getEntity().getLocation().getBlock();
 
-		if (original.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
+		if (original.getWorld() != dtm.getGameWorldHandler().getCurrentMap().getWorld())
 			return;
 
 		Player p = (Player) e.getEntity().getShooter();
-		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 
 		if (p == null || !(p instanceof Player)) {
 			// If shooter can't be found, don't break blocks
@@ -93,7 +93,7 @@ public class ArrowsDestroyBlocks implements Listener {
 		} else {
 			for (Player target : Bukkit.getOnlinePlayers()) {
 				// Test if own teammate too close to arrow
-				DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
+				DTMPlayerData targetData = dtm.getDataHandler().getPlayerData(target);
 				boolean tooClose = (target.getLocation().distance(e.getEntity().getLocation()) < 2);
 				boolean ownTeammate = (pd.getTeam() == targetData.getTeam());
 				if (tooClose && ownTeammate) {

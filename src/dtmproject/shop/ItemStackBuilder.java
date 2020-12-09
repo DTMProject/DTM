@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.shop;
+package dtmproject.shop;
 
 import java.util.ArrayList;
 import java.util.Arrays;

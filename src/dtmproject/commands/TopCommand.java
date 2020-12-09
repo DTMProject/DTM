@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.commands;
+package dtmproject.commands;
 
 import java.util.Objects;
 
@@ -7,9 +7,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
-import com.juubes.dtmproject.playerdata.DTMSeasonStats;
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.playerdata.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
 

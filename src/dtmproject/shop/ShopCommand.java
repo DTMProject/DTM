@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.shop;
+package dtmproject.shop;
 
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
@@ -6,9 +6,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.nexus.logic.GameState;
+
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
 
 public class ShopCommand implements CommandExecutor {
 
@@ -24,7 +25,7 @@ public class ShopCommand implements CommandExecutor {
 			return true;
 
 		Player p = (Player) sender;
-		DTMPlayerData pd = pl.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 		if (pl.getNexus().getGameLogic().getGameState() != GameState.RUNNING) {
 			p.sendMessage("§ePeli ei ole käynnissä.");
 			return true;

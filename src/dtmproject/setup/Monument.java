@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.setup;
+package dtmproject.setup;
 
 import org.bukkit.Material;
 import org.bukkit.World;

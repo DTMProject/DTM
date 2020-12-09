@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.playerdata;
+package dtmproject.playerdata;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,11 +17,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.juubes.dtmproject.DTM;
 import com.juubes.nexus.data.AbstractDataHandler;
 import com.juubes.nexus.data.AbstractMap;
 import com.juubes.nexus.data.AbstractPlayerData;
 import com.zaxxer.hikari.HikariDataSource;
+
+import dtmproject.DTM;
+import lombok.Getter;
 
 public class DTMDataHandler extends AbstractDataHandler {
 
@@ -32,20 +34,24 @@ public class DTMDataHandler extends AbstractDataHandler {
 	private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
 
 	private final DTM pl;
+
 	private final ConcurrentHashMap<String, AbstractMap> mapSettings = new ConcurrentHashMap<>();
 	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
 
+	@Getter
 	private final QueueDataSaver dataSaver;
 
 	private final File mapConfFolder, kitFile;
 
-	private HikariDataSource HDS;
+	@Getter
+	private final HikariDataSource HDS;
 
-	public DTMDataHandler() {
-		this.pl = (DTM) Bukkit.getPluginManager().getPlugin("DTM");
+	public DTMDataHandler(DTM pl) {
+		this.pl = pl;
 		this.mapConfFolder = new File(pl.getDataFolder(), SETTINGS_PATH);
 		this.kitFile = new File(pl.getDataFolder(), KITS_PATH);
 		this.dataSaver = new QueueDataSaver(pl);
+		this.HDS = new HikariDataSource();
 	}
 
 	public void init() {
@@ -58,7 +64,6 @@ public class DTMDataHandler extends AbstractDataHandler {
 		System.out.println("Connecting to " + server + "/" + db + " as user " + user);
 
 		// Initialize HikariCP connection pooling
-		this.HDS = new HikariDataSource();
 		HDS.setPassword(pw);
 		HDS.setUsername(user);
 		HDS.setJdbcUrl("jdbc:mysql://" + server + "/" + db);
@@ -69,16 +74,7 @@ public class DTMDataHandler extends AbstractDataHandler {
 		HDS.setLeakDetectionThreshold(5000);
 		HDS.setMinimumIdle(1);
 		HDS.setMaximumPoolSize(5);
-		try {
-			Connection conn = HDS.getConnection();
-			conn.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
-			}
-			Bukkit.shutdown();
-		}
+
 		// Create tables
 		try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
 			String createTables = IOUtils.toString(pl.getResource("create-tables.sql"));
@@ -89,13 +85,19 @@ public class DTMDataHandler extends AbstractDataHandler {
 			stmt.executeBatch();
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
+			}
+			Bukkit.shutdown();
 		}
 
 		dataSaver.init();
 	}
 
-	public HikariDataSource getHDS() {
-		return HDS;
+	@Override
+	public void loadMaps() {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
@@ -148,9 +150,8 @@ public class DTMDataHandler extends AbstractDataHandler {
 				}
 			}
 
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -185,12 +186,6 @@ public class DTMDataHandler extends AbstractDataHandler {
 	}
 
 	@Override
-	public void loadMaps() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public AbstractMap createMapIfNotExists(String mapID) {
 		// TODO Auto-generated method stub
 		return null;
@@ -208,6 +203,11 @@ public class DTMDataHandler extends AbstractDataHandler {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @return a list of unloaded playerdata with the stats ordered.
+	 */
 	@Override
 	public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {
 		LinkedList<DTMPlayerData> allStats = new LinkedList<>();
@@ -232,8 +232,10 @@ public class DTMDataHandler extends AbstractDataHandler {
 					DTMSeasonStats stats = new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
 							playTimeWon, playTimeLost, longestKillStreak);
 
+					// Emeralds and such isn't even loaded. We don't need that.
 					DTMPlayerData data = new DTMPlayerData(uuid, lastSeenName);
-					data.loadSeasonStats(stats);
+					data.seasonStats.put(stats.season, stats);
+					
 					allStats.add(data);
 				}
 			}

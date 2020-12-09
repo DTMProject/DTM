@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -6,10 +6,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.EloHandler;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
-
+import dtmproject.DTM;
+import dtmproject.EloHandler;
+import dtmproject.playerdata.DTMPlayerData;
 import net.md_5.bungee.api.ChatColor;
 
 public class ChatHandler implements Listener {
@@ -22,20 +21,19 @@ public class ChatHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onChat(AsyncPlayerChatEvent e) {
 		final Player p = e.getPlayer();
-		final DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		final DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p.getUniqueId());
 
-		int points = pd.getSeasonStats().getSum();
-		String prefix = pd.getPrefix();
+		int points = pd.seasonStats.get(dtm.getSeason()).getSum();
 		e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
 
 		// Handle null prefixes
-		String prefixString = prefix == null ? ""
-				: "§8[" + ChatColor.translateAlternateColorCodes('&', prefix) + "§8] ";
+		String prefixString = pd.prefix == null ? ""
+				: "§8[" + ChatColor.translateAlternateColorCodes('&', pd.prefix) + "§8] ";
 
 		// Add Elo rank
-		String eloRank = "§8[" + EloHandler.getEloRank(pd.getEloRating()) + "§8]";
+		String eloRank = "§8[" + EloHandler.getEloRank(pd.eloRating) + "§8]";
 
-		e.setFormat("§8[§b" + points + "§8]" + " " + eloRank + " " + prefixString + pd.getNick() + "§8: §f%2$s");
+		e.setFormat("§8[§b" + points + "§8]" + " " + eloRank + " " + prefixString + pd.lastSeenName + "§8: §f%2$s");
 
 	}
 

@@ -1,66 +1,63 @@
-package com.juubes.dtmproject;
-
-import java.util.List;
+package dtmproject;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 
-import com.juubes.dtmproject.commands.DTMCommand;
-import com.juubes.dtmproject.commands.SetMonumentCommand;
-import com.juubes.dtmproject.commands.TopCommand;
-import com.juubes.dtmproject.events.AnvilPlaceEvent;
-import com.juubes.dtmproject.events.ArrowsDestroyBlocks;
-import com.juubes.dtmproject.events.ChatHandler;
-import com.juubes.dtmproject.events.ConnectionListener;
-import com.juubes.dtmproject.events.DeathHandler;
-import com.juubes.dtmproject.events.DestroyMonumentListener;
-import com.juubes.dtmproject.events.FixTeleport;
-import com.juubes.dtmproject.events.PreWorldLoadListener;
-import com.juubes.dtmproject.events.SpawnProtectionListener;
-import com.juubes.dtmproject.events.TeamSpleefListener;
-import com.juubes.dtmproject.playerdata.DTMDataHandler;
-import com.juubes.dtmproject.setup.DTMGameLogic.DTMGameLogic;
-import com.juubes.dtmproject.shop.ShopCommand;
-import com.juubes.dtmproject.shop.ShopHandler;
 import com.juubes.nexus.Nexus;
-import com.juubes.nexus.data.AbstractDataHandler;
-import com.juubes.nexus.logic.AbstractLogicHandler;
+
+import dtmproject.commands.DTMCommand;
+import dtmproject.commands.SetMonumentCommand;
+import dtmproject.commands.TopCommand;
+import dtmproject.events.AnvilPlaceEvent;
+import dtmproject.events.ArrowsDestroyBlocks;
+import dtmproject.events.ChatHandler;
+import dtmproject.events.ConnectionListener;
+import dtmproject.events.DestroyMonumentListener;
+import dtmproject.events.FixTeleport;
+import dtmproject.events.PreWorldLoadListener;
+import dtmproject.events.SpawnProtectionListener;
+import dtmproject.events.TeamSpleefListener;
+import dtmproject.playerdata.DTMDataHandler;
+import dtmproject.setup.DTMLogicHandler;
+import dtmproject.shop.ShopCommand;
+import dtmproject.shop.ShopHandler;
 
 public class DTM extends Nexus {
 	private final ShopHandler shopHandler;
-	private final DeathHandler deathHandler;
 	private final ScoreboardManager sbManager;
+	private final DTMDataHandler dataHandler;
+	private final DTMLogicHandler logicHandler;
 
 	public DTM() {
-		super(new DTMDataHandler(), new DTMGameLogic());
 		this.sbManager = new ScoreboardManager(this);
-		this.deathHandler = new DeathHandler(this);
 		this.shopHandler = new ShopHandler(this);
+		this.dataHandler = new DTMDataHandler(this);
+		this.logicHandler = new DTMLogicHandler(this);
 	}
 
 	@Override
 	public void onEnable() {
-		Bukkit.getPluginManager().registerEvents(new DestroyMonumentListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new SpawnProtectionListener(this), this);
-		// Bukkit.getPluginManager().registerEvents(new InstakillTNTHandler(this),
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new DestroyMonumentListener(this), this);
+		pm.registerEvents(new SpawnProtectionListener(this), this);
+		// pm.registerEvents(new InstakillTNTHandler(this),
 		// this);
-		Bukkit.getPluginManager().registerEvents(new ArrowsDestroyBlocks(this), this);
-		Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
-		Bukkit.getPluginManager().registerEvents(new AnvilPlaceEvent(), this);
-		Bukkit.getPluginManager().registerEvents(new FixTeleport(), this);
+		pm.registerEvents(new ArrowsDestroyBlocks(this), this);
+		pm.registerEvents(new ConnectionListener(this), this);
+		pm.registerEvents(new TeamSpleefListener(this), this);
+		pm.registerEvents(new ChatHandler(this), this);
+		pm.registerEvents(new AnvilPlaceEvent(), this);
+		pm.registerEvents(new FixTeleport(), this);
 
-		Bukkit.getPluginManager().registerEvents(deathHandler, this);
-		Bukkit.getPluginManager().registerEvents(shopHandler, this);
-		Bukkit.getPluginManager().registerEvents(sbManager, this);
+		// pm.registerEvents(deathHandler, this);
+		pm.registerEvents(shopHandler, this);
+		pm.registerEvents(sbManager, this);
 
 		// Events from Nexus
-		Bukkit.getPluginManager().registerEvents(new PreWorldLoadListener(this), this);
+		pm.registerEvents(new PreWorldLoadListener(this), this);
 
 		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
-		getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
+		// getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
 		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
 		getCommand("shop").setExecutor(new ShopCommand(this));
@@ -72,11 +69,11 @@ public class DTM extends Nexus {
 		sbManager.updateScoreboard();
 
 		// Broadcast map changes not saved TODO
-//		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-//			for (CommandSender sender : this.getEditModeHandler().getPendingList()) {
-//				sender.sendMessage("§eDTM-mappeja ei ole tallennettu.");
-//			}
-//		}, 20 * 20, 20 * 20);
+		// Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+		// for (CommandSender sender : this.getEditModeHandler().getPendingList()) {
+		// sender.sendMessage("§eDTM-mappeja ei ole tallennettu.");
+		// }
+		// }, 20 * 20, 20 * 20);
 
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
 			Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
@@ -85,27 +82,20 @@ public class DTM extends Nexus {
 
 	@Override
 	public void onDisable() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			this.getDataHandler().savePlayerData(p.getUniqueId());
-			p.kickPlayer("§ePalvelin käynnistyy uudelleen.");
-		}
-	}
-
-	public DeathHandler getDeathHandler() {
-		return deathHandler;
+		super.onDisable();
 	}
 
 	@Override
-	public DTMGameLogic getLogicHandler() {
-		return (DTMGameLogic) super.getLogicHandler();
+	public DTMLogicHandler getLogicHandler() {
+		return logicHandler;
 	}
 
 	@Override
 	public DTMDataHandler getDataHandler() {
-		return (DTMDataHandler) super.getDataHandler();
+		return dataHandler;
 	}
 
-	public ScoreboardManager getScoreboardManager() {
+	public ScoreboardManager getScoreboardHandler() {
 		return sbManager;
 	}
 

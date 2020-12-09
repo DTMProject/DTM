@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.shop;
+package dtmproject.shop;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,8 +13,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
 
 public class ShopHandler implements Listener {
 	private final DTM pl;
@@ -89,7 +89,7 @@ public class ShopHandler implements Listener {
 
 		int slot = e.getSlot();
 		ShopItem shopItem = itemsInShop[slot];
-		DTMPlayerData pd = pl.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 
 		// TODO: Nullpointer below
 		if (shopItem.getPrice() > pd.getEmeralds()) {

@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.setup;
+package dtmproject.setup;
 
 import java.util.HashMap;
 import java.util.Set;

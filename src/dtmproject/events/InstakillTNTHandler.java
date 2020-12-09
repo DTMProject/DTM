@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -16,11 +16,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
-import com.juubes.nexus.logic.Team;
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
 
 public class InstakillTNTHandler implements Listener {
 
@@ -39,7 +39,7 @@ public class InstakillTNTHandler implements Listener {
 		if (b.getType() != Material.TNT)
 			return;
 
-		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(e.getPlayer());
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(e.getPlayer());
 
 		Team team = pd.getTeam();
 		if (team == null) {
@@ -52,7 +52,7 @@ public class InstakillTNTHandler implements Listener {
 		Location tntLocation = b.getLocation().clone();
 		tntLocation.add(new Vector(0.5, 0.5, 0.5));
 
-		World world = dtm.getNexus().getGameLogic().getCurrentGame().getWorld();
+		World world = dtm.getGameWorldHandler().getCurrentMap().getWorld();
 		TNTPrimed tnt = (TNTPrimed) world.spawnEntity(b.getLocation(), EntityType.PRIMED_TNT);
 		tnt.setFuseTicks(80);
 		tnts.put(tnt.getUniqueId(), e.getPlayer().getUniqueId());
@@ -75,7 +75,7 @@ public class InstakillTNTHandler implements Listener {
 
 		int killedTeammates = 0;
 		UUID exploderUUID = tnts.get(tnt.getUniqueId());
-		DTMPlayerData exploderData = dtm.getDatabaseManager().getPlayerData(exploderUUID);
+		DTMPlayerData exploderData = dtm.getDataHandler().getPlayerData(exploderUUID);
 		// Instakill 10 block radius
 		for (Player target : Bukkit.getOnlinePlayers()) {
 			if (target.getUniqueId() == exploderUUID)
@@ -83,7 +83,7 @@ public class InstakillTNTHandler implements Listener {
 			if (target.getLocation().distance(tnt.getLocation()) > 7)
 				continue;
 
-			DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target.getUniqueId());
+			DTMPlayerData targetData = dtm.getDataHandler().getPlayerData(target.getUniqueId());
 			if (targetData == null)
 				continue;
 

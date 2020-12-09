@@ -1,17 +1,15 @@
-package com.juubes.dtmproject.commands;
+package dtmproject.commands;
 
 import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.scoreboard.Team;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.setup.DTMTeam;
-import com.juubes.dtmproject.setup.Monument;
-import com.juubes.nexus.Lang;
-import com.juubes.nexus.logic.Team;
-
+import dtmproject.DTM;
+import dtmproject.setup.DTMTeam;
+import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
 
 public class DTMCommand implements CommandExecutor {
@@ -36,12 +34,12 @@ public class DTMCommand implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("reload")) {
 				reloadConfig();
 
-				sender.sendMessage(Lang.get("settings-reloaded"));
+				sender.sendMessage("§eSettings reloaded.");
 			} else if (args[0].equalsIgnoreCase("status")) {
-				sender.sendMessage(ChatColor.AQUA + "DTM gamestatus: " + ChatColor.GREEN + dtm.getNexus().getGameLogic()
+				sender.sendMessage(ChatColor.AQUA + "DTM gamestatus: " + ChatColor.GREEN + dtm.getLogicHandler()
 						.getGameState().name());
 				sender.sendMessage(ChatColor.AQUA + "  Teams:");
-				for (Team nexusTeam : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
+				for (Team nexusTeam : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
 					DTMTeam team = (DTMTeam) nexusTeam;
 					sender.sendMessage("    " + team.getChatColor() + ChatColor.BOLD + team.getDisplayName());
 					for (Monument mon : team.getMonuments()) {
@@ -50,14 +48,13 @@ public class DTMCommand implements CommandExecutor {
 					sender.sendMessage("");
 				}
 			} else if (args[0].equalsIgnoreCase("save")) {
-				sender.sendMessage(Lang.get("saving-config"));
-				for (String mapID : dtm.getDatabaseManager().getMaps()) {
-					dtm.getDatabaseManager().saveMapSettings(mapID);
-					sender.sendMessage(String.format(Lang.get("config-saved-for-map"), mapID));
+				sender.sendMessage("§eSaving maps...");
+				for (String mapID : dtm.getDataHandler().getMaps()) {
+					dtm.getDataHandler().saveMapSettings(mapID);
+					sender.sendMessage("§eSettings saved for map: " + mapID);
 				}
-				sender.sendMessage("§eUudelleenladataan...");
 				reloadConfig();
-				sender.sendMessage(Lang.get("ready"));
+				sender.sendMessage("§eConfig reloaded.");
 
 			}
 		}
@@ -65,9 +62,9 @@ public class DTMCommand implements CommandExecutor {
 	}
 
 	public void reloadConfig() {
-		dtm.getNexus().reloadConfig();
-		List<String> maps = dtm.getNexus().getConfig().getStringList("maps");
-		dtm.getDatabaseManager().prepareMapSettings(maps.toArray(new String[maps.size()]));
-		dtm.getNexus().getEditModeHandler().getPendingList().clear();
+		dtm.reloadConfig();
+		List<String> maps = dtm.getConfig().getStringList("maps");
+		dtm.getDataHandler().prepareMapSettings(maps.toArray(new String[maps.size()]));
+		dtm.getEditModeHandler().getPendingList().clear();
 	}
 }

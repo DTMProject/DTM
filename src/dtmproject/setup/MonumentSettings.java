@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.setup;
+package dtmproject.setup;
 
 import com.juubes.nexus.NexusLocation;
 

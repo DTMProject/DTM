@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.playerdata;
+package dtmproject.playerdata;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.bukkit.Bukkit;
 
-import com.juubes.dtmproject.DTM;
+import dtmproject.DTM;
 
 public class QueueDataSaver {
 	private Queue<DTMPlayerData> queuedData = new LinkedBlockingQueue<>();

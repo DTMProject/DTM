@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import java.util.HashMap;
 
@@ -12,9 +12,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.nexus.events.StartCountdownEvent;
+
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
 
 public class TeamSpleefListener implements Listener {
 
@@ -29,7 +30,7 @@ public class TeamSpleefListener implements Listener {
 	public void stopSpleef(BlockBreakEvent e) {
 		Player p = e.getPlayer();
 		Location blockBroken = e.getBlock().getLocation();
-		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 
 		if (pd.getTeam() == null)
 			return;

@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -32,11 +32,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
-import com.juubes.dtmproject.setup.DTMTeam;
-import com.juubes.dtmproject.setup.Monument;
 import com.juubes.nexus.NexusLocation;
+
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.setup.DTMTeam;
+import dtmproject.setup.Monument;
 
 public class DeathHandler implements Listener {
 	private final DTM dtm;
@@ -213,17 +214,17 @@ public class DeathHandler implements Listener {
 		if (e.getMessage().equals("/teams")) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§ePelaajamäärät:");
-			for (Team team : dtm.getLogicHandler().getCurrentGame().getTeams())
+			for (Team team : dtm.getGameWorldHandler().getCurrentMap().getTeams())
 				e.getPlayer().sendMessage(team.getDisplayName() + ": " + team.getPlayers().size());
 		} else if (e.getMessage().equals("/restoremonuments") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
-			for (Team team : dtm.getLogicHandler().getCurrentGame().getTeams()) {
+			for (Team team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
 				for (Monument mon : ((DTMTeam) team).getMonuments()) {
-					mon.repair(dtm.getLogicHandler().getCurrentGame().getWorld());
+					mon.repair(dtm.getGameWorldHandler().getCurrentMap().getWorld());
 				}
 			}
 
-			dtm.getScoreboardManager().updateScoreboard();
+			dtm.getScoreboardHandler().updateScoreboard();
 		} else if (e.getMessage().equals("/ram") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§e" + ((int) ((Runtime.getRuntime().maxMemory() - Runtime.getRuntime()
@@ -328,8 +329,8 @@ public class DeathHandler implements Listener {
 			if (e.getPlayer().getGameMode() == GameMode.SURVIVAL)
 				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(), DamageCause.VOID, 100));
 			else
-				e.getPlayer().teleport(dtm.getLogicHandler().getCurrentGame().getLobby().toLocation(dtm
-						.getLogicHandler().getCurrentGame().getWorld()));
+				e.getPlayer().teleport(dtm.getGameWorldHandler().getCurrentMap().getLobby().toLocation(dtm
+						.getLogicHandler().getCurrentMap().getWorld()));
 		}
 	}
 

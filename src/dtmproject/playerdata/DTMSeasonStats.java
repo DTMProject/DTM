@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.playerdata;
+package dtmproject.playerdata;
 
 import java.text.NumberFormat;
 import java.util.UUID;

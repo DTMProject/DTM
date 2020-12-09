@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.shop;
+package dtmproject.shop;
 
 import org.bukkit.inventory.ItemStack;
 

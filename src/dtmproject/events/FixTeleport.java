@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

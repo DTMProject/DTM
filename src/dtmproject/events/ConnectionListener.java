@@ -1,4 +1,4 @@
-package com.juubes.dtmproject.events;
+package dtmproject.events;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -8,9 +8,10 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.nexus.data.AbstractPlayerData;
+
+import dtmproject.DTM;
+import dtmproject.playerdata.DTMPlayerData;
 
 public class ConnectionListener implements Listener {
 	private final DTM dtm;
@@ -40,7 +41,7 @@ public class ConnectionListener implements Listener {
 		p.getActivePotionEffects().clear();
 
 		// Setup scoreboard
-		p.setScoreboard(dtm.getScoreboardManager().getGlobalScoreboard());
+		p.setScoreboard(dtm.getScoreboardHandler().getGlobalScoreboard());
 
 		// Update LastSeenName
 		pd.setLastSeenName(p.getName());
