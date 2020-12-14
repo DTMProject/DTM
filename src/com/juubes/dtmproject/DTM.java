@@ -11,7 +11,6 @@ import com.juubes.dtmproject.commands.DTMCommand;
 import com.juubes.dtmproject.commands.SetMonumentCommand;
 import com.juubes.dtmproject.commands.TopCommand;
 import com.juubes.dtmproject.events.AnvilPlaceEvent;
-import com.juubes.dtmproject.events.ArrowsDestroyBlocks;
 import com.juubes.dtmproject.events.ChatHandler;
 import com.juubes.dtmproject.events.ConnectionListener;
 import com.juubes.dtmproject.events.DeathHandler;
@@ -49,7 +48,8 @@ public class DTM extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new SpawnProtectionListener(this), this);
 		// Bukkit.getPluginManager().registerEvents(new InstakillTNTHandler(this),
 		// this);
-		Bukkit.getPluginManager().registerEvents(new ArrowsDestroyBlocks(this), this);
+		// Bukkit.getPluginManager().registerEvents(new ArrowsDestroyBlocks(this),
+		// this);
 		Bukkit.getPluginManager().registerEvents(new ConnectionListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new TeamSpleefListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new ChatHandler(this), this);
@@ -75,7 +75,7 @@ public class DTM extends JavaPlugin {
 		InitOptions options = new InitOptions(new DTMGameLoader(this), dbManager, maps, null, "./Nexus");
 
 		dbManager.prepareMapSettings(options.getMapIDs());
-		dbManager.initialize();
+		dbManager.loadCache();
 
 		Nexus.getAPI().getLang().loadTranslations(this.getResource("lang.yml"));
 

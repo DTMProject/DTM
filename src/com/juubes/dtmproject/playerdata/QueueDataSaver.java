@@ -28,13 +28,12 @@ public class QueueDataSaver {
 				while ((data = queuedData.poll()) != null) {
 					System.out.println("Saving playerdata for " + data.getLastSeenName());
 					try (PreparedStatement stmt = conn.prepareStatement(
-							"INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak, EloRating) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak), EloRating = VALUES(EloRating)")) {
+							"INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak)")) {
 						stmt.setString(1, data.getUUID().toString());
 						stmt.setString(2, data.getLastSeenName());
 						stmt.setString(3, data.getPrefix());
 						stmt.setInt(4, data.getEmeralds());
 						stmt.setInt(5, data.getKillStreak());
-						stmt.setDouble(6, data.getEloRating());
 						stmt.execute();
 					} catch (SQLException e) {
 						e.printStackTrace();

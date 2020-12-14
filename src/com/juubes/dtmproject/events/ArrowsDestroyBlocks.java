@@ -24,54 +24,6 @@ public class ArrowsDestroyBlocks implements Listener {
 	}
 
 	@EventHandler
-	public void onArrowHit2(ProjectileHitEvent e) {
-		if (e.getEntity().getType() != EntityType.ARROW)
-			return;
-
-		Set<Block> blocksAffected = new HashSet<>();
-
-		Block hitBlock = e.getHitBlock();
-
-		if (hitBlock.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
-			return;
-
-		Player p = (Player) e.getEntity().getShooter();
-		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);
-
-		if (p == null || !(p instanceof Player)) {
-			// If shooter can't be found, don't break blocks
-			return;
-		} else {
-			for (Player target : Bukkit.getOnlinePlayers()) {
-				// Test if own teammate too close to arrow
-				DTMPlayerData targetData = dtm.getDatabaseManager().getPlayerData(target);
-				boolean tooClose = (target.getLocation().distance(e.getEntity().getLocation()) < 2);
-				boolean ownTeammate = (pd.getTeam() == targetData.getTeam());
-				if (tooClose && ownTeammate) {
-					return;
-				}
-
-				/* A little nerf */
-				if (hitBlock.getType() == Material.WOOD) {
-					// Give spleefer points
-					if (targetData.getTeam() != null && targetData.getTeam() != pd.getTeam()) {
-						targetData.setLastDamager(p);
-					}
-				} else
-					return;
-			}
-		}
-
-		if (hitBlock.getType() != Material.WOOD)
-			return;
-		hitBlock.breakNaturally();
-
-		// TODO Check for teamspleef
-
-		e.getEntity().remove();
-	}
-
-	// @EventHandler
 	public void onArrowHit(ProjectileHitEvent e) {
 		if (e.getEntity().getType() != EntityType.ARROW)
 			return;
@@ -82,6 +34,15 @@ public class ArrowsDestroyBlocks implements Listener {
 
 		if (original.getWorld() != dtm.getNexus().getGameLogic().getCurrentGame().getWorld())
 			return;
+
+		blocksAffected.add(original);
+		for (int i = -1; i < 3; i++) {
+			for (int j = -1; j < 3; j++) {
+				for (int j2 = -1; j2 < 3; j2++) {
+					blocksAffected.add(original.getRelative(i, j, j2));
+				}
+			}
+		}
 
 		Player p = (Player) e.getEntity().getShooter();
 		DTMPlayerData pd = dtm.getDatabaseManager().getPlayerData(p);

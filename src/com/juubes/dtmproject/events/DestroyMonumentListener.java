@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.juubes.dtmproject.DTM;
-import com.juubes.dtmproject.EloHandler;
 import com.juubes.dtmproject.playerdata.DTMPlayerData;
 import com.juubes.dtmproject.setup.DTMTeam;
 import com.juubes.dtmproject.setup.Monument;
@@ -48,7 +47,7 @@ public class DestroyMonumentListener implements Listener {
 			} else {
 				if (p.getGameMode() != GameMode.CREATIVE) {
 					p.sendMessage(
-							"§eEt ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
+							"§eEt ole tiimissä. Ole hyvä§, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
 					e.setCancelled(true);
 				}
 			}
@@ -168,9 +167,7 @@ public class DestroyMonumentListener implements Listener {
 			p.setGameMode(GameMode.SPECTATOR);
 
 		// 50 points to the winner team, 15 to losers
-		// Calculate Elo ratings
-		Team[] allTeams = dtm.getNexus().getGameLogic().getCurrentGame().getTeams();
-		for (Team team : allTeams) {
+		for (Team team : dtm.getNexus().getGameLogic().getCurrentGame().getTeams()) {
 			for (Player p : team.getPlayers()) {
 				DTMPlayerData data = dtm.getDatabaseManager().getPlayerData(p);
 				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - dtm.getNexus().getGameLogic()
@@ -194,8 +191,6 @@ public class DestroyMonumentListener implements Listener {
 				}
 			}
 		}
-
-//		EloHandler.updateEloRating(winner, allTeams);
 		dtm.getNexus().getGameLogic().restartGame();
 		dtm.getNexus().getGameLogic().getCurrentGame().setEnded(true);
 	}

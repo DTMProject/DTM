@@ -41,11 +41,7 @@ import com.juubes.nexus.TopListEntry;
 import com.juubes.nexus.TopListEntryTotal;
 import com.juubes.nexus.data.AbstractDatabaseManager;
 import com.juubes.nexus.data.AbstractSeasonStats;
-import com.juubes.nexus.logic.Team;
 import com.zaxxer.hikari.HikariDataSource;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public class DTMDatabaseManager extends AbstractDatabaseManager {
 	private final DTM dtm;
@@ -73,7 +69,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 	/**
 	 * Loads all playerdata and other important stuff to memory from MySQL.
 	 */
-	public void initialize() {
+	public void loadCache() {
 		// Load config for MySQL credentials
 		FileConfiguration conf = dtm.getConfig();
 		String pw = conf.getString("mysql.password");
@@ -419,7 +415,7 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 		try (Connection conn = HDS.getConnection()) {
 			try (PreparedStatement stmt1 = conn.prepareStatement(
-					"SELECT Prefix, Emeralds, Nick, KillStreak, EloRating FROM PlayerData WHERE UUID = ?")) {
+					"SELECT Prefix, Emeralds, Nick, KillStreak FROM PlayerData WHERE UUID = ?")) {
 				stmt1.setString(1, uuid.toString());
 
 				try (ResultSet rs = stmt1.executeQuery()) {
@@ -428,10 +424,9 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 						int emeralds = rs.getInt("Emeralds");
 						String nick = rs.getString("Nick");
 						int killStreak = rs.getInt("KillStreak");
-						double eloRating = rs.getDouble("EloRating");
 
 						loadedPlayerdata.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName, prefix, emeralds, nick,
-								killStreak, eloRating));
+								killStreak));
 					} else {
 						loadedPlayerdata.put(uuid, new DTMPlayerData(nexus, uuid, lastSeenName));
 					}
@@ -476,57 +471,6 @@ public class DTMDatabaseManager extends AbstractDatabaseManager {
 
 	public HikariDataSource getHDS() {
 		return HDS;
-	}
-
-	/**
-	 * Get best game winners in order from all time stats.
-	 */
-	public LinkedList<LevelTopEntry> getLevelTop() {
-		LinkedList<LevelTopEntry> allStats = new LinkedList<>();
-
-		try (Connection conn = HDS.getConnection();
-				PreparedStatement stmt = conn.prepareStatement("SELECT PlayerData.UUID " + "FROM PlayerData "
-						+ "ORDER BY EloRating DESC")) {
-			try (ResultSet rs = stmt.executeQuery()) {
-				int placement = 0;
-				while (rs.next()) {
-					UUID uuid = UUID.fromString(rs.getString("UUID"));
-					allStats.add(new LevelTopEntry(uuid, ++placement));
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return allStats;
-	}
-
-	@AllArgsConstructor
-	static class LevelTopEntry {
-		@Getter
-		private UUID uuid;
-		@Getter
-		private int placement;
-	}
-
-	@Override
-	public void updateOfflineEloRatings() {
-		// Propably updates online players too, but they are overridden after a save.
-		try (Connection conn = HDS.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(
-						"UPDATE PlayerData SET EloRating = EloRating - 1 WHERE EloRating > 500")) {
-			stmt.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void updateOnlineEloRatings(Team winner) {
-		for (DTMPlayerData loadedData : loadedPlayerdata.values()) {
-			if (loadedData.getTeam() == null)
-				continue;
-		}
 	}
 
 }
