@@ -25,7 +25,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import dtmproject.DTM;
 import lombok.Getter;
 
-public class DTMDataHandler extends AbstractDataHandler {
+public class DTMDataHandler {
 
 	public static final String SETTINGS_PATH = "./settings";
 	public static final String KITS_PATH = "./kits.yml";
@@ -35,7 +35,7 @@ public class DTMDataHandler extends AbstractDataHandler {
 
 	private final DTM pl;
 
-	private final ConcurrentHashMap<String, AbstractMap> mapSettings = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, DTMMap> mapSettings = new ConcurrentHashMap<>();
 	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
 
 	@Getter
@@ -186,19 +186,19 @@ public class DTMDataHandler extends AbstractDataHandler {
 	}
 
 	@Override
-	public AbstractMap createMapIfNotExists(String mapID) {
+	public DTMMap createMapIfNotExists(String mapID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AbstractMap getMap(String mapID) {
+	public DTMMap getMap(String mapID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void saveMap(AbstractMap map) {
+	public void saveMap(DTMMap map) {
 		// TODO Auto-generated method stub
 
 	}
@@ -235,7 +235,7 @@ public class DTMDataHandler extends AbstractDataHandler {
 					// Emeralds and such isn't even loaded. We don't need that.
 					DTMPlayerData data = new DTMPlayerData(uuid, lastSeenName);
 					data.seasonStats.put(stats.season, stats);
-					
+
 					allStats.add(data);
 				}
 			}

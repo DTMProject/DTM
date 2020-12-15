@@ -14,7 +14,7 @@ public class MapSettings {
 
 	private final String id;
 	public String displayName;
-	public NexusLocation lobby;
+	public WorldlessLocation lobby;
 	public int ticks;
 	public boolean sortMonumentNames = true;
 
@@ -23,7 +23,7 @@ public class MapSettings {
 		this.loadTeamSettings(teams);
 	}
 
-	public MapSettings(String id, Set<String> teams, String displayName, NexusLocation lobby, int ticks,
+	public MapSettings(String id, Set<String> teams, String displayName, WorldlessLocation lobby, int ticks,
 			boolean sortMonumentNames) {
 		super();
 		this.id = id;
@@ -79,7 +79,7 @@ public class MapSettings {
 		return displayName;
 	}
 
-	public NexusLocation getLobby() {
+	public WorldlessLocation getLobby() {
 		return lobby;
 	}
 
@@ -111,7 +111,7 @@ public class MapSettings {
 		return sortMonumentNames;
 	}
 
-	public void setLobby(NexusLocation lobby) {
+	public void setLobby(WorldlessLocation lobby) {
 		this.lobby = lobby;
 	}
 

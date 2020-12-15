@@ -2,21 +2,31 @@ package dtmproject.setup;
 
 import org.bukkit.ChatColor;
 
-import com.juubes.nexus.Nexus;
-import com.juubes.nexus.NexusLocation;
-import com.juubes.nexus.data.AbstractTeam;
+import dtmproject.WorldlessLocation;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-public class DTMTeam extends AbstractTeam {
+@AllArgsConstructor
+public class DTMTeam {
+
+	@Getter
+	private final String ID;
+
+	@Getter
+	@Setter
+	private String displayName;
+	
+	@Getter
+	@Setter
+	private ChatColor teamColor;
+	
+	@Getter
+	@Setter
+	private WorldlessLocation spawn;
+	
+	@Getter
+	@Setter
 	private Monument[] monuments;
-
-	public DTMTeam(Nexus nexus, String ID, ChatColor teamColor, String displayName, NexusLocation spawn,
-			Monument[] monuments) {
-		super(ID, displayName, teamColor, spawn);
-		this.monuments = monuments;
-	}
-
-	public Monument[] getMonuments() {
-		return monuments;
-	}
 
 }

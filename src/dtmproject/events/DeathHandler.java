@@ -132,7 +132,7 @@ public class DeathHandler implements Listener {
 				return;
 			else {
 				World world = Bukkit.getWorld(dtm.getGameWorldManager().getCurrentMapID());
-				NexusLocation spawn = playerData.team.getSpawn();
+				WorldlessLocation spawn = playerData.team.getSpawn();
 				Location realSpawn = spawn.toLocation(world);
 				p.teleport(realSpawn);
 			}

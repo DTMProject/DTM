@@ -8,11 +8,11 @@ import com.juubes.nexus.NexusLocation;
 
 public class TeamSettings {
 	public ChatColor color;
-	public NexusLocation spawn;
+	public WorldlessLocation spawn;
 	public String ID, displayName;
 	public HashMap<String, MonumentSettings> monumentSettings;
 
-	public TeamSettings(String teamID, ChatColor color, String displayName, NexusLocation spawn,
+	public TeamSettings(String teamID, ChatColor color, String displayName, WorldlessLocation spawn,
 			HashMap<String, MonumentSettings> monumentSettings) {
 		this.ID = teamID;
 		this.color = color;

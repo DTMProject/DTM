@@ -2,11 +2,12 @@ package dtmproject;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
-
-import com.juubes.nexus.Nexus;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import dtmproject.commands.DTMCommand;
+import dtmproject.commands.JoinCommand;
 import dtmproject.commands.SetMonumentCommand;
+import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.TopCommand;
 import dtmproject.events.AnvilPlaceEvent;
 import dtmproject.events.ArrowsDestroyBlocks;
@@ -17,27 +18,50 @@ import dtmproject.events.FixTeleport;
 import dtmproject.events.PreWorldLoadListener;
 import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
+import dtmproject.logic.DTMLogicHandler;
+import dtmproject.logic.GameWorldHandler;
 import dtmproject.playerdata.DTMDataHandler;
-import dtmproject.setup.DTMLogicHandler;
 import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
+import lombok.Getter;
 
-public class DTM extends Nexus {
+public class DTM extends JavaPlugin {
+	@Getter
 	private final ShopHandler shopHandler;
+
+	@Getter
 	private final ScoreboardManager sbManager;
+
+	@Getter
 	private final DTMDataHandler dataHandler;
+
+	@Getter
 	private final DTMLogicHandler logicHandler;
+
+	@Getter
+	private final GameWorldHandler gameWorldHandler;
 
 	public DTM() {
 		this.sbManager = new ScoreboardManager(this);
 		this.shopHandler = new ShopHandler(this);
 		this.dataHandler = new DTMDataHandler(this);
 		this.logicHandler = new DTMLogicHandler(this);
+		this.gameWorldHandler = new GameWorldHandler(this);
 	}
 
 	@Override
 	public void onEnable() {
+
+		getCommand("join").setExecutor(new JoinCommand(this));
+		getCommand("spec").setExecutor(new SpectateCommand(this));
+		getCommand("top").setExecutor(new TopCommand(this));
+		getCommand("shop").setExecutor(new ShopCommand(this));
+
+		// Load playerdata; only runs after reloads
+		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId()));
+
 		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new DestroyMonumentListener(this), this);
 		pm.registerEvents(new SpawnProtectionListener(this), this);
 		// pm.registerEvents(new InstakillTNTHandler(this),
@@ -82,24 +106,11 @@ public class DTM extends Nexus {
 
 	@Override
 	public void onDisable() {
-		super.onDisable();
+		// Save playerdata
+		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
 	}
 
-	@Override
-	public DTMLogicHandler getLogicHandler() {
-		return logicHandler;
-	}
-
-	@Override
-	public DTMDataHandler getDataHandler() {
-		return dataHandler;
-	}
-
-	public ScoreboardManager getScoreboardHandler() {
-		return sbManager;
-	}
-
-	public ShopHandler getShopHandler() {
-		return shopHandler;
+	public int getSeason() {
+		return getConfig().getInt("season");
 	}
 }
