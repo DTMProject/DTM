@@ -9,9 +9,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import com.juubes.nexus.logic.GameState;
-
 import dtmproject.DTM;
+import dtmproject.logic.GameState;
 import dtmproject.setup.DTMTeam;
 
 public class SpawnProtectionListener implements Listener {

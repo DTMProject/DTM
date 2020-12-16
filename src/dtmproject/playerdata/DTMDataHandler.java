@@ -17,8 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.juubes.nexus.data.AbstractDataHandler;
-import com.juubes.nexus.data.AbstractMap;
 import com.juubes.nexus.data.AbstractPlayerData;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -94,7 +92,6 @@ public class DTMDataHandler {
 		dataSaver.init();
 	}
 
-	@Override
 	public void loadMaps() {
 		// TODO Auto-generated method stub
 
@@ -103,7 +100,6 @@ public class DTMDataHandler {
 	/**
 	 * Don't call this method from the server thread. It blocks.
 	 */
-	@Override
 	public synchronized void loadPlayerData(UUID uuid) {
 		try (Connection conn = HDS.getConnection()) {
 			String lastSeenName = Bukkit.getPlayer(uuid).getName();
@@ -156,18 +152,15 @@ public class DTMDataHandler {
 
 	}
 
-	@Override
 	public AbstractPlayerData createIfNotExists(UUID uuid) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public DTMPlayerData getPlayerData(UUID uuid) {
 		return null;
 	}
 
-	@Override
 	public void savePlayerData(UUID uuid) {
 		// TODO Auto-generated method stub
 
@@ -179,25 +172,21 @@ public class DTMDataHandler {
 		unloadPlayerdata(uuid);
 	}
 
-	@Override
 	public void unloadPlayerdata(UUID uuid) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public DTMMap createMapIfNotExists(String mapID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public DTMMap getMap(String mapID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void saveMap(DTMMap map) {
 		// TODO Auto-generated method stub
 

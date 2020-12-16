@@ -1,6 +1,5 @@
 package dtmproject.logic;
 
-import java.util.AbstractMap;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -9,12 +8,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.juubes.nexus.data.AbstractPlayerData;
-import com.juubes.nexus.data.AbstractTeam;
-import com.juubes.nexus.logic.AbstractLogicHandler;
-import com.juubes.nexus.logic.GameState;
-
 import dtmproject.DTM;
+import dtmproject.playerdata.DTMMap;
+import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 
@@ -40,25 +37,25 @@ public class DTMLogicHandler {
 		throw new NotImplementedException();
 	}
 
-	public void endGame(AbstractTeam winnerTeam) {
+	public void endGame(DTMTeam winnerTeam) {
 		throw new NotImplementedException();
 	}
 
 	public void sendPlayerToGame(Player p) {
-		AbstractPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+		throw new NotImplementedException();
 	}
 
 	public void sendToSpectate(Player p) {
-		AbstractPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-		pd.team = null;
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+		pd.setTeam(null);
 
 		p.setGameMode(GameMode.SPECTATOR);
 
 		// Teleport to lobby
-		AbstractMap currentMap = pl.getGameWorldHandler().getCurrentMap();
+		DTMMap currentMap = pl.getGameWorldHandler().getCurrentMap();
 		World currentWorld = pl.getGameWorldHandler().getCurrentWorld();
-		Location lobby = currentMap.lobby.toLocation(currentWorld);
+		Location lobby = currentMap.getLobby().toLocation(currentWorld);
 		p.teleport(lobby);
 
 		if (p.getWorld() != currentWorld)
@@ -67,7 +64,7 @@ public class DTMLogicHandler {
 		if (lobby != null) {
 			p.teleport(lobby);
 		} else {
-			System.err.println("Lobby null for map " + currentMap.displayName);
+			System.err.println("Lobby null for map " + currentMap.getDisplayName());
 			p.teleport(new Location(currentWorld, 0, 100, 0));
 		}
 		p.setGameMode(GameMode.SPECTATOR);
@@ -75,8 +72,9 @@ public class DTMLogicHandler {
 
 		// Handle appropriate nametag colours
 		p.setDisplayName("§7" + p.getName());
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.prefix) + "§8] §7" + p.getName());
-		p.setCustomName(pd.team.teamColor + p.getName());
+		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] §7" + p
+				.getName());
+		p.setCustomName(pd.getTeam().getTeamColor() + p.getName());
 		p.setCustomNameVisible(false);
 
 	}

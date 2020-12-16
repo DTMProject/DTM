@@ -3,20 +3,35 @@ package dtmproject.playerdata;
 import java.text.NumberFormat;
 import java.util.UUID;
 
-import com.juubes.nexus.data.AbstractSeasonStats;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-public class DTMSeasonStats extends AbstractSeasonStats {
+@AllArgsConstructor
+public class DTMSeasonStats {
+	@Getter
+	private final UUID uuid;
 
-	public int monuments;
+	@Getter
+	private final int season;
 
+	@Getter
+	@Setter
+	private int kills, deaths, wins, losses, longestKillStreak;
+
+	@Getter
+	@Setter
+	private long playTimeWon, playTimeLost;
+
+	@Getter
+	@Setter
+	private int monuments;
+
+	/**
+	 * Default constructor. Set's everything to 0.
+	 */
 	public DTMSeasonStats(UUID uuid, int season) {
 		this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0);
-	}
-
-	public DTMSeasonStats(UUID uuid, int season, int kills, int deaths, int monuments, int wins,
-			int losses, long playTimeWon, long playTimeLost, int longestKillStreak) {
-		super(uuid, season, kills, deaths, wins, losses, playTimeWon, playTimeLost, longestKillStreak);
-		this.monuments = monuments;
 	}
 
 	public double getKDRatio() {
@@ -52,4 +67,5 @@ public class DTMSeasonStats extends AbstractSeasonStats {
 		sum += playTimeLost / 1000 / 60;
 		return sum;
 	}
+
 }

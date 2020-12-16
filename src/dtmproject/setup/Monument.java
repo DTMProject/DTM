@@ -3,7 +3,7 @@ package dtmproject.setup;
 import org.bukkit.Material;
 import org.bukkit.World;
 
-import com.juubes.nexus.NexusBlockLocation;
+import dtmproject.NexusBlockLocation;
 
 public class Monument {
 

@@ -7,6 +7,7 @@ import dtmproject.setup.DTMTeam;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @AllArgsConstructor
 public class DTMMap {
@@ -15,13 +16,19 @@ public class DTMMap {
 	private final String id;
 
 	@NonNull
+	@Getter
+	@Setter
 	private String displayName;
 
-	@NonNull
+	@Getter
+	@Setter
 	private WorldlessLocation lobby;
 
-	public int ticks;
+	@Getter
+	@Setter
+	private int ticks;
 
-	public final LinkedHashSet<? extends DTMTeam> teams = new LinkedHashSet<>();
+	@Getter
+	private final LinkedHashSet<? extends DTMTeam> teams = new LinkedHashSet<>();
 
 }

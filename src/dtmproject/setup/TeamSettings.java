@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 
-import com.juubes.nexus.NexusLocation;
+import dtmproject.WorldlessLocation;
 
 public class TeamSettings {
 	public ChatColor color;

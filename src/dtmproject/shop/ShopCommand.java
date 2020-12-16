@@ -6,9 +6,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.juubes.nexus.logic.GameState;
-
 import dtmproject.DTM;
+import dtmproject.logic.GameState;
 import dtmproject.playerdata.DTMPlayerData;
 
 public class ShopCommand implements CommandExecutor {

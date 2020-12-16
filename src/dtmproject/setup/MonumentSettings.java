@@ -1,6 +1,6 @@
 package dtmproject.setup;
 
-import com.juubes.nexus.NexusLocation;
+import dtmproject.WorldlessLocation;
 
 public class MonumentSettings {
 	public WorldlessLocation loc;

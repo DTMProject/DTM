@@ -10,9 +10,9 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
 import com.juubes.nexus.Lang;
-import com.juubes.nexus.NexusBlockLocation;
 
 import dtmproject.DTM;
+import dtmproject.NexusBlockLocation;
 import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
 

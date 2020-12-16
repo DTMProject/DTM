@@ -37,6 +37,9 @@ public class DTM extends JavaPlugin {
 
 	@Getter
 	private final DTMLogicHandler logicHandler;
+	
+	@Getter
+	private final EditModeHandler editModeHandler;
 
 	@Getter
 	private final GameWorldHandler gameWorldHandler;

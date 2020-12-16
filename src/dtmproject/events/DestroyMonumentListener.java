@@ -1,13 +1,9 @@
 package dtmproject.events;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -20,11 +16,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.scoreboard.Team;
 
-import com.google.common.collect.Sets;
 import com.juubes.nexus.data.AbstractTeam;
-import com.juubes.nexus.logic.GameState;
 
 import dtmproject.DTM;
+import dtmproject.logic.GameState;
 import dtmproject.playerdata.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;

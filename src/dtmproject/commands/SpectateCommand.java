@@ -4,8 +4,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.juubes.nexus.Nexus;
-
 import dtmproject.DTM;
 
 public class SpectateCommand implements CommandExecutor {

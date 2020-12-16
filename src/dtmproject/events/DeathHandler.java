@@ -32,9 +32,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
-import com.juubes.nexus.NexusLocation;
-
 import dtmproject.DTM;
+import dtmproject.WorldlessLocation;
+import dtmproject.logic.GameState;
 import dtmproject.playerdata.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
