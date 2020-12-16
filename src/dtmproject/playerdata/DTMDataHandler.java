@@ -97,10 +97,8 @@ public class DTMDataHandler {
 	/**
 	 * Don't call this method from the server thread. It blocks.
 	 */
-	public synchronized void loadPlayerData(UUID uuid) {
+	public void loadPlayerData(UUID uuid, String lastSeenName) {
 		try (Connection conn = HDS.getConnection()) {
-			String lastSeenName = Bukkit.getPlayer(uuid).getName();
-
 			// Load stats
 			HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
 			try (PreparedStatement stmt = conn.prepareStatement(LOAD_PLAYERDATA_STATS_QUERY)) {
@@ -223,9 +221,6 @@ public class DTMDataHandler {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		return allStats;
-
 	}
-
 }

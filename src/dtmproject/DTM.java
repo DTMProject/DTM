@@ -15,6 +15,7 @@ import dtmproject.events.AnvilPlaceListener;
 import dtmproject.events.ArrowsDestroyBlocks;
 import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
+import dtmproject.events.DeathHandler;
 import dtmproject.events.DestroyMonumentListener;
 import dtmproject.events.FixTeleport;
 import dtmproject.events.PreWorldLoadListener;
@@ -48,6 +49,9 @@ public class DTM extends JavaPlugin {
 	@Getter
 	private final GameWorldHandler gameWorldHandler;
 
+	@Getter
+	private final DeathHandler deathHandler;
+
 	public DTM() {
 		this.sbManager = new ScoreboardManager(this);
 		this.shopHandler = new ShopHandler(this);
@@ -55,18 +59,20 @@ public class DTM extends JavaPlugin {
 		this.logicHandler = new DTMLogicHandler(this);
 		this.gameWorldHandler = new GameWorldHandler(this);
 		this.editModeHandler = new EditModeCommand(this);
+		this.deathHandler = new DeathHandler(this);
 	}
 
 	@Override
 	public void onEnable() {
 
+		// TODO: all the commands
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
 		getCommand("shop").setExecutor(new ShopCommand(this));
 
 		// Load playerdata; only runs after reloads
-		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId()));
+		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
 
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new ConnectionListener(this), this);
@@ -81,7 +87,7 @@ public class DTM extends JavaPlugin {
 		pm.registerEvents(new AnvilPlaceListener(), this);
 		pm.registerEvents(new FixTeleport(), this);
 
-		// pm.registerEvents(deathHandler, this);
+		pm.registerEvents(deathHandler, this);
 		pm.registerEvents(shopHandler, this);
 		pm.registerEvents(sbManager, this);
 
@@ -96,7 +102,7 @@ public class DTM extends JavaPlugin {
 
 		saveDefaultConfig();
 
-		this.getDataHandler().init();
+		dataHandler.init();
 
 		sbManager.updateScoreboard();
 

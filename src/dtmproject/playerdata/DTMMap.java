@@ -2,6 +2,8 @@ package dtmproject.playerdata;
 
 import java.util.LinkedHashSet;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import dtmproject.WorldlessLocation;
 import dtmproject.setup.DTMTeam;
 import lombok.AllArgsConstructor;
@@ -41,6 +43,11 @@ public class DTMMap {
 		this.lobby = lobby;
 		this.ticks = ticks;
 		this.teams = teams;
+	}
+
+	public void reset() {
+		// TODO
+		throw new NotImplementedException();
 	}
 
 }

@@ -22,7 +22,7 @@ public class ConnectionListener implements Listener {
 
 	@EventHandler
 	public void onAsyncJoin(AsyncPlayerPreLoginEvent e) {
-		dtm.getDataHandler().loadPlayerdata(e.getUniqueId(), e.getName());
+		dtm.getDataHandler().loadPlayerData(e.getUniqueId(), e.getName());
 	}
 
 	@EventHandler
@@ -48,7 +48,7 @@ public class ConnectionListener implements Listener {
 
 		// Join message
 		if (Bukkit.getOnlinePlayers().size() <= 15)
-			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getNick());
+			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getLastSeenName());
 
 		pd.setTeam(null);
 	}
@@ -59,9 +59,9 @@ public class ConnectionListener implements Listener {
 
 		Player p = e.getPlayer();
 		p.getActivePotionEffects().clear();
-		AbstractPlayerData pd = dtm.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 		if (Bukkit.getOnlinePlayers().size() <= 15)
-			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getNick());
+			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getLastSeenName());
 
 		dtm.getDeathHandler().clearLastHits(p);
 		dtm.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
