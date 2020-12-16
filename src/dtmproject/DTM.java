@@ -9,7 +9,7 @@ import dtmproject.commands.JoinCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.TopCommand;
-import dtmproject.events.AnvilPlaceEvent;
+import dtmproject.events.AnvilPlaceListener;
 import dtmproject.events.ArrowsDestroyBlocks;
 import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
@@ -73,7 +73,7 @@ public class DTM extends JavaPlugin {
 		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new TeamSpleefListener(this), this);
 		pm.registerEvents(new ChatHandler(this), this);
-		pm.registerEvents(new AnvilPlaceEvent(), this);
+		pm.registerEvents(new AnvilPlaceListener(), this);
 		pm.registerEvents(new FixTeleport(), this);
 
 		// pm.registerEvents(deathHandler, this);

@@ -96,4 +96,7 @@ public class DTMPlayerData {
 		return str;
 	}
 
+	public boolean isSpectator() {
+		return this.team == null;
+	}
 }

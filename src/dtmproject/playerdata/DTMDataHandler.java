@@ -152,9 +152,13 @@ public class DTMDataHandler {
 
 	}
 
-	public AbstractPlayerData createIfNotExists(UUID uuid) {
+	public DTMPlayerData createIfNotExists(UUID uuid) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public DTMPlayerData getPlayerData(Player p) {
+		return this.getPlayerData(p.getUniqueId());
 	}
 
 	public DTMPlayerData getPlayerData(UUID uuid) {

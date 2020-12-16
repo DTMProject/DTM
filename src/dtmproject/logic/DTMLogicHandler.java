@@ -79,8 +79,9 @@ public class DTMLogicHandler {
 
 	}
 
-	public void setPlayerToSmallestTeam(Player p) {
-
+	public void restartGame() {
+		// TODO
+		
 	}
 
 }

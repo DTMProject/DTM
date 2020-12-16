@@ -4,14 +4,25 @@ import org.bukkit.Material;
 import org.bukkit.World;
 
 import dtmproject.NexusBlockLocation;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Monument {
+	@Getter
+	@Setter
+	private NexusBlockLocation block;
 
-	public NexusBlockLocation block;
-	public String position;
-	public String customName;
+	@Getter
+	@Setter
+	private String position;
 
-	public boolean broken = false;
+	@Getter
+	@Setter
+	private String customName;
+
+	@Getter
+	@Setter
+	private boolean broken = false;
 
 	public static char getSymbol() {
 		return (char) 0x1f844;
