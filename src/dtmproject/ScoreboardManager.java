@@ -34,7 +34,7 @@ public class ScoreboardManager implements Listener {
 			obj.unregister();
 		obj = globalScoreboard.registerNewObjective("global", "dummy");
 		obj.setDisplayName(ChatColor.GOLD + ChatColor.BOLD.toString() + dtm.getGameWorldHandler().getCurrentMap()
-				.getMapDisplayName());
+				.getDisplayName());
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
 		int score = 69;
@@ -42,27 +42,21 @@ public class ScoreboardManager implements Listener {
 		obj.getScore(getSpacer()).setScore(score--);
 
 		int teamSpacerCount = 0;
-		for (Team t : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
-			DTMTeam team = (DTMTeam) t;
-			obj.getScore(team.getChatColor() + ChatColor.BOLD.toString() + "   " + team.getDisplayName()).setScore(
+		for (DTMTeam team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
+			obj.getScore(team.getTeamColor() + ChatColor.BOLD.toString() + "   " + team.getDisplayName()).setScore(
 					score--);
 			obj.getScore(getSpacer()).setScore(score--);
 
-			Arrays.sort(team.getMonuments(), new Comparator<Monument>() {
-				@Override
-				public int compare(Monument o1, Monument o2) {
-					return o1.customName.compareTo(o2.customName);
-				}
-			});
+			Arrays.sort(team.getMonuments(), (o1, o2) -> o1.getCustomName().compareTo(o2.getCustomName()));
 
 			for (Monument mon : team.getMonuments()) {
-				if (mon.broken)
-					obj.getScore(ChatColor.GRAY + ChatColor.BOLD.toString() + "    " + mon.customName + getSpacer(
+				if (mon.isBroken())
+					obj.getScore(ChatColor.GRAY + ChatColor.BOLD.toString() + "    " + mon.getCustomName() + getSpacer(
 							teamSpacerCount)).setScore(score--);
 				else {
 					// There can be two "blacked out" or destroyed but similarly named monuments
-					String name = team.getChatColor() + ChatColor.BOLD.toString() + "    " + mon.customName + getSpacer(
-							teamSpacerCount);
+					String name = team.getTeamColor() + ChatColor.BOLD.toString() + "    " + mon.getCustomName()
+							+ getSpacer(teamSpacerCount);
 					obj.getScore(name).setScore(score--);
 				}
 			}

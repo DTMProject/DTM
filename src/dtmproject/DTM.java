@@ -1,10 +1,12 @@
 package dtmproject;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dtmproject.commands.DTMCommand;
+import dtmproject.commands.EditModeCommand;
 import dtmproject.commands.JoinCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
@@ -26,6 +28,8 @@ import dtmproject.shop.ShopHandler;
 import lombok.Getter;
 
 public class DTM extends JavaPlugin {
+	public static final String DEFAULT_PREFIX = "§eDTM-Jonne";
+
 	@Getter
 	private final ShopHandler shopHandler;
 
@@ -37,9 +41,9 @@ public class DTM extends JavaPlugin {
 
 	@Getter
 	private final DTMLogicHandler logicHandler;
-	
+
 	@Getter
-	private final EditModeHandler editModeHandler;
+	private final EditModeCommand editModeHandler;
 
 	@Getter
 	private final GameWorldHandler gameWorldHandler;
@@ -50,6 +54,7 @@ public class DTM extends JavaPlugin {
 		this.dataHandler = new DTMDataHandler(this);
 		this.logicHandler = new DTMLogicHandler(this);
 		this.gameWorldHandler = new GameWorldHandler(this);
+		this.editModeHandler = new EditModeCommand(this);
 	}
 
 	@Override
@@ -115,5 +120,9 @@ public class DTM extends JavaPlugin {
 
 	public int getSeason() {
 		return getConfig().getInt("season");
+	}
+
+	public String[] getMapList() {
+		throw new NotImplementedException();
 	}
 }

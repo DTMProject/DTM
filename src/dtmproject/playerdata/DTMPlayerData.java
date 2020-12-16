@@ -49,7 +49,7 @@ public class DTMPlayerData {
 	private long lastRespawn;
 
 	public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
-		this(dtm, uuid, lastSeenName, 0, null, 0, new );p
+		this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, new HashMap<>());
 	}
 
 	// TODO: injektaa plugin instanssi
@@ -65,7 +65,11 @@ public class DTMPlayerData {
 	}
 
 	public DTMSeasonStats getSeasonStats() {
-		return seasonStats.get(dtm.getSeason());
+		return getSeasonStats(dtm.getSeason());
+	}
+
+	public DTMSeasonStats getSeasonStats(int season) {
+		return seasonStats.get(season);
 	}
 
 	public DTMTotalStats getTotalStats() {

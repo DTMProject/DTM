@@ -24,8 +24,6 @@ import dtmproject.DTM;
 import lombok.Getter;
 
 public class DTMDataHandler {
-
-	public static final String SETTINGS_PATH = "./settings";
 	public static final String KITS_PATH = "./kits.yml";
 	private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
 	private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
@@ -33,20 +31,19 @@ public class DTMDataHandler {
 
 	private final DTM pl;
 
-	private final ConcurrentHashMap<String, DTMMap> mapSettings = new ConcurrentHashMap<>();
 	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
+	private final ConcurrentHashMap<String, DTMMap> mapSettings = new ConcurrentHashMap<>();
 
 	@Getter
 	private final QueueDataSaver dataSaver;
 
-	private final File mapConfFolder, kitFile;
+	private final File kitFile;
 
 	@Getter
 	private final HikariDataSource HDS;
 
 	public DTMDataHandler(DTM pl) {
 		this.pl = pl;
-		this.mapConfFolder = new File(pl.getDataFolder(), SETTINGS_PATH);
 		this.kitFile = new File(pl.getDataFolder(), KITS_PATH);
 		this.dataSaver = new QueueDataSaver(pl);
 		this.HDS = new HikariDataSource();
@@ -132,20 +129,15 @@ public class DTMDataHandler {
 					if (rs.next()) {
 						String prefix = rs.getString("Prefix");
 						int emeralds = rs.getInt("Emeralds");
-						String nick = rs.getString("Nick");
 						int killStreak = rs.getInt("KillStreak");
-
 						loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix,
-								killStreak, seasonStats));
+								killStreak, stats));
 					} else {
 						loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
-
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -196,11 +188,8 @@ public class DTMDataHandler {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * 
 	 * @return a list of unloaded playerdata with the stats ordered.
 	 */
-	@Override
 	public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {
 		LinkedList<DTMPlayerData> allStats = new LinkedList<>();
 
@@ -225,8 +214,8 @@ public class DTMDataHandler {
 							playTimeWon, playTimeLost, longestKillStreak);
 
 					// Emeralds and such isn't even loaded. We don't need that.
-					DTMPlayerData data = new DTMPlayerData(uuid, lastSeenName);
-					data.seasonStats.put(stats.season, stats);
+					DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName);
+					data.seasonStats.put(stats.getSeason(), stats);
 
 					allStats.add(data);
 				}

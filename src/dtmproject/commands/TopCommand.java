@@ -58,11 +58,11 @@ public class TopCommand implements CommandExecutor {
 			int i = 1;
 			// for (DTMPlayerData entry : topListCache) {
 			for (DTMPlayerData entry : dtm.getDataHandler().getLeaderboard(100, season)) {
-				DTMSeasonStats stats = Objects.requireNonNull(entry.seasonStats.get(season));
+				DTMSeasonStats stats = Objects.requireNonNull(entry.getSeasonStats(season));
 				// Player possiblePlayer = Bukkit.getPlayer(stats.uuid);
 
-				sender.sendMessage("§e" + (i++) + ". " + entry.nick + ": §a" + stats.getSum() + " §c" + stats.kills
-						+ " §4" + stats.deaths + " §7" + stats.getKDRatio());
+				sender.sendMessage("§e" + (i++) + ". " + entry.getLastSeenName() + ": §a" + stats.getSum() + " §c"
+						+ stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
 				if (i == finalCount + 1)
 					break;
 			}
