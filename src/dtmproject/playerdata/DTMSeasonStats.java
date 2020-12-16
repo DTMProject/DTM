@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @AllArgsConstructor
 public class DTMSeasonStats {
@@ -16,22 +15,19 @@ public class DTMSeasonStats {
 	private final int season;
 
 	@Getter
-	@Setter
-	private int kills, deaths, wins, losses, longestKillStreak;
+	private int kills, deaths, wins, losses, longestKillStreak, /* current */killStreak;
 
 	@Getter
-	@Setter
 	private long playTimeWon, playTimeLost;
 
 	@Getter
-	@Setter
 	private int monuments;
 
 	/**
 	 * Default constructor. Set's everything to 0.
 	 */
 	public DTMSeasonStats(UUID uuid, int season) {
-		this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0);
+		this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	}
 
 	public double getKDRatio() {
@@ -68,4 +64,38 @@ public class DTMSeasonStats {
 		return sum;
 	}
 
+	public void increaseKills() {
+		kills++;
+
+	}
+
+	public void increaseDeaths() {
+		deaths++;
+	}
+
+	public void increaseKillStreak() {
+		killStreak++;
+
+		longestKillStreak = Math.max(longestKillStreak, killStreak);
+	}
+
+	public void increaseWins() {
+		wins++;
+	}
+
+	public void increaseLosses() {
+		losses++;
+	}
+
+	public void increasePlayTimeWon(long time) {
+		playTimeWon += time;
+	}
+
+	public void increasePlayTimeLost(long time) {
+		playTimeLost += time;
+	}
+
+	public void increaseMonuments() {
+		monuments++;
+	}
 }

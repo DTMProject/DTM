@@ -187,7 +187,6 @@ public class DestroyMonumentListener implements Listener {
 
 				if (team == winner) {
 					stats.setPlayTimeWon(stats.getPlayTimeWon() + loserPoints * 60 * 1000);
-					stats.setWins(stats.getWins() + 1);
 				} else {
 					stats.setPlayTimeLost(stats.getPlayTimeLost() + loserPoints * 60 * 1000);
 					stats.setLosses(stats.getLosses() + 1);
