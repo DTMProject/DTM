@@ -110,7 +110,7 @@ public class DestroyMonumentListener implements Listener {
 	}
 
 	private void announcePlayerWhoBrokeTheMonument(Player p, DTMPlayerData pd, Monument mon, DTMTeam team) {
-		pd.getSeasonStats().setMonuments(pd.getSeasonStats().getMonuments() + 1);
+		pd.getSeasonStats().increaseMonumentsDestroyed();
 		pd.setEmeralds(pd.getEmeralds() + 5);
 		Bukkit.broadcastMessage("§e" + p.getDisplayName() + " §etuhosi monumentin " + team.getTeamColor() + mon
 				.getCustomName());
@@ -171,8 +171,8 @@ public class DestroyMonumentListener implements Listener {
 		for (DTMTeam team : allTeams) {
 			for (Player p : team.getPlayers()) {
 				DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
-				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - dtm.getLogicHandler().getCurrentMap()
-						.getStartTime()) / 1000 / 60), 60);
+				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - dtm.getGameWorldHandler()
+						.getCurrentMap().getStartTime()) / 1000 / 60), 60);
 
 				int loserPoints = minutesPlayed * 5;
 				int winnerPoints = minutesPlayed * 25;
@@ -185,11 +185,13 @@ public class DestroyMonumentListener implements Listener {
 
 				DTMSeasonStats stats = pd.getSeasonStats();
 
+				long playTime = loserPoints * 60 * 1000;
 				if (team == winner) {
-					stats.setPlayTimeWon(stats.getPlayTimeWon() + loserPoints * 60 * 1000);
+					stats.increaseWins();
+					stats.increasePlayTimeWon(playTime);
 				} else {
-					stats.setPlayTimeLost(stats.getPlayTimeLost() + loserPoints * 60 * 1000);
-					stats.setLosses(stats.getLosses() + 1);
+					stats.increaseLosses();
+					stats.increasePlayTimeLost(playTime);
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package dtmproject.playerdata;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +18,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.juubes.nexus.data.AbstractPlayerData;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.DTM;
@@ -75,7 +75,7 @@ public class DTMDataHandler {
 
 		// Create tables
 		try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
-			String createTables = IOUtils.toString(pl.getResource("create-tables.sql"));
+			String createTables = IOUtils.toString(pl.getResource("create-tables.sql"), Charset.forName("UTF-8"));
 			String[] sqlStatements = createTables.split(";");
 			for (String sql : sqlStatements) {
 				stmt.addBatch(sql);
@@ -134,12 +134,11 @@ public class DTMDataHandler {
 						int emeralds = rs.getInt("Emeralds");
 						String nick = rs.getString("Nick");
 						int killStreak = rs.getInt("KillStreak");
-						double eloRating = rs.getDouble("EloRating");
 
-						loadedPlayerdata.put(uuid, new DTMPlayerData(uuid, lastSeenName, emeralds, prefix, nick,
-								killStreak, eloRating, stats));
+						loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix,
+								killStreak, seasonStats));
 					} else {
-						loadedPlayerdata.put(uuid, new DTMPlayerData(uuid, lastSeenName));
+						loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

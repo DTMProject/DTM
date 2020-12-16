@@ -21,7 +21,7 @@ public class DTMTotalStats {
 	public int getMonuments() {
 		int sum = 0;
 		for (DTMSeasonStats s : allStats.values()) {
-			sum += ((DTMSeasonStats) s).getMonuments();
+			sum += s.getMonumentsDestroyed();
 		}
 		return sum;
 	}

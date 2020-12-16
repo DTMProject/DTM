@@ -39,10 +39,6 @@ public class DTMPlayerData {
 	@Setter
 	private boolean autoJoin;
 
-	@Getter
-	@Setter
-	private double eloRating;
-
 	/**
 	 * Maps season number to stats.
 	 */
@@ -52,16 +48,19 @@ public class DTMPlayerData {
 	@Setter
 	private long lastRespawn;
 
+	public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
+		this(dtm, uuid, lastSeenName, 0, null, 0, new );p
+	}
+
 	// TODO: injektaa plugin instanssi
 	public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
-			double eloRating, HashMap<Integer, DTMSeasonStats> seasonStats) {
+			HashMap<Integer, DTMSeasonStats> seasonStats) {
 		this.dtm = dtm;
 		this.uuid = uuid;
 		this.lastSeenName = lastSeenName;
 		this.prefix = prefix;
 		this.emeralds = emeralds;
 		this.killStreak = killStreak;
-		this.eloRating = eloRating;
 		this.seasonStats = seasonStats;
 	}
 

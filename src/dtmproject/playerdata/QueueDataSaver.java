@@ -32,27 +32,27 @@ public class QueueDataSaver {
 						PreparedStatement stmt2 = conn.prepareStatement(SAVE_STATS_SQL)) {
 
 					while ((data = queuedData.poll()) != null) {
-						System.out.println("Saving playrerdata for " + data.lastSeenName);
-						stmt1.setString(1, data.uuid.toString());
-						stmt1.setString(2, data.lastSeenName);
-						stmt1.setString(3, data.prefix);
-						stmt1.setInt(4, data.emeralds);
-						stmt1.setInt(5, data.killStreak);
-						stmt1.setDouble(6, data.eloRating);
+						System.out.println("Saving playrerdata for " + data.getLastSeenName());
+						stmt1.setString(1, data.getUuid().toString());
+						stmt1.setString(2, data.getLastSeenName());
+						stmt1.setString(3, data.getPrefix());
+						stmt1.setInt(4, data.getEmeralds());
+						stmt1.setInt(5, data.getKillStreak());
+						stmt1.setDouble(6, data.getEloRating());
 						stmt1.addBatch();
 
 						// TODO: Only saves current season
 						DTMSeasonStats stats = data.seasonStats.get(dtm.getSeason());
-						stmt2.setString(1, stats.uuid.toString());
+						stmt2.setString(1, stats.getUuid().toString());
 						stmt2.setInt(2, dtm.getSeason());
-						stmt2.setInt(3, stats.kills);
-						stmt2.setInt(4, stats.deaths);
-						stmt2.setInt(5, stats.monuments);
-						stmt2.setInt(6, stats.wins);
-						stmt2.setInt(7, stats.losses);
-						stmt2.setLong(8, stats.playTimeWon);
-						stmt2.setLong(9, stats.playTimeLost);
-						stmt2.setInt(10, stats.longestKillStreak);
+						stmt2.setInt(3, stats.getKills());
+						stmt2.setInt(4, stats.getDeaths());
+						stmt2.setInt(5, stats.getMonumentsDestroyed());
+						stmt2.setInt(6, stats.getWins());
+						stmt2.setInt(7, stats.getLosses());
+						stmt2.setLong(8, stats.getPlayTimeWon());
+						stmt2.setLong(9, stats.getPlayTimeLost());
+						stmt2.setInt(10, stats.getLongestKillStreak());
 						stmt2.addBatch();
 					}
 					stmt1.executeBatch();
@@ -72,7 +72,7 @@ public class QueueDataSaver {
 
 	public boolean isSavingDataFor(UUID uuid) {
 		for (DTMPlayerData data : queuedData) {
-			if (data.uuid == uuid)
+			if (data.getUuid() == uuid)
 				return true;
 		}
 		return false;

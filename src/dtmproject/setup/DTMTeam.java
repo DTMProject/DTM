@@ -1,10 +1,12 @@
 package dtmproject.setup;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import dtmproject.DTM;
 import dtmproject.WorldlessLocation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +15,7 @@ import net.md_5.bungee.api.ChatColor;
 
 @AllArgsConstructor
 public class DTMTeam {
+	private final DTM pl;
 
 	@Getter
 	private final String ID;
@@ -34,7 +37,7 @@ public class DTMTeam {
 	private Monument[] monuments;
 
 	public Set<Player> getPlayers() {
-		throw new NotImplementedException();
+		return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)
+				.collect(Collectors.toSet());
 	}
-
 }

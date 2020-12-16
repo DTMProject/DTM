@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-@AllArgsConstructor
 public class DTMMap {
 	@NonNull
 	@Getter
@@ -29,6 +28,19 @@ public class DTMMap {
 	private int ticks;
 
 	@Getter
-	private final LinkedHashSet<? extends DTMTeam> teams = new LinkedHashSet<>();
+	private final LinkedHashSet<DTMTeam> teams;
+
+	@Getter
+	private long startTime;
+	// TODO where is this set? constructor?
+
+	public DTMMap(@NonNull String id, @NonNull String displayName, WorldlessLocation lobby, int ticks,
+			LinkedHashSet<DTMTeam> teams) {
+		this.id = id;
+		this.displayName = displayName;
+		this.lobby = lobby;
+		this.ticks = ticks;
+		this.teams = teams;
+	}
 
 }

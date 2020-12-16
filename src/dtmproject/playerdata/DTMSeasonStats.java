@@ -3,10 +3,8 @@ package dtmproject.playerdata;
 import java.text.NumberFormat;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 public class DTMSeasonStats {
 	@Getter
 	private final UUID uuid;
@@ -15,19 +13,33 @@ public class DTMSeasonStats {
 	private final int season;
 
 	@Getter
-	private int kills, deaths, wins, losses, longestKillStreak, /* current */killStreak;
+	private int kills, deaths, wins, losses, longestKillStreak, /* current */killStreak = 0;
 
 	@Getter
 	private long playTimeWon, playTimeLost;
 
 	@Getter
-	private int monuments;
+	private int monumentsDestroyed;
 
 	/**
 	 * Default constructor. Set's everything to 0.
 	 */
 	public DTMSeasonStats(UUID uuid, int season) {
-		this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0);
+	}
+
+	public DTMSeasonStats(UUID uuid, int season, int kills, int deaths, int wins, int losses, int longestKillStreak,
+			long playTimeWon, long playTimeLost, int monumentsDestroyed) {
+		this.uuid = uuid;
+		this.season = season;
+		this.kills = kills;
+		this.deaths = deaths;
+		this.wins = wins;
+		this.losses = losses;
+		this.longestKillStreak = longestKillStreak;
+		this.playTimeWon = playTimeWon;
+		this.playTimeLost = playTimeLost;
+		this.monumentsDestroyed = monumentsDestroyed;
 	}
 
 	public double getKDRatio() {
@@ -46,7 +58,7 @@ public class DTMSeasonStats {
 		String str = "";
 		str += "§bTapot: " + kills + "\n";
 		str += "§bKuolemat: " + deaths + "\n";
-		str += "§bMonumentteja tuhottu: " + monuments + "\n";
+		str += "§bMonumentteja tuhottu: " + monumentsDestroyed + "\n";
 		str += "§bVoitot: " + wins + "\n";
 		str += "§bHäviöt: " + losses + "\n";
 		str += "§bPelejä voitettu: " + playTimeWon / 1000 / 60 / 60 + " tuntia\n";
@@ -58,7 +70,7 @@ public class DTMSeasonStats {
 		int sum = 0;
 		sum += kills * 3;
 		sum += deaths;
-		sum += monuments * 10;
+		sum += monumentsDestroyed * 10;
 		sum += playTimeWon / 1000 / 60 * 5;
 		sum += playTimeLost / 1000 / 60;
 		return sum;
@@ -95,7 +107,8 @@ public class DTMSeasonStats {
 		playTimeLost += time;
 	}
 
-	public void increaseMonuments() {
-		monuments++;
+	public void increaseMonumentsDestroyed() {
+		monumentsDestroyed++;
 	}
+
 }

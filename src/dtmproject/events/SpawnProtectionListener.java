@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
@@ -26,7 +25,7 @@ public class SpawnProtectionListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 
-		if (p.getWorld() != dtm.getGameWorldHandler().getCurrentMap().getWorld())
+		if (p.getWorld() != dtm.getGameWorldHandler().getCurrentWorld())
 			return;
 		// Spawnprotection
 		for (DTMTeam team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
@@ -47,10 +46,10 @@ public class SpawnProtectionListener implements Listener {
 		if (dtm.getLogicHandler().getGameState() != GameState.RUNNING)
 			return;
 		Player p = e.getPlayer();
-		if (p.getWorld() != dtm.getGameWorldHandler().getCurrentMap().getWorld())
+		if (p.getWorld() != dtm.getGameWorldHandler().getCurrentWorld())
 			return;
 		// Spawnprotection
-		for (Team team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
