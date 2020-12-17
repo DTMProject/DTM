@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMMap;
+import dtmproject.data.DTMMap;
 
 public class DTMCommand implements CommandExecutor {
 	private final DTM pl;

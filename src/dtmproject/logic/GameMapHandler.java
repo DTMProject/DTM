@@ -4,7 +4,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.World;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMMap;
+import dtmproject.data.DTMMap;
 import lombok.Getter;
 import lombok.NonNull;
 

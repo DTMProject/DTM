@@ -8,8 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMPlayerData;
-import dtmproject.playerdata.DTMSeasonStats;
+import dtmproject.data.DTMPlayerData;
+import dtmproject.data.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
 

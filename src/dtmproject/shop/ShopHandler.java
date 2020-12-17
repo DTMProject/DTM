@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.data.DTMPlayerData;
 
 public class ShopHandler implements Listener {
 	private final DTM pl;

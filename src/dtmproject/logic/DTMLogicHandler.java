@@ -5,17 +5,13 @@ import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMMap;
-import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.data.DTMMap;
+import dtmproject.data.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 import lombok.Getter;
-import net.md_5.bungee.api.ChatColor;
 
 public class DTMLogicHandler {
 	private final DTM pl;
@@ -64,6 +60,8 @@ public class DTMLogicHandler {
 			selectedMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMap.getId()));
 		}
 
+		selectedMap.load();
+
 		pl.getCountdownHandler().startGameCountdown(20);
 		gameState = GameState.COUNTDOWN;
 
@@ -76,14 +74,6 @@ public class DTMLogicHandler {
 		pl.getCountdownHandler().stopChangeMapCountdown();
 
 	}
-
-	// private String getRandomOtherMapID(String lastMapID) {
-	// String[] maps = pl.getMapList();
-	// List<String> mapsList = Arrays.asList(maps);
-	// mapsList.remove(lastMapID);
-	// mapsList.get((int) (Math.random() * mapsList.size()));
-	// return mapsList.get(0);
-	// }
 
 	private String selectRandomMapId(String[] maps, String lastMapId) {
 		int randIndex = (int) (Math.random() * maps.length);
@@ -101,49 +91,6 @@ public class DTMLogicHandler {
 
 	public void endGame(DTMTeam winnerTeam) {
 		throw new NotImplementedException();
-	}
-
-	public void sendPlayerToGame(Player p) {
-		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-		throw new NotImplementedException();
-	}
-
-	public void sendToSpectate(Player p) {
-		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-		pd.setTeam(null);
-
-		p.setGameMode(GameMode.SPECTATOR);
-
-		// Teleport to lobby
-		DTMMap currentMap = gwh.getCurrentMap();
-		World currentWorld = gwh.getCurrentWorld();
-		Location lobby = currentMap.getLobby().toLocation(currentWorld);
-		p.teleport(lobby);
-
-		if (p.getWorld() != currentWorld)
-			return;
-
-		if (lobby != null) {
-			p.teleport(lobby);
-		} else {
-			System.err.println("Lobby null for map " + currentMap.getDisplayName());
-			p.teleport(new Location(currentWorld, 0, 100, 0));
-		}
-		p.setGameMode(GameMode.SPECTATOR);
-		p.getInventory().clear();
-
-		// Handle appropriate nametag colours
-		p.setDisplayName("§7" + p.getName());
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] §7" + p
-				.getName());
-		p.setCustomName(pd.getTeam().getTeamColor() + p.getName());
-		p.setCustomNameVisible(false);
-
-	}
-
-	public void restartGame() {
-		// TODO
-
 	}
 
 	public void setPlayerToSmallestTeam(Player p) {

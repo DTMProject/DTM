@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.data.DTMPlayerData;
 
 public class TeamSpleefListener implements Listener {
 	private HashMap<Block, Long> antiSpleef = new HashMap<>();

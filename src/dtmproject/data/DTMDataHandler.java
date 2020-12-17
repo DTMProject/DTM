@@ -1,4 +1,4 @@
-package dtmproject.playerdata;
+package dtmproject.data;
 
 import java.io.File;
 import java.io.IOException;

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.data.DTMPlayerData;
 import net.md_5.bungee.api.ChatColor;
 
 public class ChatHandler implements Listener {

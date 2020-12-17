@@ -1,4 +1,4 @@
-package dtmproject.playerdata;
+package dtmproject.data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

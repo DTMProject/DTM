@@ -32,9 +32,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import dtmproject.DTM;
 import dtmproject.WorldlessLocation;
+import dtmproject.data.DTMPlayerData;
 import dtmproject.logic.GameState;
 import dtmproject.logic.GameMapHandler;
-import dtmproject.playerdata.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 
 public class DeathHandler implements Listener {

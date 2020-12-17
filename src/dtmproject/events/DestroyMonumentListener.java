@@ -18,9 +18,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import com.google.common.base.Joiner;
 
 import dtmproject.DTM;
+import dtmproject.data.DTMPlayerData;
+import dtmproject.data.DTMSeasonStats;
 import dtmproject.logic.GameState;
-import dtmproject.playerdata.DTMPlayerData;
-import dtmproject.playerdata.DTMSeasonStats;
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
 

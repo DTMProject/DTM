@@ -1,4 +1,4 @@
-package dtmproject.playerdata;
+package dtmproject.data;
 
 import java.util.HashMap;
 import java.util.UUID;

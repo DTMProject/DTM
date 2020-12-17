@@ -13,7 +13,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMMap;
+import dtmproject.data.DTMMap;
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
 import lombok.Getter;

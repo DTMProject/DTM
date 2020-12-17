@@ -11,6 +11,7 @@ import dtmproject.commands.JoinCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.TopCommand;
+import dtmproject.data.DTMDataHandler;
 import dtmproject.events.AnvilPlaceListener;
 import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
@@ -22,7 +23,6 @@ import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.CountdownHandler;
 import dtmproject.logic.DTMLogicHandler;
 import dtmproject.logic.GameMapHandler;
-import dtmproject.playerdata.DTMDataHandler;
 import dtmproject.scoreboard.ScoreboardHandler;
 import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
@@ -55,6 +55,9 @@ public class DTM extends JavaPlugin {
 	@Getter
 	private final CountdownHandler countdownHandler;
 
+	@Getter
+	private final NameTagColorer nameTagColorer;
+
 	public DTM() {
 		this.scoreboardHandler = new ScoreboardHandler(this);
 		this.shopHandler = new ShopHandler(this);
@@ -64,6 +67,7 @@ public class DTM extends JavaPlugin {
 		this.editModeHandler = new EditModeCommand(this);
 		this.deathHandler = new DeathHandler(this);
 		this.countdownHandler = new CountdownHandler(this);
+		this.nameTagColorer = new NameTagColorer();
 	}
 
 	@Override
@@ -110,7 +114,6 @@ public class DTM extends JavaPlugin {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Bukkit.getOnlinePlayers().forEach(p -> this
 				.getDataHandler().savePlayerData(p.getUniqueId())), 3 * 60 * 20, 3 * 60 * 20);
 
-		
 		countdownHandler.startScheduling();
 	}
 

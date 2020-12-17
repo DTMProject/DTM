@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
@@ -40,5 +41,41 @@ public class DTMTeam {
 	public Set<Player> getPlayers() {
 		return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)
 				.collect(Collectors.toSet());
+	}
+
+	public Color getLeatherColor() {
+		switch (this.teamColor) {
+		case AQUA:
+		case DARK_AQUA:
+			return Color.AQUA;
+		case BLACK:
+			return Color.BLACK;
+		case BLUE:
+			return Color.BLUE;
+		case DARK_BLUE:
+			return Color.NAVY;
+		case DARK_GRAY:
+		case GRAY:
+			return Color.GRAY;
+		case DARK_GREEN:
+			return Color.OLIVE;
+		case DARK_PURPLE:
+		case LIGHT_PURPLE:
+			return Color.PURPLE;
+		case DARK_RED:
+			return Color.MAROON;
+		case GOLD:
+		case YELLOW:
+			return Color.YELLOW;
+		case GREEN:
+			return Color.LIME;
+		case RED:
+			return Color.RED;
+		case WHITE:
+			return Color.WHITE;
+		default:
+			break;
+		}
+		return null;
 	}
 }

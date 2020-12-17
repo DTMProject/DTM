@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.data.DTMPlayerData;
 
 public class ConnectionListener implements Listener {
 	private final DTM dtm;

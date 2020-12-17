@@ -19,7 +19,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
-import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.data.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 
 public class InstakillTNTHandler implements Listener {

@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
+import dtmproject.data.DTMPlayerData;
 import dtmproject.logic.GameState;
-import dtmproject.playerdata.DTMPlayerData;
 
 public class ShopCommand implements CommandExecutor {
 
