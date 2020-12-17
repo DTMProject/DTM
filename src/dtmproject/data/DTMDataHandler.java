@@ -97,8 +97,8 @@ public class DTMDataHandler {
 		// Load default maps
 		System.out.println("Loading maps...");
 		pl.getDefaultMapLoader().getMaps().forEach(map -> loadedMaps.put(map.getId(), map));
-		System.out.println(Joiner.on(", ").join(loadedMaps.entrySet().stream().map(entry -> entry.getKey())
-				.iterator()));
+		System.out.println("Loaded maps: " + Joiner.on(", ").join(loadedMaps.entrySet().stream().map(entry -> entry
+				.getKey()).iterator()));
 	}
 
 	/**

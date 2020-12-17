@@ -40,7 +40,6 @@ public class DTMLogicHandler {
 	 */
 	public void startGame() {
 		this.gameState = GameState.RUNNING;
-
 		this.currentMap.startGame();
 	}
 

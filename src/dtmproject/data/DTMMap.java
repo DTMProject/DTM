@@ -50,7 +50,7 @@ public class DTMMap {
 
 	@Getter
 	private long startTime;
-	// TODO where is this set? constructor?
+	// TODO where the time set? constructor?
 
 	@Getter
 	@Setter
@@ -97,6 +97,7 @@ public class DTMMap {
 		WorldCreator wc = new WorldCreator(this.id);
 		wc.type(WorldType.FLAT);
 		wc.generatorSettings("2;0;1;");
+
 		World createdWorld = Bukkit.createWorld(wc);
 		createdWorld.setStorm(false);
 		createdWorld.setThundering(false);
@@ -113,6 +114,9 @@ public class DTMMap {
 		return createdWorld;
 	}
 
+	/**
+	 * Starts the already loaded game. Sends joined players to game.
+	 */
 	public void startGame() {
 		// Send everyone to game
 		teams.forEach(team -> team.getPlayers().forEach(this::sendPlayerToGame));

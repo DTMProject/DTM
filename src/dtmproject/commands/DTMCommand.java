@@ -27,7 +27,7 @@ public class DTMCommand implements CommandExecutor {
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("status")) {
 				DTMMap map = pl.getLogicHandler().getCurrentMap();
-				sender.sendMessage("§eDTM status:");
+				sender.sendMessage("§eDTM status: " + pl.getLogicHandler().getGameState().name());
 				sender.sendMessage("§eMap ID: " + map.getId());
 				sender.sendMessage("§eMap name: " + map.getDisplayName());
 				map.getTeams().forEach(team -> {
