@@ -1,8 +1,8 @@
 package dtmproject;
 
+import java.util.Collection;
 import java.util.Optional;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +18,7 @@ import dtmproject.events.AnvilPlaceListener;
 import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
 import dtmproject.events.DeathHandler;
+import dtmproject.events.DefaultMapLoader;
 import dtmproject.events.DestroyMonumentListener;
 import dtmproject.events.FixTeleport;
 import dtmproject.events.SpawnProtectionListener;
@@ -96,6 +97,10 @@ public class DTM extends JavaPlugin {
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
 
+		// Load maps
+		new DefaultMapLoader(this).copyDefaultMapFiles();
+
+		// Init datahandler
 		dataHandler.init();
 
 		// Load playerdata; only runs after reloads
@@ -129,7 +134,7 @@ public class DTM extends JavaPlugin {
 		return getConfig().getInt("season");
 	}
 
-	public String[] getMapList() {
-		throw new NotImplementedException();
+	public Collection<String> getMapList() {
+		return getConfig().getStringList("maps");
 	}
 }

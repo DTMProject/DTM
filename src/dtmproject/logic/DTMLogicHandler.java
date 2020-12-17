@@ -42,7 +42,7 @@ public class DTMLogicHandler {
 	 */
 	public void loadNextGame(Optional<String> mapRequest) {
 		DTMMap lastMap = pl.getMapHandler().getCurrentMap();
-		String[] maps = pl.getMapList();
+		String[] maps = pl.getMapList().toArray(new String[pl.getMapList().size()]);
 
 		DTMMap selectedMap;
 		if (mapRequest.isPresent()) {

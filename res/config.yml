@@ -4,3 +4,8 @@ mysql:
    database: DTM
    user: DTM
    password: password
+maps:
+- HK1
+- HK2
+- HK3
+- HK4
