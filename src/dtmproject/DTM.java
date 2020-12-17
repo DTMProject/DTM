@@ -1,6 +1,6 @@
 package dtmproject;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.Bukkit;
@@ -61,6 +61,9 @@ public class DTM extends JavaPlugin {
 	@Getter
 	private final NameTagColorer nameTagColorer;
 
+	@Getter
+	private final DefaultMapLoader defaultMapLoader;
+
 	public DTM() {
 		this.scoreboardHandler = new ScoreboardHandler(this);
 		this.shopHandler = new ShopHandler(this);
@@ -71,6 +74,7 @@ public class DTM extends JavaPlugin {
 		this.deathHandler = new DeathHandler(this);
 		this.countdownHandler = new CountdownHandler(this);
 		this.nameTagColorer = new NameTagColorer();
+		this.defaultMapLoader = new DefaultMapLoader(this);
 	}
 
 	@Override
@@ -97,16 +101,17 @@ public class DTM extends JavaPlugin {
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
 
-		// Load maps
-		new DefaultMapLoader(this).copyDefaultMapFiles();
-
 		// Init datahandler
 		dataHandler.init();
 
 		// Load playerdata; only runs after reloads
 		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
 
-		// Load first map
+		// Load maps to cache
+		defaultMapLoader.copyDefaultMapFiles();
+		dataHandler.loadMaps();
+
+		// Load first map ingame
 		logicHandler.loadNextGame(Optional.empty());
 
 		// Initialize and update the scoreboard
@@ -134,7 +139,7 @@ public class DTM extends JavaPlugin {
 		return getConfig().getInt("season");
 	}
 
-	public Collection<String> getMapList() {
+	public List<String> getMapList() {
 		return getConfig().getStringList("maps");
 	}
 }

@@ -30,9 +30,9 @@ public class DefaultMapLoader {
 			throw new IllegalStateException("Maps are already loaded once");
 
 		Set<DTMMap> maps = new LinkedHashSet<>();
-		maps.add(new DTMMap(pl, "hk1", "Hiekkakivet I", new WorldlessLocation(-36, 150.0, 0.5, -90, 30), 0, getTeams(
+		maps.add(new DTMMap(pl, "HK1", "Hiekkakivet I", new WorldlessLocation(-36, 150.0, 0.5, -90, 30), 0, getTeams(
 				DefaultMapID.HK1)));
-		maps.add(new DTMMap(pl, "hk4", "Hiekkakivet IV", new WorldlessLocation(-36, 150, 0.5, -90, 30), 0, getTeams(
+		maps.add(new DTMMap(pl, "HK4", "Hiekkakivet IV", new WorldlessLocation(-36, 150, 0.5, -90, 30), 0, getTeams(
 				DefaultMapID.HK4)));
 
 		alreadyOnceLoaded = true;

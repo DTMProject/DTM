@@ -1,6 +1,7 @@
 package dtmproject.logic;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -42,27 +43,26 @@ public class DTMLogicHandler {
 	 */
 	public void loadNextGame(Optional<String> mapRequest) {
 		DTMMap lastMap = pl.getMapHandler().getCurrentMap();
-		String[] maps = pl.getMapList().toArray(new String[pl.getMapList().size()]);
+		String lastMapId = lastMap == null ? null : lastMap.getId();
+		List<String> maps = pl.getMapList();
 
 		DTMMap selectedMap;
 		if (mapRequest.isPresent()) {
 			// Select requested
-			int foundIndex = -1;
-			for (int i = 0; i < maps.length; i++) {
-				if (maps[i] == mapRequest.get()) {
-					foundIndex = i;
-					break;
-				}
-			}
+			if (lastMapId != mapRequest.get() && maps.contains(mapRequest.get())) {
+				selectedMap = pl.getDataHandler().getMap(mapRequest.get());
 
-			selectedMap = pl.getDataHandler().getMap(foundIndex == -1 ? maps[foundIndex]
-					: selectRandomMapId(maps, lastMap.getId()));
+			} else {
+				selectedMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMapId));
+			}
 		} else {
 			// Select random map -- exclude last map
-			selectedMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMap.getId()));
+			selectedMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMapId));
 		}
 
 		World createdWorld = selectedMap.load();
+		pl.getMapHandler().setCurrentMap(selectedMap);
+		pl.getMapHandler().setCurrentWorld(createdWorld);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
@@ -79,14 +79,12 @@ public class DTMLogicHandler {
 
 	}
 
-	private String selectRandomMapId(String[] maps, String lastMapId) {
-		int randIndex = (int) (Math.random() * maps.length);
-		if (maps.length > 1) {
-			while (maps[randIndex].equals(lastMapId)) {
-				randIndex = (int) (Math.random() * maps.length);
-			}
+	private String selectRandomMapId(List<String> maps, String lastMapId) {
+		int randIndex = (int) (Math.random() * maps.size());
+		while (maps.get(randIndex).equals(lastMapId)) {
+			randIndex = (int) (Math.random() * maps.size());
 		}
-		return maps[randIndex];
+		return maps.get(randIndex);
 	}
 
 	public void togglePause() {

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.DTM;
@@ -32,7 +34,7 @@ public class DTMDataHandler {
 	private final DTM pl;
 
 	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
-	private final ConcurrentHashMap<String, DTMMap> mapSettings = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, DTMMap> loadedMaps = new ConcurrentHashMap<>();
 
 	@Getter
 	private final QueueDataSaver dataSaver;
@@ -90,8 +92,11 @@ public class DTMDataHandler {
 	}
 
 	public void loadMaps() {
-		// TODO Auto-generated method stub
-
+		// TODO Load maps from MySQL
+		// Load default maps
+		System.out.println("Loading maps...");
+		pl.getDefaultMapLoader().getMaps().forEach(map -> loadedMaps.put(map.getId(), map));
+		System.out.println(Joiner.on(", ").join(loadedMaps.entrySet().stream().map(entry -> entry.getKey()).iterator()));
 	}
 
 	/**
@@ -166,8 +171,7 @@ public class DTMDataHandler {
 	}
 
 	public void unloadPlayerdata(UUID uuid) {
-		// TODO Auto-generated method stub
-
+		this.loadedPlayerdata.remove(uuid);
 	}
 
 	public DTMMap createMapIfNotExists(String mapID) {
@@ -175,9 +179,12 @@ public class DTMDataHandler {
 		return null;
 	}
 
+	/**
+	 * @throws NullPointerException
+	 *             if the map isn't loaded.
+	 */
 	public DTMMap getMap(String mapID) {
-		// TODO Auto-generated method stub
-		return null;
+		return Objects.requireNonNull(loadedMaps.get(mapID));
 	}
 
 	public void saveMap(DTMMap map) {

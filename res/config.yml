@@ -6,6 +6,4 @@ mysql:
    password: password
 maps:
 - HK1
-- HK2
-- HK3
 - HK4
