@@ -2,8 +2,6 @@ package dtmproject.scoreboard;
 
 import java.util.Objects;
 
-import javax.management.InstanceAlreadyExistsException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -41,7 +39,7 @@ public class ScoreboardHandler implements Listener {
 	}
 
 	public void updateScoreboard() {
-		DTMMap currentMap = Objects.requireNonNull(pl.getGameWorldHandler().getCurrentMap());
+		DTMMap currentMap = Objects.requireNonNull(pl.getMapHandler().getCurrentMap());
 		Objective obj = globalScoreboard.getObjective(DisplaySlot.SIDEBAR);
 		if (obj != null)
 			obj.unregister();

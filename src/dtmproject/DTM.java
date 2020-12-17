@@ -1,5 +1,7 @@
 package dtmproject;
 
+import java.util.Optional;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -22,7 +24,7 @@ import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.CountdownHandler;
 import dtmproject.logic.DTMLogicHandler;
-import dtmproject.logic.GameMapHandler;
+import dtmproject.logic.MapHandler;
 import dtmproject.scoreboard.ScoreboardHandler;
 import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
@@ -47,7 +49,7 @@ public class DTM extends JavaPlugin {
 	private final EditModeCommand editModeHandler;
 
 	@Getter
-	private final GameMapHandler gameWorldHandler;
+	private final MapHandler mapHandler;
 
 	@Getter
 	private final DeathHandler deathHandler;
@@ -63,7 +65,7 @@ public class DTM extends JavaPlugin {
 		this.shopHandler = new ShopHandler(this);
 		this.dataHandler = new DTMDataHandler(this);
 		this.logicHandler = new DTMLogicHandler(this);
-		this.gameWorldHandler = new GameMapHandler(this);
+		this.mapHandler = new MapHandler(this);
 		this.editModeHandler = new EditModeCommand(this);
 		this.deathHandler = new DeathHandler(this);
 		this.countdownHandler = new CountdownHandler(this);
@@ -100,7 +102,7 @@ public class DTM extends JavaPlugin {
 		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
 
 		// Load first map
-		logicHandler.restartGame();
+		logicHandler.loadNextGame(Optional.empty());
 
 		// Initialize and update the scoreboard
 		scoreboardHandler.loadGlobalScoreboard();

@@ -4,10 +4,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class NameTagColorer {
 
-	public void changeNameTag(Player p, org.bukkit.ChatColor color) {
-		String teamName = color + "";
+	public void changeNameTag(Player p, ChatColor chatColor) {
+		String teamName = chatColor + "";
 
 		Scoreboard sb = p.getScoreboard();
 

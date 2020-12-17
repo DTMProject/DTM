@@ -8,7 +8,7 @@ import dtmproject.data.DTMMap;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class GameMapHandler {
+public class MapHandler {
 	private final DTM pl;
 
 	@Getter
@@ -18,7 +18,7 @@ public class GameMapHandler {
 	@NonNull
 	private DTMMap currentMap;
 
-	public GameMapHandler(DTM pl) {
+	public MapHandler(DTM pl) {
 		this.pl = pl;
 	}
 

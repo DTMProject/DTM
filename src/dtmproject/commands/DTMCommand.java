@@ -26,7 +26,7 @@ public class DTMCommand implements CommandExecutor {
 			sender.sendMessage("§c/DTM <status>");
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("status")) {
-				DTMMap map = pl.getGameWorldHandler().getCurrentMap();
+				DTMMap map = pl.getMapHandler().getCurrentMap();
 				sender.sendMessage("§eDTM status:");
 				sender.sendMessage("§eMap ID: " + map.getId());
 				sender.sendMessage("§eMap name: " + map.getDisplayName());

@@ -1,7 +1,6 @@
 package dtmproject.events;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,11 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import com.google.common.base.Joiner;
-
 import dtmproject.DTM;
 import dtmproject.data.DTMPlayerData;
-import dtmproject.data.DTMSeasonStats;
 import dtmproject.logic.GameState;
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
@@ -58,12 +54,12 @@ public class DestroyMonumentListener implements Listener {
 		}
 
 		Block b = e.getBlock();
-		if (b.getWorld() != dtm.getGameWorldHandler().getCurrentWorld())
+		if (b.getWorld() != dtm.getMapHandler().getCurrentWorld())
 			return;
 
 		if (!e.getBlock().getType().equals(Material.OBSIDIAN))
 			return;
-		for (DTMTeam nt : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam nt : dtm.getMapHandler().getCurrentMap().getTeams()) {
 			DTMTeam team = (DTMTeam) nt;
 			for (Monument mon : team.getMonuments()) {
 				if (!e.getBlock().equals(mon.getBlock().getBlock(e.getBlock().getWorld())))
@@ -139,45 +135,8 @@ public class DestroyMonumentListener implements Listener {
 		// If two or more teams alive winner != null
 		if (winner == null)
 			return;
-		String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
-		Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
-		Bukkit.broadcastMessage(winner.getDisplayName() + " §e§lvoitti pelin!");
-		for (Player p : Bukkit.getOnlinePlayers())
-			p.setGameMode(GameMode.SPECTATOR);
 
-		// 50 points to the winner team, 15 to losers
-		LinkedHashSet<? extends DTMTeam> allTeams = dtm.getGameWorldHandler().getCurrentMap().getTeams();
-		for (DTMTeam team : allTeams) {
-			for (Player p : team.getPlayers()) {
-				DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
-				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - dtm.getGameWorldHandler()
-						.getCurrentMap().getStartTime()) / 1000 / 60), 60);
-
-				int loserPoints = minutesPlayed * 5;
-				int winnerPoints = minutesPlayed * 25;
-
-				if (team == winner) {
-					p.sendTitle("§a§lVoitto", "§aSait " + winnerPoints + " pistettä!");
-				} else if (pd.getTeam() != null) {
-					p.sendTitle("§c§lHäviö", "§aSait " + loserPoints + " pistettä!");
-				}
-
-				DTMSeasonStats stats = pd.getSeasonStats();
-
-				long playTime = loserPoints * 60 * 1000;
-				if (team == winner) {
-					stats.increaseWins();
-					stats.increasePlayTimeWon(playTime);
-				} else {
-					stats.increaseLosses();
-					stats.increasePlayTimeLost(playTime);
-				}
-			}
-		}
-
-		// EloHandler.updateEloRating(winner, allTeams);
-		dtm.getLogicHandler().restartGame();
-		dtm.getGameWorldHandler().getCurrentMap().end();
+		dtm.getMapHandler().getCurrentMap().end(winner);
 	}
 
 	private DTMTeam getWinner() {
@@ -185,7 +144,7 @@ public class DestroyMonumentListener implements Listener {
 		DTMTeam onlyOneAlive = null;
 
 		// Iterate teams and test for solid monuments
-		for (DTMTeam team : dtm.getGameWorldHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam team : dtm.getMapHandler().getCurrentMap().getTeams()) {
 			boolean hasMonuments = false;
 			for (Monument mon : team.getMonuments()) {
 				if (!mon.isBroken())

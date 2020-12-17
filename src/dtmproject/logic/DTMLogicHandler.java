@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
+import dtmproject.WorldlessLocation;
 import dtmproject.data.DTMMap;
 import dtmproject.data.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
@@ -15,14 +17,14 @@ import lombok.Getter;
 
 public class DTMLogicHandler {
 	private final DTM pl;
-	private final GameMapHandler gwh;
+	private final MapHandler gwh;
 
 	@Getter
 	private GameState gameState;
 
 	public DTMLogicHandler(DTM pl) {
 		this.pl = pl;
-		this.gwh = pl.getGameWorldHandler();
+		this.gwh = pl.getMapHandler();
 	}
 
 	/**
@@ -39,7 +41,7 @@ public class DTMLogicHandler {
 	 * 3. Unloads last game.
 	 */
 	public void loadNextGame(Optional<String> mapRequest) {
-		DTMMap lastMap = pl.getGameWorldHandler().getCurrentMap();
+		DTMMap lastMap = pl.getMapHandler().getCurrentMap();
 		String[] maps = pl.getMapList();
 
 		DTMMap selectedMap;
@@ -60,16 +62,18 @@ public class DTMLogicHandler {
 			selectedMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMap.getId()));
 		}
 
-		selectedMap.load();
+		World createdWorld = selectedMap.load();
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+			p.teleport(selectedMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(createdWorld));
+			pd.setTeam(null);
+			pd.setLastDamager(null);
+		}
 
 		pl.getCountdownHandler().startGameCountdown(20);
 		gameState = GameState.COUNTDOWN;
 
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-			pd.setTeam(null);
-			pd.setLastDamager(null);
-		}
 		// TODO: Callevent start countdown
 		pl.getCountdownHandler().stopChangeMapCountdown();
 
