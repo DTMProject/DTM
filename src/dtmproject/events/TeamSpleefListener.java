@@ -12,13 +12,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
-import com.juubes.nexus.events.StartCountdownEvent;
-
 import dtmproject.DTM;
 import dtmproject.playerdata.DTMPlayerData;
 
 public class TeamSpleefListener implements Listener {
-
 	private HashMap<Block, Long> antiSpleef = new HashMap<>();
 	private final DTM dtm;
 
@@ -67,10 +64,5 @@ public class TeamSpleefListener implements Listener {
 			return;
 		}
 
-	}
-
-	@EventHandler
-	public void onCountdownStart(StartCountdownEvent e) {
-		antiSpleef.clear();
 	}
 }

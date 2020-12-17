@@ -8,8 +8,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.juubes.nexus.data.AbstractPlayerData;
-
 import dtmproject.DTM;
 import dtmproject.playerdata.DTMPlayerData;
 

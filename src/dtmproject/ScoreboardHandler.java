@@ -1,17 +1,12 @@
 package dtmproject;
 
-import java.util.Arrays;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-
-import com.juubes.nexus.events.StartCountdownEvent;
 
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
@@ -45,7 +40,8 @@ public class ScoreboardHandler implements Listener {
 					score--);
 			obj.getScore(getSpacer()).setScore(score--);
 
-			Arrays.sort(team.getMonuments(), (o1, o2) -> o1.getCustomName().compareTo(o2.getCustomName()));
+			// Sort monuments by name
+			team.getMonuments().sort((mon1, mon2) -> mon1.getCustomName().compareTo(mon2.getCustomName()));
 
 			for (Monument mon : team.getMonuments()) {
 				if (mon.isBroken())

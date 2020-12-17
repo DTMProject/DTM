@@ -1,5 +1,6 @@
 package dtmproject.logic;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -84,5 +85,20 @@ public class DTMLogicHandler {
 	public void restartGame() {
 		// TODO
 
+	}
+
+	public void setPlayerToSmallestTeam(Player p) {
+		
+	}
+
+	public DTMTeam getSmallestTeam() {
+		Iterator<DTMTeam> teams = pl.getGameWorldHandler().getCurrentMap().getTeams().iterator();
+		DTMTeam smallest = teams.next();
+		while (teams.hasNext()) {
+			DTMTeam anotherTeam = teams.next();
+			if (smallest.getPlayers().size() > anotherTeam.getPlayers().size())
+				smallest = anotherTeam;
+		}
+		return smallest;
 	}
 }

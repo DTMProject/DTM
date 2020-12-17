@@ -89,7 +89,7 @@ public class ShopHandler implements Listener {
 
 		int slot = e.getSlot();
 		ShopItem shopItem = itemsInShop[slot];
-		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
 		// TODO: Nullpointer below
 		if (shopItem.getPrice() > pd.getEmeralds()) {
@@ -118,7 +118,7 @@ public class ShopHandler implements Listener {
 		if (e.getInventory().getItem(slot) == null)
 			return;
 
-		pd.setEmeralds(pd.getEmeralds() - shopItem.getPrice());
+		pd.decreaseEmeralds(shopItem.getPrice());
 		p.getInventory().addItem(shopItem.getReceivedItem().clone());
 		p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_YES, 1, 1);
 

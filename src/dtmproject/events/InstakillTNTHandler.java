@@ -16,11 +16,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
 import dtmproject.playerdata.DTMPlayerData;
+import dtmproject.setup.DTMTeam;
 
 public class InstakillTNTHandler implements Listener {
 
@@ -41,7 +41,7 @@ public class InstakillTNTHandler implements Listener {
 
 		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(e.getPlayer());
 
-		Team team = pd.getTeam();
+		DTMTeam team = pd.getTeam();
 		if (team == null) {
 			e.setCancelled(true);
 			return;
@@ -52,7 +52,7 @@ public class InstakillTNTHandler implements Listener {
 		Location tntLocation = b.getLocation().clone();
 		tntLocation.add(new Vector(0.5, 0.5, 0.5));
 
-		World world = dtm.getGameWorldHandler().getCurrentMap().getWorld();
+		World world = dtm.getGameWorldHandler().getCurrentWorld();
 		TNTPrimed tnt = (TNTPrimed) world.spawnEntity(b.getLocation(), EntityType.PRIMED_TNT);
 		tnt.setFuseTicks(80);
 		tnts.put(tnt.getUniqueId(), e.getPlayer().getUniqueId());

@@ -86,6 +86,10 @@ public class DTMPlayerData {
 		emeralds += amount;
 	}
 
+	public void decreaseEmeralds(int amount) {
+		this.emeralds -= amount;
+	}
+
 	public void increaseKillStreak() {
 		killStreak++;
 	}

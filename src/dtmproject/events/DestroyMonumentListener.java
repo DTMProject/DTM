@@ -14,7 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.scoreboard.Team;
+
+import com.google.common.base.Joiner;
 
 import dtmproject.DTM;
 import dtmproject.logic.GameState;
@@ -111,10 +112,9 @@ public class DestroyMonumentListener implements Listener {
 
 	private void announcePlayerWhoBrokeTheMonument(Player p, DTMPlayerData pd, Monument mon, DTMTeam team) {
 		pd.getSeasonStats().increaseMonumentsDestroyed();
-		pd.setEmeralds(pd.getEmeralds() + 5);
+		pd.increaseEmeralds(5);
 		Bukkit.broadcastMessage("§e" + p.getDisplayName() + " §etuhosi monumentin " + team.getTeamColor() + mon
 				.getCustomName());
-
 	}
 
 	private Set<Player> getCloseByTeammates(Player p, DTMPlayerData pd) {
@@ -131,16 +131,6 @@ public class DestroyMonumentListener implements Listener {
 		return val;
 	}
 
-	private boolean ownPlayerClose(Player p, DTMPlayerData pd) {
-		for (Player p2 : pd.getTeam().getPlayers()) {
-			if (p2.getLocation().distance(p.getLocation()) < 10)
-				if (p2 != p)
-					if (p2.getGameMode() == GameMode.SURVIVAL)
-						return true;
-		}
-		return false;
-	}
-
 	private void handleBrokenMonument(Monument monument) {
 		monument.setBroken(true);
 		dtm.getScoreboardHandler().updateScoreboard();
@@ -149,24 +139,13 @@ public class DestroyMonumentListener implements Listener {
 		// If two or more teams alive winner != null
 		if (winner == null)
 			return;
-		String winnerList = "";
-		Set<Player> players = winner.getPlayers();
-		if (players.size() > 1) {
-			for (int i = 0; i < players.size() - 1; i++) {
-				winnerList += players.get(i).getDisplayName() + ", ";
-			}
-			winnerList = winnerList.substring(0, winnerList.length() - 2);
-			winnerList += "§e ja " + players.get(players.size() - 1).getDisplayName();
-		} else {
-			if (players.size() == 1)
-				winnerList += players.get(0).getDisplayName();
-		}
+		String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
+		Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
 		Bukkit.broadcastMessage(winner.getDisplayName() + " §e§lvoitti pelin!");
 		for (Player p : Bukkit.getOnlinePlayers())
 			p.setGameMode(GameMode.SPECTATOR);
 
 		// 50 points to the winner team, 15 to losers
-		// Calculate Elo ratings
 		LinkedHashSet<? extends DTMTeam> allTeams = dtm.getGameWorldHandler().getCurrentMap().getTeams();
 		for (DTMTeam team : allTeams) {
 			for (Player p : team.getPlayers()) {
@@ -198,7 +177,7 @@ public class DestroyMonumentListener implements Listener {
 
 		// EloHandler.updateEloRating(winner, allTeams);
 		dtm.getLogicHandler().restartGame();
-		dtm.getGameWorldHandler().getCurrentMap().setEnded(true);
+		dtm.getGameWorldHandler().getCurrentMap().end();
 	}
 
 	private DTMTeam getWinner() {

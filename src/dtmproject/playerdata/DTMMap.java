@@ -50,4 +50,8 @@ public class DTMMap {
 		throw new NotImplementedException();
 	}
 
+	public void end() {
+		
+	}
+
 }

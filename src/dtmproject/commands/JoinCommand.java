@@ -31,10 +31,10 @@ public class JoinCommand implements CommandExecutor {
 		Player p = (Player) sender;
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 		if (args.length == 0) {
-			if (pd.team == null)
+			if (pd.isSpectator())
 				pl.getLogicHandler().setPlayerToSmallestTeam(p);
 			else
-				p.sendMessage("§eOlet jo tiimissä " + pd.team.displayName);
+				p.sendMessage("§eOlet jo tiimissä " + pd.getTeam().getDisplayName());
 		}
 
 		return true;
