@@ -12,7 +12,6 @@ import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.TopCommand;
 import dtmproject.events.AnvilPlaceListener;
-import dtmproject.events.ArrowsDestroyBlocks;
 import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
 import dtmproject.events.DeathHandler;
@@ -35,7 +34,7 @@ public class DTM extends JavaPlugin {
 	private final ShopHandler shopHandler;
 
 	@Getter
-	private final ScoreboardManager sbManager;
+	private final ScoreboardHandler scoreboardHandler;
 
 	@Getter
 	private final DTMDataHandler dataHandler;
@@ -53,7 +52,7 @@ public class DTM extends JavaPlugin {
 	private final DeathHandler deathHandler;
 
 	public DTM() {
-		this.sbManager = new ScoreboardManager(this);
+		this.scoreboardHandler = new ScoreboardHandler(this);
 		this.shopHandler = new ShopHandler(this);
 		this.dataHandler = new DTMDataHandler(this);
 		this.logicHandler = new DTMLogicHandler(this);
@@ -80,7 +79,6 @@ public class DTM extends JavaPlugin {
 		pm.registerEvents(new SpawnProtectionListener(this), this);
 		// pm.registerEvents(new InstakillTNTHandler(this),
 		// this);
-		pm.registerEvents(new ArrowsDestroyBlocks(this), this);
 		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new TeamSpleefListener(this), this);
 		pm.registerEvents(new ChatHandler(this), this);
@@ -89,7 +87,7 @@ public class DTM extends JavaPlugin {
 
 		pm.registerEvents(deathHandler, this);
 		pm.registerEvents(shopHandler, this);
-		pm.registerEvents(sbManager, this);
+		pm.registerEvents(scoreboardHandler, this);
 
 		// Events from Nexus
 		pm.registerEvents(new PreWorldLoadListener(this), this);
@@ -104,7 +102,7 @@ public class DTM extends JavaPlugin {
 
 		dataHandler.init();
 
-		sbManager.updateScoreboard();
+		scoreboardHandler.updateScoreboard();
 
 		// Broadcast map changes not saved TODO
 		// Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {

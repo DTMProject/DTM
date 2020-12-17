@@ -1,7 +1,6 @@
 package dtmproject;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,18 +10,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import com.juubes.nexus.events.StartCountdownEvent;
 
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
 
-public class ScoreboardManager implements Listener {
+public class ScoreboardHandler implements Listener {
 	private final DTM dtm;
 	private Scoreboard globalScoreboard;
 
-	public ScoreboardManager(DTM dtm) {
+	public ScoreboardHandler(DTM dtm) {
 		this.dtm = dtm;
 	}
 
@@ -97,10 +95,5 @@ public class ScoreboardManager implements Listener {
 
 	public Scoreboard getGlobalScoreboard() {
 		return globalScoreboard;
-	}
-
-	@EventHandler
-	public void onCountdownStart(StartCountdownEvent e) {
-		this.updateScoreboard();
 	}
 }

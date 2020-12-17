@@ -1,10 +1,10 @@
 package dtmproject.playerdata;
 
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
 import dtmproject.setup.DTMTeam;
@@ -23,16 +23,14 @@ public class DTMPlayerData {
 	@Setter
 	private String lastSeenName, prefix;
 
-	@Getter
 	@Setter
-	private Optional<UUID> lastDamager, lastMessager;
+	private UUID lastDamager, lastMessager;
 
 	@Getter
 	@Setter
 	private DTMTeam team;
 
 	@Getter
-	@Setter
 	private int emeralds, killStreak;
 
 	@Getter
@@ -76,6 +74,30 @@ public class DTMPlayerData {
 		return new DTMTotalStats(this.uuid, this.seasonStats);
 	}
 
+	public boolean isSpectator() {
+		return this.team == null;
+	}
+
+	public void increaseEmeralds() {
+		increaseEmeralds(1);
+	}
+
+	public void increaseEmeralds(int amount) {
+		emeralds += amount;
+	}
+
+	public void increaseKillStreak() {
+		killStreak++;
+	}
+
+	public Player getLastDamager() {
+		return Bukkit.getPlayer(lastDamager);
+	}
+
+	public Player getLastMessager() {
+		return Bukkit.getPlayer(lastMessager);
+	}
+
 	@Override
 	public String toString() {
 		DTMTotalStats totalStats = this.getTotalStats();
@@ -99,7 +121,8 @@ public class DTMPlayerData {
 		return str;
 	}
 
-	public boolean isSpectator() {
-		return this.team == null;
+	public String getDisplayName() {
+		return team.getTeamColor() + lastSeenName + "§e";
 	}
+
 }

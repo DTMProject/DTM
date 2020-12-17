@@ -31,6 +31,8 @@ public class DTMLogicHandler {
 		}
 
 		this.gameState = GameState.RUNNING;
+
+		pl.getScoreboardHandler().updateScoreboard();
 	}
 
 	public void togglePause() {
@@ -81,7 +83,6 @@ public class DTMLogicHandler {
 
 	public void restartGame() {
 		// TODO
-		
-	}
 
+	}
 }

@@ -1,5 +1,6 @@
 package dtmproject.setup;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class DTMTeam {
 
 	@Getter
 	@Setter
-	private Monument[] monuments;
+	private LinkedHashSet<Monument> monuments;
 
 	public Set<Player> getPlayers() {
 		return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)
