@@ -152,15 +152,14 @@ public class DTMDataHandler {
 	}
 
 	public DTMPlayerData getPlayerData(Player p) {
-		return this.getPlayerData(p.getUniqueId());
+		return getPlayerData(p.getUniqueId());
 	}
 
 	public DTMPlayerData getPlayerData(UUID uuid) {
-		return null;
+		return loadedPlayerdata.get(uuid);
 	}
 
 	public void savePlayerData(UUID uuid) {
-		// TODO Auto-generated method stub
 
 	}
 

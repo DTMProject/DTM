@@ -85,7 +85,6 @@ public class DTM extends JavaPlugin {
 		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new DestroyMonumentListener(this), this);
 		pm.registerEvents(new SpawnProtectionListener(this), this);
-		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new TeamSpleefListener(this), this);
 		pm.registerEvents(new ChatHandler(this), this);
 		pm.registerEvents(new AnvilPlaceListener(), this);

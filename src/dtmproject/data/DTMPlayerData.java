@@ -60,6 +60,9 @@ public class DTMPlayerData {
 		this.emeralds = emeralds;
 		this.killStreak = killStreak;
 		this.seasonStats = seasonStats;
+
+		if (getSeasonStats() == null)
+			this.seasonStats.put(dtm.getSeason(), new DTMSeasonStats(uuid, dtm.getSeason()));
 	}
 
 	public DTMSeasonStats getSeasonStats() {
