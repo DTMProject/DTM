@@ -33,7 +33,7 @@ import org.bukkit.potion.PotionEffectType;
 import dtmproject.DTM;
 import dtmproject.WorldlessLocation;
 import dtmproject.logic.GameState;
-import dtmproject.logic.GameWorldHandler;
+import dtmproject.logic.GameMapHandler;
 import dtmproject.playerdata.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 
@@ -210,7 +210,7 @@ public class DeathHandler implements Listener {
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		Player p = e.getPlayer();
-		GameWorldHandler gwh = pl.getGameWorldHandler();
+		GameMapHandler gwh = pl.getGameWorldHandler();
 		if (e.getMessage().equals("/teams")) {
 			e.setCancelled(true);
 			p.sendMessage("§ePelaajamäärät:");

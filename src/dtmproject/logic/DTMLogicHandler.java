@@ -4,10 +4,14 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+
+import com.juubes.nexus.data.AbstractPlayerData;
+import com.juubes.nexus.events.StartCountdownEvent;
 
 import dtmproject.DTM;
 import dtmproject.playerdata.DTMMap;
@@ -18,12 +22,14 @@ import net.md_5.bungee.api.ChatColor;
 
 public class DTMLogicHandler {
 	private final DTM pl;
+	private final GameWorldHandler gwh;
 
 	@Getter
 	private GameState gameState;
 
 	public DTMLogicHandler(DTM pl) {
 		this.pl = pl;
+		this.gwh = pl.getGameWorldHandler();
 	}
 
 	public void startGame(Optional<String> mapRequest) {
@@ -34,6 +40,25 @@ public class DTMLogicHandler {
 		this.gameState = GameState.RUNNING;
 
 		pl.getScoreboardHandler().updateScoreboard();
+	}
+
+	private void loadNextGame() {
+		DTMMap currentMap = pl.getGameWorldHandler().nextRandomMap();
+				
+		if (currentGame == null)
+			throw new NullPointerException();
+
+		countdownHandler.startGameCountdown(20);
+		gameState = GameState.COUNTDOWN;
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			DTMPlayerData pd = pl.getDatabaseManager().getPlayerData(p.getUniqueId());
+			pd.setTeam(null);
+			pd.setLastDamager(null);
+		}
+		Bukkit.getPluginManager().callEvent(new StartCountdownEvent(pl.getGameWorldManager().getCurrentMapID()));
+		countdownHandler.stopChangeMapCountdown();
+
 	}
 
 	public void togglePause() {
@@ -88,7 +113,7 @@ public class DTMLogicHandler {
 	}
 
 	public void setPlayerToSmallestTeam(Player p) {
-		
+
 	}
 
 	public DTMTeam getSmallestTeam() {

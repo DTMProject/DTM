@@ -8,16 +8,17 @@ import dtmproject.playerdata.DTMMap;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class GameWorldHandler {
+public class GameMapHandler {
 	private final DTM pl;
 
 	@Getter
 	private World currentWorld;
 
 	@Getter
+	@NonNull
 	private DTMMap currentMap;
 
-	public GameWorldHandler(DTM pl) {
+	public GameMapHandler(DTM pl) {
 		this.pl = pl;
 	}
 

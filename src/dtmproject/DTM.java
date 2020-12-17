@@ -17,12 +17,12 @@ import dtmproject.events.ConnectionListener;
 import dtmproject.events.DeathHandler;
 import dtmproject.events.DestroyMonumentListener;
 import dtmproject.events.FixTeleport;
-import dtmproject.events.PreWorldLoadListener;
 import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.DTMLogicHandler;
-import dtmproject.logic.GameWorldHandler;
+import dtmproject.logic.GameMapHandler;
 import dtmproject.playerdata.DTMDataHandler;
+import dtmproject.scoreboard.ScoreboardHandler;
 import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
 import lombok.Getter;
@@ -46,7 +46,7 @@ public class DTM extends JavaPlugin {
 	private final EditModeCommand editModeHandler;
 
 	@Getter
-	private final GameWorldHandler gameWorldHandler;
+	private final GameMapHandler gameWorldHandler;
 
 	@Getter
 	private final DeathHandler deathHandler;
@@ -56,33 +56,27 @@ public class DTM extends JavaPlugin {
 		this.shopHandler = new ShopHandler(this);
 		this.dataHandler = new DTMDataHandler(this);
 		this.logicHandler = new DTMLogicHandler(this);
-		this.gameWorldHandler = new GameWorldHandler(this);
+		this.gameWorldHandler = new GameMapHandler(this);
 		this.editModeHandler = new EditModeCommand(this);
 		this.deathHandler = new DeathHandler(this);
 	}
 
 	@Override
 	public void onEnable() {
-		// TODO: all the commands
+		this.saveDefaultConfig();
 
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new DestroyMonumentListener(this), this);
 		pm.registerEvents(new SpawnProtectionListener(this), this);
-		// pm.registerEvents(new InstakillTNTHandler(this),
-		// this);
 		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new TeamSpleefListener(this), this);
 		pm.registerEvents(new ChatHandler(this), this);
 		pm.registerEvents(new AnvilPlaceListener(), this);
 		pm.registerEvents(new FixTeleport(), this);
-
 		pm.registerEvents(deathHandler, this);
 		pm.registerEvents(shopHandler, this);
 		pm.registerEvents(scoreboardHandler, this);
-
-		// Events from Nexus
-		pm.registerEvents(new PreWorldLoadListener(this), this);
 
 		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
@@ -91,26 +85,27 @@ public class DTM extends JavaPlugin {
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
 
-		saveDefaultConfig();
-
 		dataHandler.init();
 
 		// Load playerdata; only runs after reloads
 		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
 
+		// Load first map
+		logicHandler.restartGame();
+		
+		// Initialize and update the scoreboard
+		scoreboardHandler.loadGlobalScoreboard();
 		scoreboardHandler.updateScoreboard();
-
-		// Broadcast map changes not saved TODO
-		// Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-		// for (CommandSender sender : this.getEditModeHandler().getPendingList()) {
-		// sender.sendMessage("§eDTM-mappeja ei ole tallennettu.");
-		// }
-		// }, 20 * 20, 20 * 20);
+		
+		// Broadcast map changes not saved
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> this.getEditModeHandler().getPendingList().forEach(
+				sender -> sender.sendMessage("§eDTM-mappeja ei ole tallennettu.")), 20 * 20, 20 * 20);
 
 		// Autosave every 3 minutes
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-			Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
-		}, 3 * 60 * 20, 3 * 60 * 20);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Bukkit.getOnlinePlayers().forEach(p -> this
+				.getDataHandler().savePlayerData(p.getUniqueId())), 3 * 60 * 20, 3 * 60 * 20);
+		
+		
 	}
 
 	@Override
