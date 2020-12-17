@@ -7,10 +7,8 @@ depends:
 database: true
 api-version: 1.12.2
 commands:
-   setmonument: {}
    DTM: {}
    top: {}
-   createmap: {}
    shop:
       aliases:
       - s
@@ -45,3 +43,4 @@ commands:
    playtime:
       aliases:
       - gametime
+   setmonument: {}

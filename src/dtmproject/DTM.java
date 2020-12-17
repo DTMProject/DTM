@@ -63,15 +63,7 @@ public class DTM extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-
 		// TODO: all the commands
-		getCommand("join").setExecutor(new JoinCommand(this));
-		getCommand("spec").setExecutor(new SpectateCommand(this));
-		getCommand("top").setExecutor(new TopCommand(this));
-		getCommand("shop").setExecutor(new ShopCommand(this));
-
-		// Load playerdata; only runs after reloads
-		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
 
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new ConnectionListener(this), this);
@@ -92,15 +84,19 @@ public class DTM extends JavaPlugin {
 		// Events from Nexus
 		pm.registerEvents(new PreWorldLoadListener(this), this);
 
-		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
-		// getCommand("createmap").setExecutor(new CreateMapCommand(nexus));
 		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
 		getCommand("shop").setExecutor(new ShopCommand(this));
+		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
+		getCommand("join").setExecutor(new JoinCommand(this));
+		getCommand("spec").setExecutor(new SpectateCommand(this));
 
 		saveDefaultConfig();
 
 		dataHandler.init();
+
+		// Load playerdata; only runs after reloads
+		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
 
 		scoreboardHandler.updateScoreboard();
 
@@ -111,6 +107,7 @@ public class DTM extends JavaPlugin {
 		// }
 		// }, 20 * 20, 20 * 20);
 
+		// Autosave every 3 minutes
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
 			Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
 		}, 3 * 60 * 20, 3 * 60 * 20);
