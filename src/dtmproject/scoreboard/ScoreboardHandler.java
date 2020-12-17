@@ -39,7 +39,7 @@ public class ScoreboardHandler implements Listener {
 	}
 
 	public void updateScoreboard() {
-		DTMMap currentMap = Objects.requireNonNull(pl.getMapHandler().getCurrentMap());
+		DTMMap currentMap = Objects.requireNonNull(pl.getLogicHandler().getCurrentMap());
 		Objective obj = globalScoreboard.getObjective(DisplaySlot.SIDEBAR);
 		if (obj != null)
 			obj.unregister();

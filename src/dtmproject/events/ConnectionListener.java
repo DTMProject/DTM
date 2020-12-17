@@ -12,15 +12,15 @@ import dtmproject.DTM;
 import dtmproject.data.DTMPlayerData;
 
 public class ConnectionListener implements Listener {
-	private final DTM dtm;
+	private final DTM pl;
 
-	public ConnectionListener(DTM dtm) {
-		this.dtm = dtm;
+	public ConnectionListener(DTM pl) {
+		this.pl = pl;
 	}
 
 	@EventHandler
 	public void onAsyncJoin(AsyncPlayerPreLoginEvent e) {
-		dtm.getDataHandler().loadPlayerData(e.getUniqueId(), e.getName());
+		pl.getDataHandler().loadPlayerData(e.getUniqueId(), e.getName());
 	}
 
 	@EventHandler
@@ -28,7 +28,7 @@ public class ConnectionListener implements Listener {
 		e.setJoinMessage(null);
 
 		Player p = e.getPlayer();
-		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
 		if (pd == null) {
 			p.kickPlayer("§ewtf, null playerdata");
@@ -39,7 +39,7 @@ public class ConnectionListener implements Listener {
 		p.getActivePotionEffects().clear();
 
 		// Setup scoreboard
-		p.setScoreboard(dtm.getScoreboardHandler().getGlobalScoreboard());
+		p.setScoreboard(pl.getScoreboardHandler().getGlobalScoreboard());
 
 		// Update LastSeenName
 		pd.setLastSeenName(p.getName());
@@ -48,7 +48,7 @@ public class ConnectionListener implements Listener {
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getLastSeenName());
 
-		pd.setTeam(null);
+		pl.getLogicHandler().getCurrentMap().sendToSpectate(p);
 	}
 
 	@EventHandler
@@ -57,11 +57,11 @@ public class ConnectionListener implements Listener {
 
 		Player p = e.getPlayer();
 		p.getActivePotionEffects().clear();
-		DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 		if (Bukkit.getOnlinePlayers().size() <= 15)
 			Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getLastSeenName());
 
-		dtm.getDeathHandler().clearLastHits(p);
-		dtm.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
+		pl.getDeathHandler().clearLastHits(p);
+		pl.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
 	}
 }

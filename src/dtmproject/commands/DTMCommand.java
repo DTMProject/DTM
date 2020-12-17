@@ -26,15 +26,16 @@ public class DTMCommand implements CommandExecutor {
 			sender.sendMessage("§c/DTM <status>");
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("status")) {
-				DTMMap map = pl.getMapHandler().getCurrentMap();
+				DTMMap map = pl.getLogicHandler().getCurrentMap();
 				sender.sendMessage("§eDTM status:");
 				sender.sendMessage("§eMap ID: " + map.getId());
 				sender.sendMessage("§eMap name: " + map.getDisplayName());
 				map.getTeams().forEach(team -> {
-					sender.sendMessage(team.getDisplayName() + ": §e" + team.getPlayers().size() + " pelaajaa");
+					sender.sendMessage(team.getTeamColor() + team.getDisplayName() + "§e: " + team.getPlayers().size()
+							+ " pelaajaa");
 					team.getMonuments().forEach(mon -> {
-						String intactStr = mon.isBroken() ? "rikki" : "ehjä";
-						sender.sendMessage("    " + mon.getCustomName() + ": " + intactStr);
+						String intactStr = mon.isBroken() ? "§crikki" : "§aehjä";
+						sender.sendMessage("    " + team.getTeamColor() + mon.getCustomName() + ": " + intactStr);
 					});
 				});
 			}

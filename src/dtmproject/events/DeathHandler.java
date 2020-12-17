@@ -35,18 +35,15 @@ import dtmproject.WorldlessLocation;
 import dtmproject.data.DTMMap;
 import dtmproject.data.DTMPlayerData;
 import dtmproject.logic.GameState;
-import dtmproject.logic.MapHandler;
 import dtmproject.setup.DTMTeam;
 
 public class DeathHandler implements Listener {
 	private final DTM pl;
-	private final MapHandler gmh;
 
 	private boolean broadcastMessages = true;
 
 	public DeathHandler(DTM dtm) {
 		this.pl = dtm;
-		this.gmh = pl.getMapHandler();
 	}
 
 	public void fakeKillPlayer(Player p) {
@@ -117,7 +114,7 @@ public class DeathHandler implements Listener {
 		DTMPlayerData playerData = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 		// Reset
-		pl.getMapHandler().getCurrentMap().sendPlayerToGame(p);
+		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(p);
 		p.setGameMode(GameMode.SPECTATOR);
 
 		if (playerData.getLastDamager() != null)
@@ -134,7 +131,7 @@ public class DeathHandler implements Listener {
 			if (p.getGameMode() != GameMode.SPECTATOR)
 				return;
 			else {
-				World world = Bukkit.getWorld(pl.getMapHandler().getCurrentMap().getId());
+				World world = Bukkit.getWorld(pl.getLogicHandler().getCurrentMap().getId());
 				WorldlessLocation spawn = playerData.getTeam().getSpawn();
 				Location realSpawn = spawn.toLocation(world);
 				p.teleport(realSpawn);
@@ -215,18 +212,17 @@ public class DeathHandler implements Listener {
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		Player p = e.getPlayer();
-		MapHandler gwh = pl.getMapHandler();
 		if (e.getMessage().equals("/teams")) {
 			e.setCancelled(true);
 			p.sendMessage("§ePelaajamäärät:");
-			for (DTMTeam team : gwh.getCurrentMap().getTeams())
+			for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams())
 				p.sendMessage(team.getDisplayName() + ": " + team.getPlayers().size());
 		} else if (e.getMessage().equals("/restoremonuments") && p.isOp()) {
 			e.setCancelled(true);
 
 			// Repair monuments
-			gwh.getCurrentMap().getTeams().forEach(team -> team.getMonuments().forEach(mon -> mon.repair(gwh
-					.getCurrentWorld())));
+			pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> team.getMonuments().forEach(mon -> mon
+					.repair(pl.getLogicHandler().getCurrentWorld())));
 			pl.getScoreboardHandler().updateScoreboard();
 		} else if (e.getMessage().equals("/ram") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
@@ -335,8 +331,8 @@ public class DeathHandler implements Listener {
 			if (p.getGameMode() == GameMode.SURVIVAL)
 				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(), DamageCause.VOID, 100));
 			else {
-				DTMMap currentMap = pl.getMapHandler().getCurrentMap();
-				World currentWorld = pl.getMapHandler().getCurrentWorld();
+				DTMMap currentMap = pl.getLogicHandler().getCurrentMap();
+				World currentWorld = pl.getLogicHandler().getCurrentWorld();
 				p.teleport(currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(currentWorld));
 
 			}

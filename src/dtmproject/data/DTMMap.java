@@ -19,7 +19,6 @@ import com.google.common.base.Joiner;
 import dtmproject.DTM;
 import dtmproject.TeamArmorUtils;
 import dtmproject.WorldlessLocation;
-import dtmproject.logic.MapHandler;
 import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.NonNull;
@@ -28,7 +27,6 @@ import net.md_5.bungee.api.ChatColor;
 
 public class DTMMap {
 	private final DTM pl;
-	private final MapHandler gmh;
 
 	@NonNull
 	@Getter
@@ -58,10 +56,12 @@ public class DTMMap {
 	@Setter
 	private ItemStack[] kit;
 
+	@Getter
+	private boolean running;
+
 	public DTMMap(DTM pl, @NonNull String id, @NonNull String displayName, WorldlessLocation lobby, int ticks,
 			LinkedHashSet<DTMTeam> teams) {
 		this.pl = pl;
-		this.gmh = pl.getMapHandler();
 		this.id = id;
 		this.displayName = displayName;
 		this.lobby = Optional.of(lobby);
@@ -127,11 +127,11 @@ public class DTMMap {
 			p.setGameMode(GameMode.SPECTATOR);
 
 		// 50 points to the winner team, 15 to losers
-		LinkedHashSet<? extends DTMTeam> allTeams = pl.getMapHandler().getCurrentMap().getTeams();
+		LinkedHashSet<? extends DTMTeam> allTeams = pl.getLogicHandler().getCurrentMap().getTeams();
 		for (DTMTeam team : allTeams) {
 			for (Player p : team.getPlayers()) {
 				DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
-				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - pl.getMapHandler().getCurrentMap()
+				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap()
 						.getStartTime()) / 1000 / 60), 60);
 
 				int loserPoints = minutesPlayed * 5;
@@ -165,9 +165,8 @@ public class DTMMap {
 		p.setGameMode(GameMode.SPECTATOR);
 
 		// Teleport to lobby
-		DTMMap currentMap = gmh.getCurrentMap();
-		World currentWorld = gmh.getCurrentWorld();
-		Location lobby = currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(currentWorld);
+		World currentWorld = pl.getLogicHandler().getCurrentWorld();
+		Location lobby = getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(currentWorld);
 		p.teleport(lobby);
 
 		if (p.getWorld() != currentWorld)
@@ -176,7 +175,7 @@ public class DTMMap {
 		if (lobby != null) {
 			p.teleport(lobby);
 		} else {
-			System.err.println("Lobby null for map " + currentMap.getDisplayName());
+			System.err.println("Lobby null for map " + getDisplayName());
 			p.teleport(new Location(currentWorld, 0, 100, 0));
 		}
 		p.setGameMode(GameMode.SPECTATOR);
@@ -186,7 +185,7 @@ public class DTMMap {
 		p.setDisplayName("§7" + p.getName());
 		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] §7" + p
 				.getName());
-		p.setCustomName(pd.getTeam().getTeamColor() + p.getName());
+		p.setCustomName("§7" + p.getName());
 		p.setCustomNameVisible(false);
 
 	}
@@ -199,10 +198,10 @@ public class DTMMap {
 		p.setHealthScale(20);
 		p.setHealth(p.getHealthScale());
 		p.setFoodLevel(20);
-		p.teleport(pd.getTeam().getSpawn().toLocation(pl.getMapHandler().getCurrentWorld()));
+		p.teleport(pd.getTeam().getSpawn().toLocation(pl.getLogicHandler().getCurrentWorld()));
 		p.setGameMode(GameMode.SURVIVAL);
 
-		p.getInventory().setContents(pl.getMapHandler().getCurrentMap().getKit());
+		p.getInventory().setContents(pl.getLogicHandler().getCurrentMap().getKit());
 		p.getInventory().setArmorContents(TeamArmorUtils.getArmorForTeam(p, pd.getTeam()));
 
 		updateNameTag(p);
@@ -220,5 +219,4 @@ public class DTMMap {
 		if (pd.getTeam() != null)
 			pl.getNameTagColorer().changeNameTag(p, pd.getTeam().getTeamColor());
 	}
-
 }

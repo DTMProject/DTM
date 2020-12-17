@@ -25,10 +25,10 @@ public class SpawnProtectionListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 
-		if (p.getWorld() != dtm.getMapHandler().getCurrentWorld())
+		if (p.getWorld() != dtm.getLogicHandler().getCurrentWorld())
 			return;
 		// Spawnprotection
-		for (DTMTeam team : dtm.getMapHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam team : dtm.getLogicHandler().getCurrentMap().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
@@ -46,10 +46,10 @@ public class SpawnProtectionListener implements Listener {
 		if (dtm.getLogicHandler().getGameState() != GameState.RUNNING)
 			return;
 		Player p = e.getPlayer();
-		if (p.getWorld() != dtm.getMapHandler().getCurrentWorld())
+		if (p.getWorld() != dtm.getLogicHandler().getCurrentWorld())
 			return;
 		// Spawnprotection
-		for (DTMTeam team : dtm.getMapHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam team : dtm.getLogicHandler().getCurrentMap().getTeams()) {
 			if (team.getSpawn() == null)
 				continue;
 			Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();

@@ -40,7 +40,7 @@ public class CountdownHandler {
 			if (startGame > 0) {
 				startGame--;
 			} else if (startGame == 0) {
-				for (DTMTeam team : pl.getMapHandler().getCurrentMap().getTeams()) {
+				for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
 					if (team.getPlayers().size() == 0) {
 						Bukkit.broadcastMessage("§ePelissä ei ole tarpeeksi pelaajia.");
 						startGame = 30;

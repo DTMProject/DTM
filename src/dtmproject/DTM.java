@@ -9,9 +9,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dtmproject.commands.DTMCommand;
 import dtmproject.commands.EditModeCommand;
+import dtmproject.commands.GetposCommand;
 import dtmproject.commands.JoinCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
+import dtmproject.commands.StartCommand;
 import dtmproject.commands.TopCommand;
 import dtmproject.data.DTMDataHandler;
 import dtmproject.events.AnvilPlaceListener;
@@ -25,7 +27,6 @@ import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.CountdownHandler;
 import dtmproject.logic.DTMLogicHandler;
-import dtmproject.logic.MapHandler;
 import dtmproject.scoreboard.ScoreboardHandler;
 import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
@@ -50,9 +51,6 @@ public class DTM extends JavaPlugin {
 	private final EditModeCommand editModeHandler;
 
 	@Getter
-	private final MapHandler mapHandler;
-
-	@Getter
 	private final DeathHandler deathHandler;
 
 	@Getter
@@ -69,7 +67,6 @@ public class DTM extends JavaPlugin {
 		this.shopHandler = new ShopHandler(this);
 		this.dataHandler = new DTMDataHandler(this);
 		this.logicHandler = new DTMLogicHandler(this);
-		this.mapHandler = new MapHandler(this);
 		this.editModeHandler = new EditModeCommand(this);
 		this.deathHandler = new DeathHandler(this);
 		this.countdownHandler = new CountdownHandler(this);
@@ -99,6 +96,8 @@ public class DTM extends JavaPlugin {
 		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
+		getCommand("start").setExecutor(new StartCommand(this));
+		getCommand("getpos").setExecutor(new GetposCommand());
 
 		// Init datahandler
 		dataHandler.init();
@@ -132,6 +131,9 @@ public class DTM extends JavaPlugin {
 	public void onDisable() {
 		// Save playerdata
 		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
+
+		// Empty playerdata saving queue
+		dataHandler.getDataSaver().emptyQueueSync();
 	}
 
 	public int getSeason() {

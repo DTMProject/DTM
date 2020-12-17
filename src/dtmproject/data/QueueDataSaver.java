@@ -14,6 +14,7 @@ import dtmproject.DTM;
 public class QueueDataSaver {
 	private Queue<DTMPlayerData> queuedData = new LinkedBlockingQueue<>();
 	private final DTM dtm;
+	private Runnable saveTask;
 
 	public static final String SAVE_STATS_SQL = "INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)";
 	public static final String SAVE_PLAYERDATA_SQL = "INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak)";
@@ -23,7 +24,7 @@ public class QueueDataSaver {
 	}
 
 	public void init() {
-		Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, () -> {
+		this.saveTask = () -> {
 			if (queuedData.size() == 0)
 				return;
 			try (Connection conn = dtm.getDataHandler().getHDS().getConnection()) {
@@ -32,7 +33,6 @@ public class QueueDataSaver {
 						PreparedStatement stmt2 = conn.prepareStatement(SAVE_STATS_SQL)) {
 
 					while ((data = queuedData.poll()) != null) {
-						System.out.println("Saving playrerdata for " + data.getLastSeenName());
 						stmt1.setString(1, data.getUuid().toString());
 						stmt1.setString(2, data.getLastSeenName());
 						stmt1.setString(3, data.getPrefix());
@@ -61,7 +61,8 @@ public class QueueDataSaver {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}, 20, 20);
+		};
+		Bukkit.getScheduler().runTaskTimerAsynchronously(dtm, saveTask, 20, 20);
 
 	}
 
@@ -75,6 +76,10 @@ public class QueueDataSaver {
 				return true;
 		}
 		return false;
+	}
+
+	public void emptyQueueSync() {
+		this.saveTask.run();
 	}
 
 }

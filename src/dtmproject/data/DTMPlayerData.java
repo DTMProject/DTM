@@ -14,7 +14,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class DTMPlayerData {
 	@Getter
-	private final DTM dtm;
+	private final DTM pl;
 
 	@Getter
 	private final UUID uuid;
@@ -53,7 +53,7 @@ public class DTMPlayerData {
 	// TODO: injektaa plugin instanssi
 	public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
 			HashMap<Integer, DTMSeasonStats> seasonStats) {
-		this.dtm = dtm;
+		this.pl = dtm;
 		this.uuid = uuid;
 		this.lastSeenName = lastSeenName;
 		this.prefix = prefix;
@@ -66,7 +66,7 @@ public class DTMPlayerData {
 	}
 
 	public DTMSeasonStats getSeasonStats() {
-		return getSeasonStats(dtm.getSeason());
+		return getSeasonStats(pl.getSeason());
 	}
 
 	public DTMSeasonStats getSeasonStats(int season) {

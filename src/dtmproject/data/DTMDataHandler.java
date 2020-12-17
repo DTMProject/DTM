@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -96,7 +97,8 @@ public class DTMDataHandler {
 		// Load default maps
 		System.out.println("Loading maps...");
 		pl.getDefaultMapLoader().getMaps().forEach(map -> loadedMaps.put(map.getId(), map));
-		System.out.println(Joiner.on(", ").join(loadedMaps.entrySet().stream().map(entry -> entry.getKey()).iterator()));
+		System.out.println(Joiner.on(", ").join(loadedMaps.entrySet().stream().map(entry -> entry.getKey())
+				.iterator()));
 	}
 
 	/**
@@ -160,13 +162,14 @@ public class DTMDataHandler {
 	}
 
 	public void savePlayerData(UUID uuid) {
-
+		dataSaver.queue(this.getPlayerData(uuid));
 	}
 
+	// TODO: queue this shit
 	public void unloadPlayerdata(UUID uuid, boolean save) {
 		if (save)
-			savePlayerData(uuid);
-		unloadPlayerdata(uuid);
+			this.savePlayerData(uuid);
+		this.unloadPlayerdata(uuid);
 	}
 
 	public void unloadPlayerdata(UUID uuid) {
@@ -174,8 +177,7 @@ public class DTMDataHandler {
 	}
 
 	public DTMMap createMapIfNotExists(String mapID) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -188,7 +190,7 @@ public class DTMDataHandler {
 
 	public void saveMap(DTMMap map) {
 		// TODO Auto-generated method stub
-
+		throw new NotImplementedException();
 	}
 
 	/**

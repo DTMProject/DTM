@@ -54,12 +54,12 @@ public class DestroyMonumentListener implements Listener {
 		}
 
 		Block b = e.getBlock();
-		if (b.getWorld() != dtm.getMapHandler().getCurrentWorld())
+		if (b.getWorld() != dtm.getLogicHandler().getCurrentWorld())
 			return;
 
 		if (!e.getBlock().getType().equals(Material.OBSIDIAN))
 			return;
-		for (DTMTeam nt : dtm.getMapHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam nt : dtm.getLogicHandler().getCurrentMap().getTeams()) {
 			DTMTeam team = (DTMTeam) nt;
 			for (Monument mon : team.getMonuments()) {
 				if (!e.getBlock().equals(mon.getBlock().getBlock(e.getBlock().getWorld())))
@@ -136,7 +136,7 @@ public class DestroyMonumentListener implements Listener {
 		if (winner == null)
 			return;
 
-		dtm.getMapHandler().getCurrentMap().end(winner);
+		dtm.getLogicHandler().getCurrentMap().end(winner);
 	}
 
 	private DTMTeam getWinner() {
@@ -144,7 +144,7 @@ public class DestroyMonumentListener implements Listener {
 		DTMTeam onlyOneAlive = null;
 
 		// Iterate teams and test for solid monuments
-		for (DTMTeam team : dtm.getMapHandler().getCurrentMap().getTeams()) {
+		for (DTMTeam team : dtm.getLogicHandler().getCurrentMap().getTeams()) {
 			boolean hasMonuments = false;
 			for (Monument mon : team.getMonuments()) {
 				if (!mon.isBroken())
