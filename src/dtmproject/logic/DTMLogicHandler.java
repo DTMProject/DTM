@@ -10,9 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.juubes.nexus.data.AbstractPlayerData;
-import com.juubes.nexus.events.StartCountdownEvent;
-
 import dtmproject.DTM;
 import dtmproject.playerdata.DTMMap;
 import dtmproject.playerdata.DTMPlayerData;
@@ -22,7 +19,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class DTMLogicHandler {
 	private final DTM pl;
-	private final GameWorldHandler gwh;
+	private final GameMapHandler gwh;
 
 	@Getter
 	private GameState gameState;
@@ -32,33 +29,70 @@ public class DTMLogicHandler {
 		this.gwh = pl.getGameWorldHandler();
 	}
 
-	public void startGame(Optional<String> mapRequest) {
-		if (!mapRequest.isPresent()) {
-			pl.getGameWorldHandler().nextMap(mapRequest.get());
-		}
-
+	/**
+	 * Starts the already loaded game. Sends joined players to game.
+	 */
+	public void startGame() {
 		this.gameState = GameState.RUNNING;
-
-		pl.getScoreboardHandler().updateScoreboard();
+		throw new NotImplementedException();
 	}
 
-	private void loadNextGame() {
-		DTMMap currentMap = pl.getGameWorldHandler().nextRandomMap();
-				
-		if (currentGame == null)
-			throw new NullPointerException();
+	/**
+	 * 1. Loads the new game. <br>
+	 * 2. Teleports players to new world. <br>
+	 * 3. Unloads last game.
+	 */
+	public void loadNextGame(Optional<String> mapRequest) {
+		DTMMap lastMap = pl.getGameWorldHandler().getCurrentMap();
+		String[] maps = pl.getMapList();
 
-		countdownHandler.startGameCountdown(20);
+		DTMMap selectedMap;
+		if (mapRequest.isPresent()) {
+			// Select requested
+			int foundIndex = -1;
+			for (int i = 0; i < maps.length; i++) {
+				if (maps[i] == mapRequest.get()) {
+					foundIndex = i;
+					break;
+				}
+			}
+
+			selectedMap = pl.getDataHandler().getMap(foundIndex == -1 ? maps[foundIndex]
+					: selectRandomMapId(maps, lastMap.getId()));
+		} else {
+			// Select random map -- exclude last map
+			selectedMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMap.getId()));
+		}
+
+		pl.getCountdownHandler().startGameCountdown(20);
 		gameState = GameState.COUNTDOWN;
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			DTMPlayerData pd = pl.getDatabaseManager().getPlayerData(p.getUniqueId());
+			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 			pd.setTeam(null);
 			pd.setLastDamager(null);
 		}
-		Bukkit.getPluginManager().callEvent(new StartCountdownEvent(pl.getGameWorldManager().getCurrentMapID()));
-		countdownHandler.stopChangeMapCountdown();
+		// TODO: Callevent start countdown
+		pl.getCountdownHandler().stopChangeMapCountdown();
 
+	}
+
+	// private String getRandomOtherMapID(String lastMapID) {
+	// String[] maps = pl.getMapList();
+	// List<String> mapsList = Arrays.asList(maps);
+	// mapsList.remove(lastMapID);
+	// mapsList.get((int) (Math.random() * mapsList.size()));
+	// return mapsList.get(0);
+	// }
+
+	private String selectRandomMapId(String[] maps, String lastMapId) {
+		int randIndex = (int) (Math.random() * maps.length);
+		if (maps.length > 1) {
+			while (maps[randIndex].equals(lastMapId)) {
+				randIndex = (int) (Math.random() * maps.length);
+			}
+		}
+		return maps[randIndex];
 	}
 
 	public void togglePause() {
@@ -81,8 +115,8 @@ public class DTMLogicHandler {
 		p.setGameMode(GameMode.SPECTATOR);
 
 		// Teleport to lobby
-		DTMMap currentMap = pl.getGameWorldHandler().getCurrentMap();
-		World currentWorld = pl.getGameWorldHandler().getCurrentWorld();
+		DTMMap currentMap = gwh.getCurrentMap();
+		World currentWorld = gwh.getCurrentWorld();
 		Location lobby = currentMap.getLobby().toLocation(currentWorld);
 		p.teleport(lobby);
 
@@ -113,11 +147,12 @@ public class DTMLogicHandler {
 	}
 
 	public void setPlayerToSmallestTeam(Player p) {
-
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+		pd.setTeam(getSmallestTeam());
 	}
 
 	public DTMTeam getSmallestTeam() {
-		Iterator<DTMTeam> teams = pl.getGameWorldHandler().getCurrentMap().getTeams().iterator();
+		Iterator<DTMTeam> teams = gwh.getCurrentMap().getTeams().iterator();
 		DTMTeam smallest = teams.next();
 		while (teams.hasNext()) {
 			DTMTeam anotherTeam = teams.next();

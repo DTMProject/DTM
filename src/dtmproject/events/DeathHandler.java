@@ -47,7 +47,7 @@ public class DeathHandler implements Listener {
 
 	public void fakeKillPlayer(Player p) {
 		// Drop inventory
-		if (p.getGameMode().equals(GameMode.SURVIVAL))
+		if (p.getGameMode().equals(GameMode.SURVIVAL)) {
 			for (ItemStack item : p.getInventory().getContents()) {
 				if (item == null)
 					continue;
@@ -78,8 +78,8 @@ public class DeathHandler implements Listener {
 				}
 			}
 
-		// Drop armour if not leather
-		if (p.getGameMode().equals(GameMode.SURVIVAL))
+			// Drop armour if not leather
+
 			for (ItemStack item : p.getInventory().getArmorContents()) {
 				if (item == null)
 					continue;
@@ -94,6 +94,7 @@ public class DeathHandler implements Listener {
 						p.getWorld().dropItemNaturally(p.getLocation(), item);
 				}
 			}
+		}
 
 		// Dupe bug fix
 		p.getOpenInventory().setCursor(null);

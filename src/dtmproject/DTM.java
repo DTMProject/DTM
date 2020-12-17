@@ -19,6 +19,7 @@ import dtmproject.events.DestroyMonumentListener;
 import dtmproject.events.FixTeleport;
 import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
+import dtmproject.logic.CountdownHandler;
 import dtmproject.logic.DTMLogicHandler;
 import dtmproject.logic.GameMapHandler;
 import dtmproject.playerdata.DTMDataHandler;
@@ -51,6 +52,9 @@ public class DTM extends JavaPlugin {
 	@Getter
 	private final DeathHandler deathHandler;
 
+	@Getter
+	private final CountdownHandler countdownHandler;
+
 	public DTM() {
 		this.scoreboardHandler = new ScoreboardHandler(this);
 		this.shopHandler = new ShopHandler(this);
@@ -59,6 +63,7 @@ public class DTM extends JavaPlugin {
 		this.gameWorldHandler = new GameMapHandler(this);
 		this.editModeHandler = new EditModeCommand(this);
 		this.deathHandler = new DeathHandler(this);
+		this.countdownHandler = new CountdownHandler(this);
 	}
 
 	@Override
@@ -92,11 +97,11 @@ public class DTM extends JavaPlugin {
 
 		// Load first map
 		logicHandler.restartGame();
-		
+
 		// Initialize and update the scoreboard
 		scoreboardHandler.loadGlobalScoreboard();
 		scoreboardHandler.updateScoreboard();
-		
+
 		// Broadcast map changes not saved
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> this.getEditModeHandler().getPendingList().forEach(
 				sender -> sender.sendMessage("§eDTM-mappeja ei ole tallennettu.")), 20 * 20, 20 * 20);
@@ -104,8 +109,9 @@ public class DTM extends JavaPlugin {
 		// Autosave every 3 minutes
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Bukkit.getOnlinePlayers().forEach(p -> this
 				.getDataHandler().savePlayerData(p.getUniqueId())), 3 * 60 * 20, 3 * 60 * 20);
+
 		
-		
+		countdownHandler.startScheduling();
 	}
 
 	@Override
