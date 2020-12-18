@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
 import dtmproject.DTM;
 import dtmproject.NexusBlockLocation;
 import dtmproject.WorldlessLocation;
@@ -17,6 +20,7 @@ import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
 
 public class DefaultMapLoader {
+	public static final ItemStack[] DEFAULT_KIT = new ItemStack[] { new ItemStack(Material.IRON_AXE) };
 	private final DTM pl;
 
 	public DefaultMapLoader(DTM pl) {
@@ -30,10 +34,10 @@ public class DefaultMapLoader {
 			throw new IllegalStateException("Maps are already loaded once");
 
 		Set<DTMMap> maps = new LinkedHashSet<>();
-		maps.add(new DTMMap(pl, "HK1", "Hiekkakivet I", new WorldlessLocation(-36, 150.0, 0.5, -90, 30), 0, getTeams(
-				DefaultMapID.HK1)));
-		maps.add(new DTMMap(pl, "HK4", "Hiekkakivet IV", new WorldlessLocation(-36, 150, 0.5, -90, 30), 0, getTeams(
-				DefaultMapID.HK4)));
+		maps.add(new DTMMap(pl, "HK1", "Hiekkakivet I", new WorldlessLocation(-36, 150.0, 0.5, -90, 30), 0, DEFAULT_KIT,
+				getTeams(DefaultMapID.HK1)));
+		maps.add(new DTMMap(pl, "HK4", "Hiekkakivet IV", new WorldlessLocation(-36, 150, 0.5, -90, 30), 0, DEFAULT_KIT,
+				getTeams(DefaultMapID.HK4)));
 
 		alreadyOnceLoaded = true;
 		return maps;
@@ -103,7 +107,7 @@ public class DefaultMapLoader {
 
 			if (outputFolder.exists())
 				continue;
-			
+
 			ZipInputStream zis = new ZipInputStream(pl.getResource(mapName + ".zip"));
 			try {
 				ZipEntry entry;

@@ -25,10 +25,6 @@ public class DTMLogicHandler {
 	private DTMMap currentMap;
 
 	@Getter
-	@Setter
-	private World currentWorld;
-
-	@Getter
 	private GameState gameState;
 
 	public DTMLogicHandler(DTM pl) {
@@ -49,9 +45,10 @@ public class DTMLogicHandler {
 	 * 3. Unloads last game.
 	 */
 	public void loadNextGame(Optional<String> mapRequest) {
-		DTMMap lastMap = currentMap;
-		String lastMapId = lastMap == null ? null : lastMap.getId();
+		Optional<DTMMap> lastMap = Optional.ofNullable(currentMap);
 		List<String> maps = pl.getMapList();
+
+		String lastMapId = lastMap.isPresent() ? lastMap.get().getId() : null;
 
 		if (mapRequest.isPresent()) {
 			// Select requested
@@ -66,12 +63,12 @@ public class DTMLogicHandler {
 			this.currentMap = pl.getDataHandler().getMap(selectRandomMapId(maps, lastMapId));
 		}
 
-		currentWorld = this.currentMap.load();
+		this.currentMap.load();
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-			p.teleport(this.currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(
-					this.currentWorld));
+			p.teleport(this.currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(this.currentMap
+					.getWorld()));
 			pd.setTeam(null);
 			pd.setLastDamager(null);
 		}
@@ -81,6 +78,9 @@ public class DTMLogicHandler {
 
 		// TODO: Callevent start countdown
 		pl.getCountdownHandler().stopChangeMapCountdown();
+
+		if (lastMap.isPresent())
+			lastMap.get().unload();
 
 	}
 
@@ -114,5 +114,17 @@ public class DTMLogicHandler {
 				smallest = anotherTeam;
 		}
 		return smallest;
+	}
+
+	/**
+	 * Convenience method for backwards-combactibility.
+	 * 
+	 * Use {@link DTMMap#getWorld()}
+	 * 
+	 * @deprecated
+	 */
+	@Deprecated
+	public World getCurrentWorld() {
+		return this.currentMap.getWorld();
 	}
 }

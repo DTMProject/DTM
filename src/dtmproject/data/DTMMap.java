@@ -1,6 +1,7 @@
 package dtmproject.data;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.Builder.Default;
 import net.md_5.bungee.api.ChatColor;
 
 public class DTMMap {
@@ -42,7 +44,6 @@ public class DTMMap {
 	private Optional<WorldlessLocation> lobby;
 
 	@Getter
-	@Setter
 	private int ticks;
 
 	@Getter
@@ -50,7 +51,6 @@ public class DTMMap {
 
 	@Getter
 	private long startTime;
-	// TODO where the time set? constructor?
 
 	@Getter
 	@Setter
@@ -59,20 +59,25 @@ public class DTMMap {
 	@Getter
 	private boolean running;
 
+	@Getter
+	@Setter
+	private World world;
+
 	public DTMMap(DTM pl, @NonNull String id, @NonNull String displayName, WorldlessLocation lobby, int ticks,
-			LinkedHashSet<DTMTeam> teams) {
+			ItemStack[] kit, LinkedHashSet<DTMTeam> teams) {
 		this.pl = pl;
 		this.id = id;
 		this.displayName = displayName;
 		this.lobby = Optional.of(lobby);
 		this.ticks = ticks;
+		this.kit = kit;
 		this.teams = teams;
 	}
 
 	/**
 	 * Loads the world associated with the map.
 	 */
-	public World load() {
+	public void load() {
 		// First delete and replace with a generated world, then load it
 		System.out.println("Loading map: " + this.id);
 
@@ -98,20 +103,18 @@ public class DTMMap {
 		wc.type(WorldType.FLAT);
 		wc.generatorSettings("2;0;1;");
 
-		World createdWorld = Bukkit.createWorld(wc);
-		createdWorld.setStorm(false);
-		createdWorld.setThundering(false);
-		createdWorld.setTime(this.ticks);
-		createdWorld.setWeatherDuration(5000000);
-		createdWorld.setGameRuleValue("doDaylightCycle", "false");
-		createdWorld.setGameRuleValue("randomTickSpeed", "5");
-		createdWorld.setGameRuleValue("announceAchievements", "false");
+		this.world = Bukkit.createWorld(wc);
+		world.setStorm(false);
+		world.setThundering(false);
+		world.setTime(this.ticks);
+		world.setWeatherDuration(5000000);
+		world.setGameRuleValue("doDaylightCycle", "false");
+		world.setGameRuleValue("randomTickSpeed", "5");
+		world.setGameRuleValue("announceAchievements", "false");
 
 		// TODO: Call event for preload
 		// Bukkit.getPluginManager().callEvent(new PreLoadGameWorldEvent(nextMapID,
 		// createdWorld));
-
-		return createdWorld;
 	}
 
 	/**
@@ -121,6 +124,7 @@ public class DTMMap {
 		// Send everyone to game
 		teams.forEach(team -> team.getPlayers().forEach(this::sendPlayerToGame));
 
+		this.startTime = System.currentTimeMillis();
 	}
 
 	public void end(DTMTeam winner) {
@@ -160,6 +164,20 @@ public class DTMMap {
 			}
 		}
 
+	}
+
+	public void unload() {
+		Bukkit.unloadWorld(id, false);
+
+		// Delete the worldfolder so it doens't get messy
+		try {
+			FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer() + "/" + id));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// For memory leak prevention (idk if it works) - Juubes
+		this.setWorld(null);
 	}
 
 	public void sendToSpectate(Player p) {
@@ -209,7 +227,6 @@ public class DTMMap {
 		p.getInventory().setArmorContents(TeamArmorUtils.getArmorForTeam(p, pd.getTeam()));
 
 		updateNameTag(p);
-
 	}
 
 	public void updateNameTag(Player p) {
@@ -223,4 +240,5 @@ public class DTMMap {
 		if (pd.getTeam() != null)
 			pl.getNameTagColorer().changeNameTag(p, pd.getTeam().getTeamColor());
 	}
+
 }
