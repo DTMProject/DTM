@@ -16,6 +16,7 @@ import dtmproject.data.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.ChatColor;
 
 public class DTMLogicHandler {
 	private final DTM pl;
@@ -79,6 +80,7 @@ public class DTMLogicHandler {
 		// TODO: Callevent start countdown
 		pl.getCountdownHandler().stopChangeMapCountdown();
 
+		// Unloads the map and deletes the old world dir
 		if (lastMap.isPresent())
 			lastMap.get().unload();
 
@@ -96,13 +98,28 @@ public class DTMLogicHandler {
 		throw new NotImplementedException();
 	}
 
-	public void endGame(DTMTeam winnerTeam) {
-		throw new NotImplementedException();
-	}
-
-	public void setPlayerToSmallestTeam(Player p) {
+	public DTMTeam setPlayerToSmallestTeam(Player p) {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 		pd.setTeam(getSmallestTeam());
+
+		if (gameState == GameState.RUNNING)
+			currentMap.sendPlayerToGame(p);
+
+		updateNameTag(p);
+
+		return pd.getTeam();
+	}
+
+	public void updateNameTag(Player p) {
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+		p.setDisplayName(pd.getDisplayName());
+		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] " + pd
+				.getDisplayName());
+		p.setCustomName(pd.getDisplayName());
+		p.setCustomNameVisible(true);
+
+		if (pd.getTeam() != null)
+			pl.getNameTagColorer().changeNameTag(p, pd.getTeam().getTeamColor());
 	}
 
 	public DTMTeam getSmallestTeam() {

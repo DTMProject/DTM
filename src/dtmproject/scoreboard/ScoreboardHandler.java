@@ -62,10 +62,10 @@ public class ScoreboardHandler implements Listener {
 
 			// Render monuments under teamname
 			for (Monument mon : team.getMonuments()) {
-				if (mon.isBroken())
+				if (mon.isBroken()) {
 					obj.getScore("§7§l    " + mon.getCustomName() + spacers.getSpacer(teamSpacerCount)).setScore(
 							score--);
-				else {
+				} else {
 					// There can be two "blacked out" or destroyed but similarly named monuments
 					String name = team.getTeamColor() + "§l    " + mon.getCustomName() + spacers.getSpacer(
 							teamSpacerCount);

@@ -20,7 +20,7 @@ import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
 
 public class DefaultMapLoader {
-	public static final ItemStack[] DEFAULT_KIT = new ItemStack[] { new ItemStack(Material.IRON_AXE) };
+	public static final ItemStack[] DEFAULT_KIT = getDefaultKit();
 	private final DTM pl;
 
 	public DefaultMapLoader(DTM pl) {
@@ -66,7 +66,7 @@ public class DefaultMapLoader {
 		return teams;
 	}
 
-	public LinkedList<Monument> getMonuments(DefaultMapID id, DefaultTeamID team) {
+	public static LinkedList<Monument> getMonuments(DefaultMapID id, DefaultTeamID team) {
 		LinkedList<Monument> monuments = new LinkedList<>();
 		switch (id) {
 		case HK1:
@@ -98,6 +98,18 @@ public class DefaultMapLoader {
 			break;
 		}
 		return monuments;
+	}
+
+	public static ItemStack[] getDefaultKit() {
+		ItemStack[] kit = new ItemStack[9];
+		kit[0] = new ItemStack(Material.IRON_AXE);
+		kit[1] = new ItemStack(Material.BOW);
+		kit[2] = new ItemStack(Material.DIAMOND_PICKAXE);
+		kit[3] = new ItemStack(Material.GOLDEN_APPLE, 3);
+		kit[4] = new ItemStack(Material.ARROW, 16);
+		kit[5] = new ItemStack(Material.WOOD, 64);
+		kit[6] = new ItemStack(Material.WOOD, 64);
+		return kit;
 	}
 
 	public void copyDefaultMapFiles() {

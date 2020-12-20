@@ -78,6 +78,7 @@ public class DTM extends JavaPlugin {
 	public void onEnable() {
 		this.saveDefaultConfig();
 
+		// Events
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new ConnectionListener(this), this);
 		pm.registerEvents(new DestroyMonumentListener(this), this);
@@ -90,6 +91,7 @@ public class DTM extends JavaPlugin {
 		pm.registerEvents(shopHandler, this);
 		pm.registerEvents(scoreboardHandler, this);
 
+		// Commands
 		getCommand("DTM").setExecutor(new DTMCommand(this));
 		getCommand("top").setExecutor(new TopCommand(this));
 		getCommand("shop").setExecutor(new ShopCommand(this));
@@ -99,11 +101,11 @@ public class DTM extends JavaPlugin {
 		getCommand("start").setExecutor(new StartCommand(this));
 		getCommand("getpos").setExecutor(new GetposCommand());
 
-		// Init datahandler
+		// HikariCP init and other stuff
 		dataHandler.init();
 
 		// Load playerdata; only runs after reloads
-		Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().loadPlayerData(p.getUniqueId(), p.getName()));
+		Bukkit.getOnlinePlayers().forEach(p -> dataHandler.loadPlayerData(p.getUniqueId(), p.getName()));
 
 		// Load maps to cache
 		defaultMapLoader.copyDefaultMapFiles();

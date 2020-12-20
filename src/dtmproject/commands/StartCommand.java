@@ -7,13 +7,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import dtmproject.DTM;
+import dtmproject.logic.DTMLogicHandler;
 import dtmproject.logic.GameState;
 
 public class StartCommand implements CommandExecutor {
 	private final DTM pl;
+	private final DTMLogicHandler logic;
 
 	public StartCommand(DTM pl) {
 		this.pl = pl;
+		this.logic = pl.getLogicHandler();
 	}
 
 	@Override
@@ -23,20 +26,20 @@ public class StartCommand implements CommandExecutor {
 			return true;
 		}
 
-		if (pl.getLogicHandler().getGameState() == GameState.RUNNING) {
+		if (logic.getGameState() == GameState.RUNNING) {
 			sender.sendMessage("§ePeli on jo käynnissä.");
 			return true;
 		}
 
-		if (pl.getLogicHandler().getGameState() == GameState.PAUSED) {
-			pl.getLogicHandler().togglePause();
+		if (logic.getGameState() == GameState.PAUSED) {
+			logic.togglePause();
 			return true;
 		}
 
-		if (pl.getLogicHandler().getGameState() == GameState.COUNTDOWN) {
-			if (pl.getLogicHandler().getCurrentMap().isRunning())
-				pl.getLogicHandler().loadNextGame(Optional.empty());
-			pl.getLogicHandler().startGame();
+		if (logic.getGameState() == GameState.COUNTDOWN) {
+			if (logic.getCurrentMap().isRunning())
+				logic.loadNextGame(Optional.empty());
+			logic.startGame();
 			return true;
 		}
 

@@ -24,7 +24,6 @@ import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.Builder.Default;
 import net.md_5.bungee.api.ChatColor;
 
 public class DTMMap {
@@ -89,10 +88,12 @@ public class DTMMap {
 		/**
 		 * The world folder that players interact with. Will be deleted later.
 		 */
-		File createdWorldFolder = new File(Bukkit.getWorldContainer(), this.id);
+		File createdWorldFolder = Bukkit.getWorldContainer();// new File(Bukkit.getWorldContainer(), this.id);
 
 		try {
-			FileUtils.deleteDirectory(createdWorldFolder);
+			// Path has to be specified like this so the map isn't copied to the already
+			// existing dir.
+			FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer(), id));
 			FileUtils.copyDirectory(savedWorld, createdWorldFolder);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,7 +102,7 @@ public class DTMMap {
 
 		WorldCreator wc = new WorldCreator(this.id);
 		wc.type(WorldType.FLAT);
-		wc.generatorSettings("2;0;1;");
+		// wc.generatorSettings("2;0;1;");
 
 		this.world = Bukkit.createWorld(wc);
 		world.setStorm(false);
@@ -131,16 +132,14 @@ public class DTMMap {
 		String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
 		Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
 		Bukkit.broadcastMessage(winner.getDisplayName() + " §e§lvoitti pelin!");
-		for (Player p : Bukkit.getOnlinePlayers())
-			p.setGameMode(GameMode.SPECTATOR);
+		Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
 		// 50 points to the winner team, 15 to losers
-		LinkedHashSet<? extends DTMTeam> allTeams = pl.getLogicHandler().getCurrentMap().getTeams();
-		for (DTMTeam team : allTeams) {
-			for (Player p : team.getPlayers()) {
+		pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
+			team.getPlayers().forEach(p -> {
 				DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 				int minutesPlayed = Math.min((int) ((System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap()
-						.getStartTime()) / 1000 / 60), 60);
+						.getStartTime()) / 1000 / 60), 90);
 
 				int loserPoints = minutesPlayed * 5;
 				int winnerPoints = minutesPlayed * 25;
@@ -161,9 +160,8 @@ public class DTMMap {
 					stats.increaseLosses();
 					stats.increasePlayTimeLost(playTime);
 				}
-			}
-		}
-
+			});
+		});
 	}
 
 	public void unload() {
@@ -171,7 +169,7 @@ public class DTMMap {
 
 		// Delete the worldfolder so it doens't get messy
 		try {
-			FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer() + "/" + id));
+			FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer(), id));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -226,19 +224,7 @@ public class DTMMap {
 		p.getInventory().setContents(pl.getLogicHandler().getCurrentMap().getKit());
 		p.getInventory().setArmorContents(TeamArmorUtils.getArmorForTeam(p, pd.getTeam()));
 
-		updateNameTag(p);
-	}
-
-	public void updateNameTag(Player p) {
-		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-		p.setDisplayName(pd.getDisplayName());
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] " + pd
-				.getDisplayName());
-		p.setCustomName(pd.getDisplayName());
-		p.setCustomNameVisible(true);
-
-		if (pd.getTeam() != null)
-			pl.getNameTagColorer().changeNameTag(p, pd.getTeam().getTeamColor());
+		pl.getLogicHandler().updateNameTag(p);
 	}
 
 }

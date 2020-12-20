@@ -102,7 +102,8 @@ public class DTMDataHandler {
 	}
 
 	/**
-	 * Don't call this method from the server thread. It blocks.
+	 * Don't call this method from the server thread. It blocks. <br>
+	 * Creates new data if old doesn't exist.
 	 */
 	public void loadPlayerData(UUID uuid, String lastSeenName) {
 		try (Connection conn = HDS.getConnection()) {
@@ -146,11 +147,6 @@ public class DTMDataHandler {
 			e.printStackTrace();
 		}
 
-	}
-
-	public DTMPlayerData createIfNotExists(UUID uuid) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public DTMPlayerData getPlayerData(Player p) {
