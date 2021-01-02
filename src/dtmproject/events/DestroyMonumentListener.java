@@ -136,9 +136,12 @@ public class DestroyMonumentListener implements Listener {
 		if (winner == null)
 			return;
 
-		dtm.getLogicHandler().getCurrentMap().end(winner);
+		dtm.getLogicHandler().endGame(winner);
 	}
 
+	/**
+	 * Checks if there's only one team "alive" with any monuments.
+	 */
 	private DTMTeam getWinner() {
 		int teamsAlive = 0;
 		DTMTeam onlyOneAlive = null;

@@ -24,6 +24,7 @@ public class JoinCommand implements CommandExecutor {
 		if (!(sender instanceof Player))
 			return true;
 
+		
 		if (pl.getLogicHandler().getGameState() == GameState.PAUSED) {
 			sender.sendMessage("§ePeli on pysäytetty.");
 			return true;

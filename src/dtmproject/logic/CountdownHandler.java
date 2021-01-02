@@ -32,7 +32,7 @@ public class CountdownHandler {
 			if (changeMap > 0) {
 				changeMap--;
 			} else if (changeMap == 0) {
-				pl.getLogicHandler().loadNextGame(Optional.empty());
+				pl.getLogicHandler().loadNextGame(false, Optional.empty());
 				Bukkit.broadcastMessage("§eLiity peliin komennolla /join");
 				changeMap = -1;
 			}
@@ -57,7 +57,7 @@ public class CountdownHandler {
 		startGame = seconds;
 	}
 
-	public void changeMapCountdown(int seconds) {
+	public void startChangeMapCountdown(int seconds) {
 		changeMap = seconds;
 	}
 

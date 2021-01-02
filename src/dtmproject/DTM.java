@@ -11,6 +11,7 @@ import dtmproject.commands.DTMCommand;
 import dtmproject.commands.EditModeCommand;
 import dtmproject.commands.GetposCommand;
 import dtmproject.commands.JoinCommand;
+import dtmproject.commands.NextMapCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.StartCommand;
@@ -98,6 +99,8 @@ public class DTM extends JavaPlugin {
 		getCommand("setmonument").setExecutor(new SetMonumentCommand(this));
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
+		getCommand("nextmap").setExecutor(new NextMapCommand(this));
+
 		getCommand("start").setExecutor(new StartCommand(this));
 		getCommand("getpos").setExecutor(new GetposCommand());
 
@@ -112,7 +115,7 @@ public class DTM extends JavaPlugin {
 		dataHandler.loadMaps();
 
 		// Load first map ingame
-		logicHandler.loadNextGame(Optional.empty());
+		logicHandler.loadNextGame(false, Optional.empty());
 
 		// Initialize and update the scoreboard
 		scoreboardHandler.loadGlobalScoreboard();

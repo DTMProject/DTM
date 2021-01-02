@@ -29,7 +29,7 @@ public class ChatHandler implements Listener {
 		String prefixString = pd.getPrefix() == null ? ""
 				: "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] ";
 
-		e.setFormat("§8[§b" + points + "§8]" + " " + prefixString + pd.getLastSeenName() + "§8: §f%2$s");
+		e.setFormat("§8[§b" + points + "§8]" + " " + prefixString + pd.getDisplayName() + "§8: §f%2$s");
 
 	}
 

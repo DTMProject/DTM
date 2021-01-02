@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 import dtmproject.DTM;
 import dtmproject.TeamArmorUtils;
 import dtmproject.WorldlessLocation;
+import dtmproject.logic.GameState;
 import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.NonNull;
@@ -211,6 +212,9 @@ public class DTMMap {
 	}
 
 	public void sendPlayerToGame(Player p) {
+		if (pl.getLogicHandler().getGameState() != GameState.RUNNING)
+			throw new IllegalStateException();
+
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 		// Reset properties and teleport to spawn

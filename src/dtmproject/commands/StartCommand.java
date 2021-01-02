@@ -11,11 +11,9 @@ import dtmproject.logic.DTMLogicHandler;
 import dtmproject.logic.GameState;
 
 public class StartCommand implements CommandExecutor {
-	private final DTM pl;
 	private final DTMLogicHandler logic;
 
 	public StartCommand(DTM pl) {
-		this.pl = pl;
 		this.logic = pl.getLogicHandler();
 	}
 
@@ -38,7 +36,7 @@ public class StartCommand implements CommandExecutor {
 
 		if (logic.getGameState() == GameState.COUNTDOWN) {
 			if (logic.getCurrentMap().isRunning())
-				logic.loadNextGame(Optional.empty());
+				logic.loadNextGame(false, Optional.empty());
 			logic.startGame();
 			return true;
 		}

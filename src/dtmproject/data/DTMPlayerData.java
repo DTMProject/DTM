@@ -129,6 +129,8 @@ public class DTMPlayerData {
 	}
 
 	public String getDisplayName() {
+		if (isSpectator())
+			return "§7" + lastSeenName + "§e";
 		return team.getTeamColor() + lastSeenName + "§e";
 	}
 

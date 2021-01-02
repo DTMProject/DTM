@@ -227,4 +227,8 @@ public class DTMDataHandler {
 		}
 		return allStats;
 	}
+
+	public boolean mapExists(String req) {
+		return loadedMaps.contains(req);
+	}
 }
