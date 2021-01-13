@@ -34,7 +34,7 @@ public class NextMapCommand implements CommandExecutor {
 			}
 		}
 
-		pl.getLogicHandler().loadNextGame(mapRequest);
+		pl.getLogicHandler().loadNextGame(false, mapRequest);
 		return true;
 	}
 

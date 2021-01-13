@@ -31,7 +31,7 @@ public class ShopCommand implements CommandExecutor {
 		}
 
 		if (pd.getTeam() == null) {
-			p.sendMessage("§eLiity peliin komennolla /join.");
+			p.sendMessage("§eLiity peliin komennolla /liity.");
 			return true;
 		}
 

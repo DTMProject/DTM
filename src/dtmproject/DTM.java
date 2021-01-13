@@ -115,7 +115,7 @@ public class DTM extends JavaPlugin {
 		dataHandler.loadMaps();
 
 		// Load first map ingame
-		logicHandler.loadNextGame(false, Optional.empty());
+		logicHandler.loadNextGame(true, Optional.empty());
 
 		// Initialize and update the scoreboard
 		scoreboardHandler.loadGlobalScoreboard();

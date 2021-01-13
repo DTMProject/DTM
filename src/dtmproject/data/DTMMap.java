@@ -57,9 +57,6 @@ public class DTMMap {
 	private ItemStack[] kit;
 
 	@Getter
-	private boolean running;
-
-	@Getter
 	@Setter
 	private World world;
 
@@ -127,12 +124,16 @@ public class DTMMap {
 		teams.forEach(team -> team.getPlayers().forEach(this::sendPlayerToGame));
 
 		this.startTime = System.currentTimeMillis();
+
+		// Title for everyone
+		Bukkit.getOnlinePlayers().forEach(p -> p.sendTitle("§eTuhoa monumentit!", "§eNopein tiimi voittaa!", 0, 5 * 20,
+				3 * 20));
 	}
 
 	public void end(DTMTeam winner) {
 		String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
 		Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
-		Bukkit.broadcastMessage(winner.getDisplayName() + " §e§lvoitti pelin!");
+		Bukkit.broadcastMessage(winner.getTeamColor() + "§l" + winner.getDisplayName() + " §e§lvoitti pelin!");
 		Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
 		// 50 points to the winner team, 15 to losers

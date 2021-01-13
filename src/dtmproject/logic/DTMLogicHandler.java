@@ -10,7 +10,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.WorldlessLocation;
 import dtmproject.data.DTMMap;
 import dtmproject.data.DTMPlayerData;
 import dtmproject.setup.DTMTeam;
@@ -37,19 +36,22 @@ public class DTMLogicHandler {
 	 */
 	public void startGame() {
 		this.gameState = GameState.RUNNING;
-		pl.getCountdownHandler().stopStartGameCountdown();
 		this.currentMap.startGame();
+		pl.getCountdownHandler().stopStartGameCountdown();
 	}
 
 	/**
 	 * 1. Loads the new game. <br>
 	 * 2. Teleports players to new world. <br>
 	 * 3. Unloads last game.
+	 * 
+	 * @param startInstantly
+	 *            starts the game immediately after the map has been changed.
 	 */
-	public void loadNextGame(boolean countdownChange, Optional<String> mapRequest) {
+	public void loadNextGame(boolean startInstantly, Optional<String> mapRequest) {
 		pl.getCountdownHandler().stopChangeMapCountdown();
 		pl.getCountdownHandler().stopStartGameCountdown();
-		
+
 		Optional<DTMMap> lastMap = Optional.ofNullable(currentMap);
 		List<String> maps = pl.getMapList();
 
@@ -69,21 +71,22 @@ public class DTMLogicHandler {
 
 		this.currentMap.load();
 
-		gameState = countdownChange ? GameState.COUNTDOWN : GameState.RUNNING;
+		gameState = startInstantly ? GameState.RUNNING : GameState.PRE_START;
+		if (!startInstantly)
+			pl.getCountdownHandler().startGameCountdown(20);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-			p.teleport(this.currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(this.currentMap
-					.getWorld()));
+			// p.teleport(this.currentMap.getLobby().orElse(new WorldlessLocation(0, 100,
+			// 0)).toLocation(this.currentMap
+			// .getWorld()));
+			this.currentMap.sendToSpectate(p);
 			pd.setTeam(null);
 			pd.setLastDamager(null);
 		}
 
-		if (countdownChange) {
-			pl.getCountdownHandler().startChangeMapCountdown(20);
-		} else {
-			pl.getCountdownHandler().startGameCountdown(20);
-		}
+		if (lastMap.isPresent())
+			pl.getScoreboardHandler().updateScoreboard();
 
 		// TODO: Callevent start countdown
 		// pl.getCountdownHandler().stopChangeMapCountdown();
@@ -95,9 +98,9 @@ public class DTMLogicHandler {
 	}
 
 	public void endGame(DTMTeam winner) {
-		this.gameState = GameState.COUNTDOWN;
+		this.gameState = GameState.CHANGING_MAP;
+		pl.getCountdownHandler().startChangeMapCountdown(20);
 		currentMap.end(winner);
-		loadNextGame(true, Optional.empty());
 	}
 
 	private String selectRandomMapId(List<String> maps, String lastMapId) {

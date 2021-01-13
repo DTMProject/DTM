@@ -33,7 +33,7 @@ public class CountdownHandler {
 				changeMap--;
 			} else if (changeMap == 0) {
 				pl.getLogicHandler().loadNextGame(false, Optional.empty());
-				Bukkit.broadcastMessage("§eLiity peliin komennolla /join");
+				Bukkit.broadcastMessage("§eLiity peliin komennolla /liity");
 				changeMap = -1;
 			}
 

@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 
 import dtmproject.DTM;
 import dtmproject.logic.DTMLogicHandler;
-import dtmproject.logic.GameState;
 
 public class StartCommand implements CommandExecutor {
 	private final DTMLogicHandler logic;
@@ -24,24 +23,20 @@ public class StartCommand implements CommandExecutor {
 			return true;
 		}
 
-		if (logic.getGameState() == GameState.RUNNING) {
-			sender.sendMessage("§ePeli on jo käynnissä.");
-			return true;
-		}
-
-		if (logic.getGameState() == GameState.PAUSED) {
+		switch (logic.getGameState()) {
+		case CHANGING_MAP:
+			logic.loadNextGame(true, Optional.empty());
+			break;
+		case PAUSED:
 			logic.togglePause();
-			return true;
-		}
-
-		if (logic.getGameState() == GameState.COUNTDOWN) {
-			if (logic.getCurrentMap().isRunning())
-				logic.loadNextGame(false, Optional.empty());
+			break;
+		case PRE_START:
 			logic.startGame();
-			return true;
+			break;
+		case RUNNING:
+			sender.sendMessage("§ePeli on jo käynnissä.");
+			break;
 		}
-
-		sender.sendMessage("§ePeli on pysäytetty kokonaan. /dtm status");
 		return true;
 	}
 }

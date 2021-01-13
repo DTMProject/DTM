@@ -1,4 +1,4 @@
 package dtmproject.logic;
 public enum GameState {
-	RUNNING, COUNTDOWN, PAUSED
+	PRE_START, RUNNING, CHANGING_MAP, PAUSED
 }
