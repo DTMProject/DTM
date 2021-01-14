@@ -12,6 +12,7 @@ import dtmproject.commands.EditModeCommand;
 import dtmproject.commands.GetposCommand;
 import dtmproject.commands.JoinCommand;
 import dtmproject.commands.NextMapCommand;
+import dtmproject.commands.PlayTimeCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.StartCommand;
@@ -100,6 +101,7 @@ public class DTM extends JavaPlugin {
 		getCommand("join").setExecutor(new JoinCommand(this));
 		getCommand("spec").setExecutor(new SpectateCommand(this));
 		getCommand("nextmap").setExecutor(new NextMapCommand(this));
+		getCommand("playtime").setExecutor(new PlayTimeCommand(this));
 
 		getCommand("start").setExecutor(new StartCommand(this));
 		getCommand("getpos").setExecutor(new GetposCommand());

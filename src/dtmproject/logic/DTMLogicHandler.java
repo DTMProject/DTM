@@ -72,14 +72,12 @@ public class DTMLogicHandler {
 		this.currentMap.load();
 
 		gameState = startInstantly ? GameState.RUNNING : GameState.PRE_START;
-		if (!startInstantly)
+		if (!startInstantly) {
 			pl.getCountdownHandler().startGameCountdown(20);
+		}
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-			// p.teleport(this.currentMap.getLobby().orElse(new WorldlessLocation(0, 100,
-			// 0)).toLocation(this.currentMap
-			// .getWorld()));
 			this.currentMap.sendToSpectate(p);
 			pd.setTeam(null);
 			pd.setLastDamager(null);
@@ -95,11 +93,13 @@ public class DTMLogicHandler {
 		if (lastMap.isPresent())
 			lastMap.get().unload();
 
+		if (startInstantly)
+			this.currentMap.startGame();
 	}
 
 	public void endGame(DTMTeam winner) {
 		this.gameState = GameState.CHANGING_MAP;
-		pl.getCountdownHandler().startChangeMapCountdown(20);
+		pl.getCountdownHandler().startChangeMapCountdown(30);
 		currentMap.end(winner);
 	}
 

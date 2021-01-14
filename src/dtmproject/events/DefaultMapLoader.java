@@ -36,8 +36,8 @@ public class DefaultMapLoader {
 		Set<DTMMap> maps = new LinkedHashSet<>();
 		maps.add(new DTMMap(pl, "HK1", "Hiekkakivet I", new WorldlessLocation(-36, 150.0, 0.5, -90, 30), 0, DEFAULT_KIT,
 				getTeams(DefaultMapID.HK1)));
-		maps.add(new DTMMap(pl, "HK4", "Hiekkakivet IV", new WorldlessLocation(-36, 150, 0.5, -90, 30), 0, DEFAULT_KIT,
-				getTeams(DefaultMapID.HK4)));
+		maps.add(new DTMMap(pl, "HK4", "Hiekkakivet IV", new WorldlessLocation(-57.5, 124, 0.5, -90, 10), 0,
+				DEFAULT_KIT, getTeams(DefaultMapID.HK4)));
 
 		alreadyOnceLoaded = true;
 		return maps;
@@ -60,7 +60,7 @@ public class DefaultMapLoader {
 			teams.add(new DTMTeam(pl, "mansikka", "Mansikka", ChatColor.RED, new WorldlessLocation(0.5, 101.0, -64.5, 0,
 					0), getMonuments(id, DefaultTeamID.MANSIKKA)));
 			teams.add(new DTMTeam(pl, "mustikka", "Mustikka", ChatColor.DARK_PURPLE, new WorldlessLocation(0.5, 101.0,
-					65, 180, 0), getMonuments(id, DefaultTeamID.MANSIKKA)));
+					65, 180, 0), getMonuments(id, DefaultTeamID.MUSTIKKA)));
 			break;
 		}
 		return teams;
@@ -106,9 +106,10 @@ public class DefaultMapLoader {
 		kit[1] = new ItemStack(Material.BOW);
 		kit[2] = new ItemStack(Material.DIAMOND_PICKAXE);
 		kit[3] = new ItemStack(Material.GOLDEN_APPLE, 3);
-		kit[4] = new ItemStack(Material.ARROW, 16);
 		kit[5] = new ItemStack(Material.WOOD, 64);
 		kit[6] = new ItemStack(Material.WOOD, 64);
+		kit[4] = new ItemStack(Material.ARROW, 16);
+
 		return kit;
 	}
 

@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
@@ -50,6 +51,7 @@ public class DTMMap {
 	private final LinkedHashSet<DTMTeam> teams;
 
 	@Getter
+	@Setter
 	private long startTime;
 
 	@Getter
@@ -109,7 +111,11 @@ public class DTMMap {
 		world.setWeatherDuration(5000000);
 		world.setGameRuleValue("doDaylightCycle", "false");
 		world.setGameRuleValue("randomTickSpeed", "5");
-		world.setGameRuleValue("announceAchievements", "false");
+		world.setGameRuleValue("announceAdvancements", "false");
+
+		// Regenerate monuments if any are missing
+		teams.forEach(team -> team.getMonuments().forEach(mon -> mon.getBlock().getBlock(world).setType(
+				Material.OBSIDIAN)));
 
 		// TODO: Call event for preload
 		// Bukkit.getPluginManager().callEvent(new PreLoadGameWorldEvent(nextMapID,
@@ -230,6 +236,10 @@ public class DTMMap {
 		p.getInventory().setArmorContents(TeamArmorUtils.getArmorForTeam(p, pd.getTeam()));
 
 		pl.getLogicHandler().updateNameTag(p);
+	}
+
+	public long getTimePlayed() {
+		return System.currentTimeMillis() - startTime;
 	}
 
 }
