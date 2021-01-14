@@ -41,7 +41,7 @@ public class EditModeCommand implements CommandExecutor {
 		if (args.length > 0) {
 
 			boolean foundMapID = false;
-			for (String map : pl.getMapList()) {
+			for (String map : pl.getActiveMapList()) {
 				if (map.equalsIgnoreCase(args[0])) {
 					foundMapID = true;
 					setEditModeWorld(p, map);

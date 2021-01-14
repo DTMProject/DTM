@@ -12,6 +12,7 @@ import dtmproject.commands.EditModeCommand;
 import dtmproject.commands.GetposCommand;
 import dtmproject.commands.JoinCommand;
 import dtmproject.commands.NextMapCommand;
+import dtmproject.commands.PauseCommand;
 import dtmproject.commands.PlayTimeCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
@@ -102,6 +103,7 @@ public class DTM extends JavaPlugin {
 		getCommand("spec").setExecutor(new SpectateCommand(this));
 		getCommand("nextmap").setExecutor(new NextMapCommand(this));
 		getCommand("playtime").setExecutor(new PlayTimeCommand(this));
+		getCommand("pause").setExecutor(new PauseCommand(this));
 
 		getCommand("start").setExecutor(new StartCommand(this));
 		getCommand("getpos").setExecutor(new GetposCommand());
@@ -147,7 +149,7 @@ public class DTM extends JavaPlugin {
 		return getConfig().getInt("season");
 	}
 
-	public List<String> getMapList() {
+	public List<String> getActiveMapList() {
 		return getConfig().getStringList("maps");
 	}
 }

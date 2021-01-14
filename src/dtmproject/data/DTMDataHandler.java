@@ -1,6 +1,5 @@
 package dtmproject.data;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Connection;
@@ -11,6 +10,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,7 +27,6 @@ import dtmproject.DTM;
 import lombok.Getter;
 
 public class DTMDataHandler {
-	public static final String KITS_PATH = "./kits.yml";
 	private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
 	private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
 	private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
@@ -35,19 +34,22 @@ public class DTMDataHandler {
 	private final DTM pl;
 
 	private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
+
+	/**
+	 * Loaded maps and active maps are a different thing. Active maps must be loaded
+	 * and all of them are listed in the config. Loaded maps can be loaded into game
+	 * with /nextmap.
+	 */
 	private final ConcurrentHashMap<String, DTMMap> loadedMaps = new ConcurrentHashMap<>();
 
 	@Getter
 	private final QueueDataSaver dataSaver;
-
-	private final File kitFile;
 
 	@Getter
 	private final HikariDataSource HDS;
 
 	public DTMDataHandler(DTM pl) {
 		this.pl = pl;
-		this.kitFile = new File(pl.getDataFolder(), KITS_PATH);
 		this.dataSaver = new QueueDataSaver(pl);
 		this.HDS = new HikariDataSource();
 	}
@@ -229,6 +231,10 @@ public class DTMDataHandler {
 	}
 
 	public boolean mapExists(String req) {
-		return loadedMaps.contains(req);
+		return loadedMaps.containsKey(req);
+	}
+
+	public Set<String> getLoadedMaps() {
+		return loadedMaps.keySet();
 	}
 }

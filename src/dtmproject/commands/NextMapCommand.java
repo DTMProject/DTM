@@ -27,6 +27,10 @@ public class NextMapCommand implements CommandExecutor {
 			String req = args[0];
 
 			if (pl.getDataHandler().mapExists(req)) {
+				if (pl.getLogicHandler().getCurrentMap().getId().equals(req)) {
+					sender.sendMessage("§eTämä mappi on jo pelattavana.");
+					return true;
+				}
 				mapRequest = Optional.of(req);
 			} else {
 				sender.sendMessage("§eMappia ei ole ladattu: " + req);
