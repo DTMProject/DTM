@@ -37,9 +37,8 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<!--include>com.juubes:dtmproject</include>
-							<include>com.juubes:nexus</include>
-							<include>org.spigotmc:spigot-api</include-->
+							<!--include>com.juubes:dtmproject</include> <include>com.juubes:nexus</include> 
+								<include>org.spigotmc:spigot-api</include -->
 							<include>com.zaxxer:HikariCP</include>
 							<include>org.slf4j:slf4j-api</include>
 							<include>org.slf4j:slf4j-simple</include>
@@ -77,7 +76,7 @@
 		<dependency>
 			<groupId>com.juubes</groupId>
 			<artifactId>nexus</artifactId>
-			<version>2.0.2</version>
+			<version>2.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -94,6 +93,11 @@
 			<groupId>net.freeutils</groupId>
 			<artifactId>jlhttp</artifactId>
 			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.12</version>
 		</dependency>
 	</dependencies>
 </project>

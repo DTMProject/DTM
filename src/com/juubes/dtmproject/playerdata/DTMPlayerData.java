@@ -20,12 +20,12 @@ public class DTMPlayerData extends AbstractPlayerData {
 	 * Creates new playerdata for player, defaults all other values.
 	 */
 	public DTMPlayerData(Nexus nexus, UUID uuid, String lastSeenName) {
-		super(nexus, uuid, lastSeenName, null, 0, null, 0);
+		super(nexus, uuid, lastSeenName, null, 0, null, 0, 1000);
 	}
 
 	public DTMPlayerData(Nexus nexus, UUID uuid, String lastSeenName, String prefix, int emeralds, String nick,
-			int killStreak) {
-		super(nexus, uuid, lastSeenName, prefix, emeralds, nick, killStreak);
+			int killStreak, double eloRating) {
+		super(nexus, uuid, lastSeenName, prefix, emeralds, nick, killStreak, eloRating);
 	}
 
 	@Override
