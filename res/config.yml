@@ -1,5 +1,11 @@
+season: 1
 mysql:
    server: localhost:3306
    database: DTM
    user: DTM
    password: password
+maps:
+- HK1
+- HK2
+- HK3
+- HK4
