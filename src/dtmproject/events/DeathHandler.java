@@ -35,7 +35,6 @@ import dtmproject.WorldlessLocation;
 import dtmproject.data.DTMMap;
 import dtmproject.data.DTMPlayerData;
 import dtmproject.logic.GameState;
-import dtmproject.setup.DTMTeam;
 
 public class DeathHandler implements Listener {
 	private final DTM pl;
@@ -208,16 +207,11 @@ public class DeathHandler implements Listener {
 		}
 	}
 
-	// Just a lazy command
+	// Lazy commands
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
 		Player p = e.getPlayer();
-		if (e.getMessage().equals("/teams")) {
-			e.setCancelled(true);
-			p.sendMessage("§ePelaajamäärät:");
-			for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams())
-				p.sendMessage(team.getDisplayName() + ": " + team.getPlayers().size());
-		} else if (e.getMessage().equals("/restoremonuments") && p.isOp()) {
+		if (e.getMessage().equals("/restoremonuments") && p.isOp()) {
 			e.setCancelled(true);
 
 			// Repair monuments
