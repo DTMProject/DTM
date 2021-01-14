@@ -242,4 +242,14 @@ public class DTMMap {
 		return System.currentTimeMillis() - startTime;
 	}
 
+	/**
+	 * Tests for IDs and display names.
+	 * 
+	 * @returns null if team isn't in the map.
+	 */
+	public DTMTeam getTeamWithName(String name) {
+		return teams.stream().filter(team -> team.getID().equals(name) || team.getDisplayName().equalsIgnoreCase(name))
+				.findFirst().orElse(null);
+	}
+
 }
