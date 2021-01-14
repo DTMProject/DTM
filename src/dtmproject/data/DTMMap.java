@@ -3,6 +3,7 @@ package dtmproject.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
@@ -192,18 +193,17 @@ public class DTMMap {
 		p.setGameMode(GameMode.SPECTATOR);
 
 		// Teleport to lobby
-		World currentWorld = pl.getLogicHandler().getCurrentWorld();
-		Location lobby = getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(currentWorld);
+		Location lobby = getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(world);
 		p.teleport(lobby);
 
-		if (p.getWorld() != currentWorld)
+		if (p.getWorld() != world)
 			return;
 
 		if (lobby != null) {
 			p.teleport(lobby);
 		} else {
 			System.err.println("Lobby null for map " + getDisplayName());
-			p.teleport(new Location(currentWorld, 0, 100, 0));
+			p.teleport(new Location(world, 0, 100, 0));
 		}
 		p.setGameMode(GameMode.SPECTATOR);
 		p.getInventory().clear();
@@ -221,6 +221,8 @@ public class DTMMap {
 		if (pl.getLogicHandler().getGameState() != GameState.RUNNING)
 			throw new IllegalStateException();
 
+		Objects.requireNonNull(this.world);
+
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 		// Reset properties and teleport to spawn
@@ -228,7 +230,7 @@ public class DTMMap {
 		p.setHealthScale(20);
 		p.setHealth(p.getHealthScale());
 		p.setFoodLevel(20);
-		p.teleport(pd.getTeam().getSpawn().toLocation(pl.getLogicHandler().getCurrentWorld()));
+		p.teleport(pd.getTeam().getSpawn().toLocation(this.world));
 		p.setGameMode(GameMode.SURVIVAL);
 
 		p.getInventory().setContents(pl.getLogicHandler().getCurrentMap().getKit());

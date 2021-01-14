@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
@@ -223,17 +222,4 @@ public class DTMLogicHandler {
 		}
 		return smallest;
 	}
-
-	/**
-	 * Convenience method for backwards-combactibility.
-	 * 
-	 * Use {@link DTMMap#getWorld()}
-	 * 
-	 * @deprecated
-	 */
-	@Deprecated
-	public World getCurrentWorld() {
-		return this.currentMap.getWorld();
-	}
-
 }

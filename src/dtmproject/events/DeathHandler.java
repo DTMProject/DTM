@@ -222,7 +222,7 @@ public class DeathHandler implements Listener {
 
 			// Repair monuments
 			pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> team.getMonuments().forEach(mon -> mon
-					.repair(pl.getLogicHandler().getCurrentWorld())));
+					.repair(pl.getLogicHandler().getCurrentMap().getWorld())));
 			pl.getScoreboardHandler().updateScoreboard();
 		} else if (e.getMessage().equals("/ram") && e.getPlayer().isOp()) {
 			e.setCancelled(true);
@@ -330,9 +330,8 @@ public class DeathHandler implements Listener {
 				Bukkit.getPluginManager().callEvent(new EntityDamageEvent(e.getPlayer(), DamageCause.VOID, 100));
 			else {
 				DTMMap currentMap = pl.getLogicHandler().getCurrentMap();
-				World currentWorld = pl.getLogicHandler().getCurrentWorld();
-				p.teleport(currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(currentWorld));
-
+				World gameWorld = currentMap.getWorld();
+				p.teleport(currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(gameWorld));
 			}
 		}
 	}

@@ -54,7 +54,7 @@ public class DestroyMonumentListener implements Listener {
 		}
 
 		Block b = e.getBlock();
-		if (b.getWorld() != dtm.getLogicHandler().getCurrentWorld())
+		if (b.getWorld() != dtm.getLogicHandler().getCurrentMap().getWorld())
 			return;
 
 		if (!e.getBlock().getType().equals(Material.OBSIDIAN))
