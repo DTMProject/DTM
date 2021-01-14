@@ -88,8 +88,7 @@ public class DTMMap {
 		/**
 		 * The world folder that players interact with. Will be deleted later.
 		 */
-		File createdWorldFolder = Bukkit.getWorldContainer();// new File(Bukkit.getWorldContainer(), this.id);
-
+		File createdWorldFolder = Bukkit.getWorldContainer();
 		try {
 			// Path has to be specified like this so the map isn't copied to the already
 			// existing dir.
@@ -117,9 +116,7 @@ public class DTMMap {
 		teams.forEach(team -> team.getMonuments().forEach(mon -> mon.getBlock().getBlock(world).setType(
 				Material.OBSIDIAN)));
 
-		// TODO: Call event for preload
-		// Bukkit.getPluginManager().callEvent(new PreLoadGameWorldEvent(nextMapID,
-		// createdWorld));
+		pl.getLogger().finer("§eLoaded world " + id);
 	}
 
 	/**

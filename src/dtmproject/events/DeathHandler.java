@@ -39,11 +39,12 @@ import dtmproject.setup.DTMTeam;
 
 public class DeathHandler implements Listener {
 	private final DTM pl;
+	private final HashMap<UUID, Long> lastHits = new HashMap<>();
 
 	private boolean broadcastMessages = true;
 
-	public DeathHandler(DTM dtm) {
-		this.pl = dtm;
+	public DeathHandler(DTM pl) {
+		this.pl = pl;
 	}
 
 	public void fakeKillPlayer(Player p) {
@@ -80,7 +81,6 @@ public class DeathHandler implements Listener {
 			}
 
 			// Drop armour if not leather
-
 			for (ItemStack item : p.getInventory().getArmorContents()) {
 				if (item == null)
 					continue;
@@ -230,8 +230,6 @@ public class DeathHandler implements Listener {
 					/ 1000000)) + "/" + (int) (Runtime.getRuntime().maxMemory() / 1000000));
 		}
 	}
-
-	private HashMap<UUID, Long> lastHits = new HashMap<>();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onSwordPVP(EntityDamageByEntityEvent e) {
@@ -485,11 +483,8 @@ public class DeathHandler implements Listener {
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		if (Bukkit.getOnlinePlayers().size() > 14 + 1) {
-			broadcastMessages = false;
-		} else {
-			broadcastMessages = true;
-		}
+		// Broadcast if less than 15 players
+		broadcastMessages = Bukkit.getOnlinePlayers().size() < 15;
 	}
 
 	public void clearLastHits(Player p) {

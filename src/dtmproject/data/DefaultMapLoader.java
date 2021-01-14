@@ -1,4 +1,4 @@
-package dtmproject.events;
+package dtmproject.data;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import dtmproject.DTM;
 import dtmproject.NexusBlockLocation;
 import dtmproject.WorldlessLocation;
-import dtmproject.data.DTMMap;
 import dtmproject.setup.DTMTeam;
 import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
@@ -101,14 +100,16 @@ public class DefaultMapLoader {
 	}
 
 	public static ItemStack[] getDefaultKit() {
+		int i = 0;
+
 		ItemStack[] kit = new ItemStack[9];
-		kit[0] = new ItemStack(Material.IRON_AXE);
-		kit[1] = new ItemStack(Material.BOW);
-		kit[2] = new ItemStack(Material.DIAMOND_PICKAXE);
-		kit[3] = new ItemStack(Material.GOLDEN_APPLE, 3);
-		kit[5] = new ItemStack(Material.WOOD, 64);
-		kit[6] = new ItemStack(Material.WOOD, 64);
-		kit[4] = new ItemStack(Material.ARROW, 16);
+		kit[i++] = new ItemStack(Material.IRON_AXE);
+		kit[i++] = new ItemStack(Material.BOW);
+		kit[i++] = new ItemStack(Material.DIAMOND_PICKAXE);
+		kit[i++] = new ItemStack(Material.WOOD, 64);
+		kit[i++] = new ItemStack(Material.WOOD, 64);
+		kit[i++] = new ItemStack(Material.GOLDEN_APPLE, 3);
+		kit[i++] = new ItemStack(Material.ARROW, 16);
 
 		return kit;
 	}
