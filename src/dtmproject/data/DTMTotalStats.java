@@ -107,13 +107,13 @@ public class DTMTotalStats {
 	@Override
 	public String toString() {
 		String str = "";
-		str += "§bTapot: " + getKills() + "\n";
-		str += "§bKuolemat: " + getDeaths() + "\n";
-		str += "§bMonumentteja tuhottu: " + getMonuments() + "\n";
-		str += "§bVoitot: " + getWins() + "\n";
-		str += "§bHäviöt: " + getLosses() + "\n";
-		str += "§bPelejä voitettu: " + getPlayTimeWon() / 1000 / 60 / 60 + " tuntia\n";
-		str += "§bPelejä hävitty: " + getPlayTimeLost() / 1000 / 60 / 60 + " tuntia\n";
+		str += "§eTapot: " + getKills() + "\n";
+		str += "§eKuolemat: " + getDeaths() + "\n";
+		str += "§eMonumentteja tuhottu: " + getMonuments() + "\n";
+		str += "§eVoitot: " + getWins() + "\n";
+		str += "§eHäviöt: " + getLosses() + "\n";
+		str += "§ePelejä voitettu: " + getPlayTimeWon() / 1000 / 60 / 60 + " tuntia\n";
+		str += "§ePelejä hävitty: " + getPlayTimeLost() / 1000 / 60 / 60 + " tuntia\n";
 		return str;
 	}
 }

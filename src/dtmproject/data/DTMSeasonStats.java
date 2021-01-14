@@ -56,13 +56,13 @@ public class DTMSeasonStats {
 	@Override
 	public String toString() {
 		String str = "";
-		str += "§bTapot: " + kills + "\n";
-		str += "§bKuolemat: " + deaths + "\n";
-		str += "§bMonumentteja tuhottu: " + monumentsDestroyed + "\n";
-		str += "§bVoitot: " + wins + "\n";
-		str += "§bHäviöt: " + losses + "\n";
-		str += "§bPelejä voitettu: " + playTimeWon / 1000 / 60 / 60 + " tuntia\n";
-		str += "§bPelejä hävitty: " + playTimeLost / 1000 / 60 / 60 + " tuntia\n";
+		str += "§eTapot: " + kills + "\n";
+		str += "§eKuolemat: " + deaths + "\n";
+		str += "§eMonumentteja tuhottu: " + monumentsDestroyed + "\n";
+		str += "§eVoitot: " + wins + "\n";
+		str += "§eHäviöt: " + losses + "\n";
+		str += "§ePelejä voitettu: " + playTimeWon / 1000 / 60 / 60 + " tuntia\n";
+		str += "§ePelejä hävitty: " + playTimeLost / 1000 / 60 / 60 + " tuntia\n";
 		return str;
 	}
 

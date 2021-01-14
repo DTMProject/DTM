@@ -17,6 +17,7 @@ import dtmproject.commands.PlayTimeCommand;
 import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.StartCommand;
+import dtmproject.commands.StatsCommand;
 import dtmproject.commands.TopCommand;
 import dtmproject.commands.WorldsCommand;
 import dtmproject.data.DTMDataHandler;
@@ -105,7 +106,9 @@ public class DTM extends JavaPlugin {
 		getCommand("nextmap").setExecutor(new NextMapCommand(this));
 		getCommand("playtime").setExecutor(new PlayTimeCommand(this));
 		getCommand("pause").setExecutor(new PauseCommand(this));
+		getCommand("stats").setExecutor(new StatsCommand(this));
 
+		
 		getCommand("start").setExecutor(new StartCommand(this));
 		getCommand("getpos").setExecutor(new GetposCommand());
 

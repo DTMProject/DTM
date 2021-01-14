@@ -109,15 +109,15 @@ public class DefaultMapLoader {
 			break;
 		case HK3:
 			if (team == DefaultTeamID.VESI) {
-				monuments.add(new Monument(new NexusBlockLocation(58, 102, 50), "fr", "Etuoikea"));
-				monuments.add(new Monument(new NexusBlockLocation(90, 102, 18), "br", "Takaoikea"));
-				monuments.add(new Monument(new NexusBlockLocation(58, 102, -50), "fl", "Etuvasen"));
-				monuments.add(new Monument(new NexusBlockLocation(90, 102, -18), "bl", "Takavasen"));
+				monuments.add(new Monument(new NexusBlockLocation(58, 102, 50), "fr", "Etu-oikea"));
+				monuments.add(new Monument(new NexusBlockLocation(90, 102, 18), "br", "Taka-oikea"));
+				monuments.add(new Monument(new NexusBlockLocation(58, 102, -50), "fl", "Etu-vasen"));
+				monuments.add(new Monument(new NexusBlockLocation(90, 102, -18), "bl", "Taka-vasen"));
 			} else if (team == DefaultTeamID.AURINKO) {
-				monuments.add(new Monument(new NexusBlockLocation(-58, 102, -50), "fr", "Etuoikea"));
-				monuments.add(new Monument(new NexusBlockLocation(-90, 102, -18), "br", "Takaoikea"));
-				monuments.add(new Monument(new NexusBlockLocation(-58, 102, 50), "fl", "Etuvasen"));
-				monuments.add(new Monument(new NexusBlockLocation(-90, 102, 18), "bl", "Takavasen"));
+				monuments.add(new Monument(new NexusBlockLocation(-58, 102, -50), "fr", "Etu-oikea"));
+				monuments.add(new Monument(new NexusBlockLocation(-90, 102, -18), "br", "Taka-oikea"));
+				monuments.add(new Monument(new NexusBlockLocation(-58, 102, 50), "fl", "Etu-vasen"));
+				monuments.add(new Monument(new NexusBlockLocation(-90, 102, 18), "bl", "Taka-vasen"));
 			}
 			break;
 		case HK4:

@@ -12,6 +12,8 @@ commands:
    shop:
       aliases:
       - s
+      - k
+      - kauppa
    join:
       aliases:
       - liity
