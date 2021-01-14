@@ -18,6 +18,7 @@ import dtmproject.commands.SetMonumentCommand;
 import dtmproject.commands.SpectateCommand;
 import dtmproject.commands.StartCommand;
 import dtmproject.commands.TopCommand;
+import dtmproject.commands.WorldsCommand;
 import dtmproject.data.DTMDataHandler;
 import dtmproject.data.DefaultMapLoader;
 import dtmproject.events.AnvilPlaceListener;
@@ -107,6 +108,10 @@ public class DTM extends JavaPlugin {
 
 		getCommand("start").setExecutor(new StartCommand(this));
 		getCommand("getpos").setExecutor(new GetposCommand());
+
+		WorldsCommand worldsCommand = new WorldsCommand();
+		getCommand("worlds").setExecutor(worldsCommand);
+		getCommand("world").setExecutor(worldsCommand);
 
 		// HikariCP init and other stuff
 		dataHandler.init();

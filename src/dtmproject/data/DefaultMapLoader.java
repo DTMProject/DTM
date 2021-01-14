@@ -35,8 +35,13 @@ public class DefaultMapLoader {
 		Set<DTMMap> maps = new LinkedHashSet<>();
 		maps.add(new DTMMap(pl, "HK1", "Hiekkakivet I", new WorldlessLocation(-36, 150.0, 0.5, -90, 30), 0, DEFAULT_KIT,
 				getTeams(DefaultMapID.HK1)));
+
 		maps.add(new DTMMap(pl, "HK2", "Hiekkakivet II", new WorldlessLocation(-45.5, 114, 0.5, 275, 0), 0, DEFAULT_KIT,
 				getTeams(DefaultMapID.HK2)));
+
+		maps.add(new DTMMap(pl, "HK3", "Hiekkakivet III", new WorldlessLocation(0.5, 126.0, 70.5, 180, 0), 0,
+				DEFAULT_KIT, getTeams(DefaultMapID.HK3)));
+
 		maps.add(new DTMMap(pl, "HK4", "Hiekkakivet IV", new WorldlessLocation(-57.5, 124, 0.5, -90, 10), 0,
 				DEFAULT_KIT, getTeams(DefaultMapID.HK4)));
 
@@ -58,9 +63,13 @@ public class DefaultMapLoader {
 					180, 0), getMonuments(id, DefaultTeamID.YELLOW)));
 			teams.add(new DTMTeam(pl, "purple", "Purppura", ChatColor.DARK_PURPLE, new WorldlessLocation(0.5, 100.0,
 					-50.5, 0, 0), getMonuments(id, DefaultTeamID.PURPLE)));
-
 			break;
 		case HK3:
+			teams.add(new DTMTeam(pl, "vesi", "Vesi", ChatColor.AQUA, new WorldlessLocation(55.5, 100, 0.5, 90, 0),
+					getMonuments(id, DefaultTeamID.VESI)));
+			teams.add(new DTMTeam(pl, "aurinko", "Aurinko", ChatColor.GOLD, new WorldlessLocation(-54.5, 100, 0.5, 270,
+					0), getMonuments(id, DefaultTeamID.AURINKO)));
+
 			break;
 		case HK4:
 			teams.add(new DTMTeam(pl, "mansikka", "Mansikka", ChatColor.RED, new WorldlessLocation(0.5, 101.0, -64.5, 0,
@@ -99,6 +108,17 @@ public class DefaultMapLoader {
 			}
 			break;
 		case HK3:
+			if (team == DefaultTeamID.VESI) {
+				monuments.add(new Monument(new NexusBlockLocation(58, 102, 50), "fr", "Etuoikea"));
+				monuments.add(new Monument(new NexusBlockLocation(90, 102, 18), "br", "Takaoikea"));
+				monuments.add(new Monument(new NexusBlockLocation(58, 102, -50), "fl", "Etuvasen"));
+				monuments.add(new Monument(new NexusBlockLocation(90, 102, -18), "bl", "Takavasen"));
+			} else if (team == DefaultTeamID.AURINKO) {
+				monuments.add(new Monument(new NexusBlockLocation(-58, 102, -50), "fr", "Etuoikea"));
+				monuments.add(new Monument(new NexusBlockLocation(-90, 102, -18), "br", "Takaoikea"));
+				monuments.add(new Monument(new NexusBlockLocation(-58, 102, 50), "fl", "Etuvasen"));
+				monuments.add(new Monument(new NexusBlockLocation(-90, 102, 18), "bl", "Takavasen"));
+			}
 			break;
 		case HK4:
 			if (team == DefaultTeamID.MANSIKKA) {
@@ -172,5 +192,5 @@ enum DefaultMapID {
 }
 
 enum DefaultTeamID {
-	MANSIKKA, MUSTIKKA, YELLOW, PURPLE
+	MANSIKKA, MUSTIKKA, YELLOW, PURPLE, VESI, AURINKO
 }

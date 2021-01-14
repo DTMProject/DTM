@@ -113,8 +113,10 @@ public class DTMMap {
 		world.setGameRuleValue("announceAdvancements", "false");
 
 		// Regenerate monuments if any are missing
-		teams.forEach(team -> team.getMonuments().forEach(mon -> mon.getBlock().getBlock(world).setType(
-				Material.OBSIDIAN)));
+		teams.forEach(team -> team.getMonuments().forEach(mon -> {
+			mon.getBlock().getBlock(world).setType(Material.OBSIDIAN);
+			mon.setBroken(false);
+		}));
 
 		pl.getLogger().finer("§eLoaded world " + id);
 	}
