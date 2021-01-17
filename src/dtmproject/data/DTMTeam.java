@@ -16,7 +16,7 @@ import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
 @AllArgsConstructor
-public class DTMTeam {
+public class DTMTeam implements IDTMTeam {
 	private final DTM pl;
 
 	@Getter

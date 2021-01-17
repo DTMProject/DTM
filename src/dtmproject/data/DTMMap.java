@@ -28,7 +28,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
-public class DTMMap {
+public class DTMMap implements IDTMMap<DTMTeam> {
 	private final DTM pl;
 
 	@NonNull
@@ -45,6 +45,7 @@ public class DTMMap {
 	private Optional<WorldlessLocation> lobby;
 
 	@Getter
+	@Setter
 	private int ticks;
 
 	@Getter
@@ -135,6 +136,7 @@ public class DTMMap {
 				3 * 20));
 	}
 
+	@Override
 	public void end(DTMTeam winner) {
 		String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
 		Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
@@ -253,5 +255,4 @@ public class DTMMap {
 		return teams.stream().filter(team -> team.getID().equals(name) || team.getDisplayName().equalsIgnoreCase(name))
 				.findFirst().orElse(null);
 	}
-
 }
