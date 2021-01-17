@@ -343,9 +343,14 @@ public class DeathHandler implements Listener {
 
 		Player target = (Player) e.getEntity();
 		if (target.getHealth() - e.getFinalDamage() <= 0) {
+			DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+			if (targetData.isSpectator()) {
+				pl.getLogicHandler().getCurrentMap().sendToSpectate(target);
+			}
+
 			e.setDamage(0);
 			fakeKillPlayer(target);
-			DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+
 			Player damager = targetData.getLastDamager();
 			switch (e.getCause()) {
 			case VOID:

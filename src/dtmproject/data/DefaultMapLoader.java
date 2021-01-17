@@ -14,8 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import dtmproject.DTM;
 import dtmproject.NexusBlockLocation;
 import dtmproject.WorldlessLocation;
-import dtmproject.setup.DTMTeam;
-import dtmproject.setup.Monument;
 import net.md_5.bungee.api.ChatColor;
 
 public class DefaultMapLoader {
@@ -81,54 +79,54 @@ public class DefaultMapLoader {
 		return teams;
 	}
 
-	public static LinkedList<Monument> getMonuments(DefaultMapID id, DefaultTeamID team) {
-		LinkedList<Monument> monuments = new LinkedList<>();
+	public static LinkedList<DTMMonument> getMonuments(DefaultMapID id, DefaultTeamID team) {
+		LinkedList<DTMMonument> monuments = new LinkedList<>();
 		switch (id) {
 		case HK1:
 			if (team == DefaultTeamID.YELLOW) {
-				monuments.add(new Monument(new NexusBlockLocation(-32, 104, -56), "l", "Vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(0, 104, -88), "m", "Midi"));
-				monuments.add(new Monument(new NexusBlockLocation(32, 104, -56), "r", "Oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-32, 104, -56), "l", "Vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(0, 104, -88), "m", "Midi"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(32, 104, -56), "r", "Oikea"));
 			} else if (team == DefaultTeamID.PURPLE) {
-				monuments.add(new Monument(new NexusBlockLocation(32, 104, 56), "l", "Vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(0, 104, 88), "m", "Midi"));
-				monuments.add(new Monument(new NexusBlockLocation(-32, 104, 56), "r", "Oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(32, 104, 56), "l", "Vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(0, 104, 88), "m", "Midi"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-32, 104, 56), "r", "Oikea"));
 			}
 
 			break;
 		case HK2:
 			if (team == DefaultTeamID.YELLOW) {
-				monuments.add(new Monument(new NexusBlockLocation(36, 104, 51), "l", "Vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(0, 104, 87), "m", "Midi"));
-				monuments.add(new Monument(new NexusBlockLocation(-36, 104, 51), "r", "Oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(36, 104, 51), "l", "Vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(0, 104, 87), "m", "Midi"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-36, 104, 51), "r", "Oikea"));
 			} else if (team == DefaultTeamID.PURPLE) {
-				monuments.add(new Monument(new NexusBlockLocation(-36, 104, -51), "l", "Vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(0, 104, -87), "m", "Midi"));
-				monuments.add(new Monument(new NexusBlockLocation(36, 104, -51), "r", "Oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-36, 104, -51), "l", "Vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(0, 104, -87), "m", "Midi"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(36, 104, -51), "r", "Oikea"));
 			}
 			break;
 		case HK3:
 			if (team == DefaultTeamID.VESI) {
-				monuments.add(new Monument(new NexusBlockLocation(58, 102, 50), "fr", "Etu-oikea"));
-				monuments.add(new Monument(new NexusBlockLocation(90, 102, 18), "br", "Taka-oikea"));
-				monuments.add(new Monument(new NexusBlockLocation(58, 102, -50), "fl", "Etu-vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(90, 102, -18), "bl", "Taka-vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(58, 102, 50), "fr", "Etu-oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(90, 102, 18), "br", "Taka-oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(58, 102, -50), "fl", "Etu-vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(90, 102, -18), "bl", "Taka-vasen"));
 			} else if (team == DefaultTeamID.AURINKO) {
-				monuments.add(new Monument(new NexusBlockLocation(-58, 102, -50), "fr", "Etu-oikea"));
-				monuments.add(new Monument(new NexusBlockLocation(-90, 102, -18), "br", "Taka-oikea"));
-				monuments.add(new Monument(new NexusBlockLocation(-58, 102, 50), "fl", "Etu-vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(-90, 102, 18), "bl", "Taka-vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-58, 102, -50), "fr", "Etu-oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-90, 102, -18), "br", "Taka-oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-58, 102, 50), "fl", "Etu-vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-90, 102, 18), "bl", "Taka-vasen"));
 			}
 			break;
 		case HK4:
 			if (team == DefaultTeamID.MANSIKKA) {
-				monuments.add(new Monument(new NexusBlockLocation(-31, 103, -65), "l", "Vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(0, 103, -96), "m", "Midi"));
-				monuments.add(new Monument(new NexusBlockLocation(31, 100, -65), "r", "Oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-31, 103, -65), "l", "Vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(0, 103, -96), "m", "Midi"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(31, 103, -65), "r", "Oikea"));
 			} else if (team == DefaultTeamID.MUSTIKKA) {
-				monuments.add(new Monument(new NexusBlockLocation(31, 103, 65), "l", "Vasen"));
-				monuments.add(new Monument(new NexusBlockLocation(0, 103, 96), "m", "Midi"));
-				monuments.add(new Monument(new NexusBlockLocation(-31, 103, 65), "r", "Oikea"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(31, 103, 65), "l", "Vasen"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(0, 103, 96), "m", "Midi"));
+				monuments.add(new DTMMonument(new NexusBlockLocation(-31, 103, 65), "r", "Oikea"));
 			}
 			break;
 		}
@@ -145,7 +143,9 @@ public class DefaultMapLoader {
 		kit[i++] = new ItemStack(Material.WOOD, 64);
 		kit[i++] = new ItemStack(Material.WOOD, 64);
 		kit[i++] = new ItemStack(Material.GOLDEN_APPLE, 3);
+		kit[i++] = new ItemStack(Material.COOKED_BEEF, 8);
 		kit[i++] = new ItemStack(Material.ARROW, 16);
+
 
 		return kit;
 	}

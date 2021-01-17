@@ -70,10 +70,12 @@ public class DTMDataHandler {
 		HDS.addDataSourceProperty("cachePrepStmts", "true");
 		HDS.addDataSourceProperty("prepStmtCacheSize", "250");
 		HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+		HDS.addDataSourceProperty("useSSL", "false");
+		HDS.addDataSourceProperty("verifyServerCertificate", "false");
 		HDS.setConnectionTimeout(10000);
 		HDS.setLeakDetectionThreshold(5000);
-		HDS.setMinimumIdle(1);
-		HDS.setMaximumPoolSize(5);
+		HDS.setMinimumIdle(5);
+		HDS.setMaximumPoolSize(15);
 
 		// Create tables
 		try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
@@ -138,8 +140,9 @@ public class DTMDataHandler {
 						String prefix = rs.getString("Prefix");
 						int emeralds = rs.getInt("Emeralds");
 						int killStreak = rs.getInt("KillStreak");
+						int eloRating = rs.getInt("EloRating");
 						loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix,
-								killStreak, stats));
+								killStreak, eloRating, stats));
 					} else {
 						loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
 					}
@@ -148,7 +151,6 @@ public class DTMDataHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public DTMPlayerData getPlayerData(Player p) {

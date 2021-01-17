@@ -23,7 +23,6 @@ import dtmproject.DTM;
 import dtmproject.TeamArmorUtils;
 import dtmproject.WorldlessLocation;
 import dtmproject.logic.GameState;
-import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -224,6 +223,8 @@ public class DTMMap {
 		Objects.requireNonNull(this.world);
 
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+
+		Objects.requireNonNull(pd.getTeam());
 
 		// Reset properties and teleport to spawn
 		p.setFallDistance(0);

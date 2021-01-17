@@ -27,7 +27,6 @@ import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
 import dtmproject.events.DeathHandler;
 import dtmproject.events.DestroyMonumentListener;
-import dtmproject.events.FixTeleport;
 import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.CountdownHandler;
@@ -91,7 +90,6 @@ public class DTM extends JavaPlugin {
 		pm.registerEvents(new TeamSpleefListener(this), this);
 		pm.registerEvents(new ChatHandler(this), this);
 		pm.registerEvents(new AnvilPlaceListener(), this);
-		pm.registerEvents(new FixTeleport(), this);
 		pm.registerEvents(deathHandler, this);
 		pm.registerEvents(shopHandler, this);
 		pm.registerEvents(scoreboardHandler, this);

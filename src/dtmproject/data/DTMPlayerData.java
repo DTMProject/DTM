@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.setup.DTMTeam;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
@@ -37,6 +36,9 @@ public class DTMPlayerData {
 	@Setter
 	private boolean autoJoin;
 
+	@Getter
+	private int eloRating;
+
 	/**
 	 * Maps season number to stats.
 	 */
@@ -47,12 +49,12 @@ public class DTMPlayerData {
 	private long lastRespawn;
 
 	public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
-		this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, new HashMap<>());
+		this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashMap<>());
 	}
 
 	// TODO: injektaa plugin instanssi
 	public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
-			HashMap<Integer, DTMSeasonStats> seasonStats) {
+			int eloRating, HashMap<Integer, DTMSeasonStats> seasonStats) {
 		this.pl = dtm;
 		this.uuid = uuid;
 		this.lastSeenName = lastSeenName;
@@ -60,6 +62,7 @@ public class DTMPlayerData {
 		this.emeralds = emeralds;
 		this.killStreak = killStreak;
 		this.seasonStats = seasonStats;
+		this.eloRating = eloRating;
 
 		if (getSeasonStats() == null)
 			this.seasonStats.put(dtm.getSeason(), new DTMSeasonStats(uuid, dtm.getSeason()));
@@ -91,6 +94,10 @@ public class DTMPlayerData {
 
 	public void decreaseEmeralds(int amount) {
 		this.emeralds -= amount;
+	}
+
+	public void adjustEloRating(int amount) {
+		this.eloRating += amount;
 	}
 
 	public void increaseKillStreak() {

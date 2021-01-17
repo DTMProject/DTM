@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
 import dtmproject.data.DTMPlayerData;
+import dtmproject.data.DTMTeam;
 import dtmproject.logic.GameState;
-import dtmproject.setup.DTMTeam;
 
 public class JoinCommand implements CommandExecutor {
 	private final DTM pl;
@@ -34,12 +34,13 @@ public class JoinCommand implements CommandExecutor {
 			DTMPlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
 
 			if (!pd.isSpectator()) {
-				caller.sendMessage("§eOlet jo tiimissä " + pd.getTeam().getDisplayName());
+				caller.sendMessage("§eOlet jo tiimissä " + pd.getTeam().getDisplayName() + "§e.");
 				return true;
 			}
 
 			DTMTeam team = pl.getLogicHandler().setPlayerToSmallestTeam(caller);
 			caller.sendMessage("§eOlet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());
+			return true;
 		}
 
 		if (!sender.isOp()) {

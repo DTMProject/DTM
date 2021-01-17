@@ -1,4 +1,4 @@
-package dtmproject.setup;
+package dtmproject.data;
 
 import java.util.LinkedList;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class DTMTeam {
 
 	@Getter
 	@Setter
-	private LinkedList<Monument> monuments;
+	private LinkedList<DTMMonument> monuments;
 
 	public Set<Player> getPlayers() {
 		return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)

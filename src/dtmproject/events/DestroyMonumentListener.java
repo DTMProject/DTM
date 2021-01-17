@@ -16,9 +16,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import dtmproject.DTM;
 import dtmproject.data.DTMPlayerData;
+import dtmproject.data.DTMTeam;
+import dtmproject.data.DTMMonument;
 import dtmproject.logic.GameState;
-import dtmproject.setup.DTMTeam;
-import dtmproject.setup.Monument;
 
 public class DestroyMonumentListener implements Listener {
 	private final DTM dtm;
@@ -61,7 +61,7 @@ public class DestroyMonumentListener implements Listener {
 			return;
 		for (DTMTeam nt : dtm.getLogicHandler().getCurrentMap().getTeams()) {
 			DTMTeam team = (DTMTeam) nt;
-			for (Monument mon : team.getMonuments()) {
+			for (DTMMonument mon : team.getMonuments()) {
 				if (!e.getBlock().equals(mon.getBlock().getBlock(e.getBlock().getWorld())))
 					continue;
 
@@ -106,7 +106,7 @@ public class DestroyMonumentListener implements Listener {
 		}
 	}
 
-	private void announcePlayerWhoBrokeTheMonument(Player p, DTMPlayerData pd, Monument mon, DTMTeam team) {
+	private void announcePlayerWhoBrokeTheMonument(Player p, DTMPlayerData pd, DTMMonument mon, DTMTeam team) {
 		pd.getSeasonStats().increaseMonumentsDestroyed();
 		pd.increaseEmeralds(5);
 		Bukkit.broadcastMessage("§e" + p.getDisplayName() + " §etuhosi monumentin " + team.getTeamColor() + mon
@@ -127,7 +127,7 @@ public class DestroyMonumentListener implements Listener {
 		return val;
 	}
 
-	private void handleBrokenMonument(Monument monument) {
+	private void handleBrokenMonument(DTMMonument monument) {
 		monument.setBroken(true);
 		dtm.getScoreboardHandler().updateScoreboard();
 		DTMTeam winner = getWinner();
@@ -149,7 +149,7 @@ public class DestroyMonumentListener implements Listener {
 		// Iterate teams and test for solid monuments
 		for (DTMTeam team : dtm.getLogicHandler().getCurrentMap().getTeams()) {
 			boolean hasMonuments = false;
-			for (Monument mon : team.getMonuments()) {
+			for (DTMMonument mon : team.getMonuments()) {
 				if (!mon.isBroken())
 					hasMonuments = true;
 			}

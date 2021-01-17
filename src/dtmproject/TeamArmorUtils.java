@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import dtmproject.setup.DTMTeam;
+import dtmproject.data.DTMTeam;
 
 public class TeamArmorUtils {
 	public static ItemStack[] getArmorForTeam(Player p, DTMTeam team) {

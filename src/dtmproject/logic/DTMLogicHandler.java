@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import dtmproject.DTM;
 import dtmproject.data.DTMMap;
 import dtmproject.data.DTMPlayerData;
-import dtmproject.setup.DTMTeam;
+import dtmproject.data.DTMTeam;
 import lombok.Getter;
 import lombok.Setter;
 

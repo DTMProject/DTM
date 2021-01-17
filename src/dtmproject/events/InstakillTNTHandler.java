@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
 import dtmproject.data.DTMPlayerData;
-import dtmproject.setup.DTMTeam;
+import dtmproject.data.DTMTeam;
 
 public class InstakillTNTHandler implements Listener {
 

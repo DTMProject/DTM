@@ -1,4 +1,4 @@
-package dtmproject.setup;
+package dtmproject.data;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -7,7 +7,7 @@ import dtmproject.NexusBlockLocation;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Monument {
+public class DTMMonument {
 	@Getter
 	@Setter
 	private NexusBlockLocation block;
@@ -28,7 +28,7 @@ public class Monument {
 		return (char) 0x1f844;
 	}
 
-	public Monument(NexusBlockLocation block, String position, String customName) {
+	public DTMMonument(NexusBlockLocation block, String position, String customName) {
 		this.block = block;
 		this.position = position;
 		this.customName = customName;

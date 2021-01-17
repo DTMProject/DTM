@@ -12,8 +12,8 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import dtmproject.DTM;
 import dtmproject.data.DTMMap;
-import dtmproject.setup.DTMTeam;
-import dtmproject.setup.Monument;
+import dtmproject.data.DTMTeam;
+import dtmproject.data.DTMMonument;
 import lombok.Getter;
 
 public class ScoreboardHandler implements Listener {
@@ -61,7 +61,7 @@ public class ScoreboardHandler implements Listener {
 			team.getMonuments().sort((mon1, mon2) -> mon1.getCustomName().compareTo(mon2.getCustomName()));
 
 			// Render monuments under teamname
-			for (Monument mon : team.getMonuments()) {
+			for (DTMMonument mon : team.getMonuments()) {
 				if (mon.isBroken()) {
 					obj.getScore("§7§l    " + mon.getCustomName() + spacers.getSpacer(teamSpacerCount)).setScore(
 							score--);

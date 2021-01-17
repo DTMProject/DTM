@@ -8,11 +8,14 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.google.common.util.concurrent.RateLimiter;
+
 import dtmproject.DTM;
 import dtmproject.data.DTMPlayerData;
 
 public class ConnectionListener implements Listener {
 	private final DTM pl;
+	private final RateLimiter rl = RateLimiter.create(6);
 
 	public ConnectionListener(DTM pl) {
 		this.pl = pl;
@@ -20,6 +23,8 @@ public class ConnectionListener implements Listener {
 
 	@EventHandler
 	public void onAsyncJoin(AsyncPlayerPreLoginEvent e) {
+		rl.acquire();
+
 		pl.getDataHandler().loadPlayerData(e.getUniqueId(), e.getName());
 	}
 

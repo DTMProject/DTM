@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.bukkit.Bukkit;
 
 import dtmproject.DTM;
-import dtmproject.setup.DTMTeam;
+import dtmproject.data.DTMTeam;
 
 public class CountdownHandler {
 	private final DTM pl;
