@@ -40,7 +40,7 @@ public class ShopCommand implements CommandExecutor {
 	    return true;
 	}
 
-	p.openInventory(pl.getShopHandler().getShopInventory(pd));
+	pl.getShopHandler().openShop(p);
 	return true;
     }
 

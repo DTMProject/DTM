@@ -41,7 +41,6 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     private String displayName;
 
     @Getter
-    @Setter
     private Optional<WorldlessLocation> lobby;
 
     @Getter
@@ -77,6 +76,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     /**
      * Loads the world associated with the map.
      */
+    @Override
     public void load() {
 	// First delete and replace with a generated world, then load it
 	System.out.println("Loading map: " + this.id);
@@ -174,6 +174,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	});
     }
 
+    @Override
     public void unload() {
 	Bukkit.unloadWorld(id, false);
 
@@ -219,6 +220,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     }
 
+    @Override
     public void sendPlayerToGame(Player p) {
 	if (pl.getLogicHandler().getGameState() != GameState.RUNNING)
 	    throw new IllegalStateException();
@@ -243,6 +245,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	pl.getLogicHandler().updateNameTag(p);
     }
 
+    @Override
     public long getTimePlayed() {
 	return System.currentTimeMillis() - startTime;
     }

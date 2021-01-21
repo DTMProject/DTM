@@ -21,16 +21,14 @@ import dtmproject.data.DTMMap;
 import dtmproject.data.DTMPlayerData;
 import dtmproject.data.DTMTeam;
 import lombok.Getter;
-import lombok.Setter;
 
-public class DTMLogicHandler {
+public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
     public static int START_GAME_COUNTDOWN_SECONDS = 20;
     public static int CHANGE_MAP_COUNTDOWN_SECONDS = 30;
 
     private final DTM pl;
 
     @Getter
-    @Setter
     private DTMMap currentMap;
 
     @Getter
@@ -43,9 +41,6 @@ public class DTMLogicHandler {
 	this.pl = pl;
     }
 
-    /**
-     * Starts the already loaded game. Sends joined players to game.
-     */
     public void startGame() {
 	this.gameState = RUNNING;
 	this.currentMap.startGame();
@@ -129,7 +124,6 @@ public class DTMLogicHandler {
     }
 
     public void togglePause() {
-
 	switch (gameState) {
 	case CHANGING_MAP:
 	    gameStatePrePause = gameState;
@@ -191,7 +185,7 @@ public class DTMLogicHandler {
 	}
     }
 
-    public DTMTeam setPlayerToSmallestTeam(Player p) {
+    public void setPlayerToSmallestTeam(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	pd.setTeam(getSmallestTeam());
 
@@ -199,8 +193,6 @@ public class DTMLogicHandler {
 	    currentMap.sendPlayerToGame(p);
 
 	updateNameTag(p);
-
-	return pd.getTeam();
     }
 
     public void updateNameTag(Player p) {

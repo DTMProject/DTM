@@ -42,7 +42,7 @@ public class QueueDataSaver {
 
 			// TODO: Only saves current season
 			DTMSeasonStats stats = data.seasonStats.get(dtm.getSeason());
-			stmt2.setString(1, stats.getUuid().toString());
+			stmt2.setString(1, stats.getUUID().toString());
 			stmt2.setInt(2, dtm.getSeason());
 			stmt2.setInt(3, stats.getKills());
 			stmt2.setInt(4, stats.getDeaths());

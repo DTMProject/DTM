@@ -36,7 +36,7 @@ import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
 import lombok.Getter;
 
-public final class DTM extends JavaPlugin implements IDTM {
+public final class DTM extends JavaPlugin implements DTMAPI {
     public static final String DEFAULT_PREFIX = "§eDTM-Jonne";
 
     @Getter

@@ -6,6 +6,7 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -16,7 +17,7 @@ import dtmproject.DTM;
 import dtmproject.IShopHandler;
 import dtmproject.data.DTMPlayerData;
 
-public class ShopHandler implements IShopHandler {
+public class ShopHandler implements IShopHandler, Listener {
     private final DTM pl;
     private final Inventory shopInventory;
     private final ShopItem[] itemsInShop;
@@ -136,12 +137,14 @@ public class ShopHandler implements IShopHandler {
 	inv.setItem(index, item);
     }
 
-    public Inventory getShopInventory(DTMPlayerData pd) {
+    @Override
+    public void openShop(Player p) {
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 	Inventory inv = Bukkit.createInventory(null, 27, shopInventory.getName());
 	inv.setContents(shopInventory.getContents());
 
 	// Replace last index with the current emeraldcount
 	setIndexToEmerald(inv, 8, pd.getEmeralds());
-	return inv;
+	p.openInventory(inv);
     }
 }

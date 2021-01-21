@@ -24,7 +24,6 @@ import com.google.common.base.Joiner;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.DTM;
-import dtmproject.IDTMDataHandler;
 import lombok.Getter;
 
 public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {

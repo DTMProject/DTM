@@ -38,7 +38,9 @@ public class JoinCommand implements CommandExecutor {
 		return true;
 	    }
 
-	    DTMTeam team = pl.getLogicHandler().setPlayerToSmallestTeam(caller);
+	    pl.getLogicHandler().setPlayerToSmallestTeam(caller);
+	    DTMTeam team = pd.getTeam();
+	    
 	    caller.sendMessage("§eOlet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());
 	    return true;
 	}

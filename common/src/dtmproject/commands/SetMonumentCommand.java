@@ -28,7 +28,6 @@ public class SetMonumentCommand implements CommandExecutor {
 	}
 
 	Player p = (Player) sender;
-	String editMode = dtm.getEditModeHandler().getEditWorld(p);
 	if (args.length == 0) {
 	    sender.sendMessage(ChatColor.RED + "/setmonument <team ID> <l|m|r|bl|bm|mr|...> <custom name...>");
 	} else if (args.length == 1) {

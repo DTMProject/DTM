@@ -1,13 +1,12 @@
 package dtmproject.data;
 
-import java.text.NumberFormat;
 import java.util.UUID;
 
 import lombok.Getter;
 
 public class DTMSeasonStats implements IDTMSeasonStats {
     @Getter
-    private final UUID uuid;
+    private final UUID UUID;
 
     @Getter
     private final int season;
@@ -30,7 +29,7 @@ public class DTMSeasonStats implements IDTMSeasonStats {
 
     public DTMSeasonStats(UUID uuid, int season, int kills, int deaths, int wins, int losses, int longestKillStreak,
 	    long playTimeWon, long playTimeLost, int monumentsDestroyed) {
-	this.uuid = uuid;
+	this.UUID = uuid;
 	this.season = season;
 	this.kills = kills;
 	this.deaths = deaths;
@@ -40,17 +39,6 @@ public class DTMSeasonStats implements IDTMSeasonStats {
 	this.playTimeWon = playTimeWon;
 	this.playTimeLost = playTimeLost;
 	this.monumentsDestroyed = monumentsDestroyed;
-    }
-
-    public double getKDRatio() {
-	NumberFormat f = NumberFormat.getInstance();
-	f.setMaximumFractionDigits(2);
-	f.setMinimumFractionDigits(2);
-
-	String KD = f.format((double) kills / (double) deaths);
-	if (kills < 1 || deaths < 1)
-	    KD = "0.00";
-	return Double.parseDouble(KD);
     }
 
     @Override

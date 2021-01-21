@@ -1,13 +1,10 @@
-package dtmproject;
+package dtmproject.data;
 
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
-
-import dtmproject.data.IDTMMap;
-import dtmproject.data.IDTMPlayerData;
 
 public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTMMap<?>> {
     /**

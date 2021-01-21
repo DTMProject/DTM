@@ -1,7 +1,7 @@
 package dtmproject;
 
-import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
 
-public interface IShopHandler extends Listener {
-    // TODO
+public interface IShopHandler {
+    public void openShop(Player p);
 }
