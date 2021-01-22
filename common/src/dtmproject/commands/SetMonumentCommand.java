@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import dtmproject.DTM;
 import net.md_5.bungee.api.ChatColor;
 
+@SuppressWarnings("unused")
 public class SetMonumentCommand implements CommandExecutor {
     private final DTM dtm;
 

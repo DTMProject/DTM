@@ -2,9 +2,8 @@ package dtmproject;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
-public interface IScoreboardHandler extends Listener {
+public interface IScoreboardHandler {
 
     public void updateScoreboard();
 

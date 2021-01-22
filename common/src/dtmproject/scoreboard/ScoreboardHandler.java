@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -16,7 +17,7 @@ import dtmproject.data.DTMMonument;
 import dtmproject.data.DTMTeam;
 import lombok.Getter;
 
-public class ScoreboardHandler implements IScoreboardHandler {
+public class ScoreboardHandler implements IScoreboardHandler, Listener {
     private final DTM pl;
 
     @Getter

@@ -42,7 +42,7 @@ public class WorldlessBlockLocation implements Cloneable {
     }
 
     @Override
-    public WorldlessBlockLocation clone() throws CloneNotSupportedException {
+    public WorldlessBlockLocation clone() {
 	return new WorldlessBlockLocation(getX(), getY(), getZ());
     }
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
  * A class to replace org.bukkit.Location in some cases, where a reference to a
  * World is not necessary.
  */
-public class WorldlessLocation {
+public class WorldlessLocation implements Cloneable {
     @Getter
     @Setter
     private double x;
@@ -59,5 +59,10 @@ public class WorldlessLocation {
 
     public WorldlessBlockLocation getBlock() {
 	return new WorldlessBlockLocation((int) x, (int) y, (int) z);
+    }
+
+    @Override
+    public Object clone() {
+	return new WorldlessLocation(x, y, z, yaw, pitch);
     }
 }
