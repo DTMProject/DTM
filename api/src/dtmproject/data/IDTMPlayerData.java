@@ -1,6 +1,7 @@
 package dtmproject.data;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -12,7 +13,7 @@ public interface IDTMPlayerData<T extends IDTMTeam<?>, SS extends IDTMSeasonStat
 
     public void setLastSeenName(String lastSeenName);
 
-    public String getPrefix();
+    public Optional<String> getPrefix();
 
     public void setPrefix(String prefix);
 
