@@ -27,6 +27,7 @@ import dtmproject.events.ChatHandler;
 import dtmproject.events.ConnectionListener;
 import dtmproject.events.DeathHandler;
 import dtmproject.events.DestroyMonumentListener;
+import dtmproject.events.LoggingHandler;
 import dtmproject.events.SpawnProtectionListener;
 import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.CountdownHandler;
@@ -65,6 +66,9 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     private final DeathHandler deathHandler;
 
     @Getter
+    private final LoggingHandler loggingHandler;
+
+    @Getter
     private final CountdownHandler countdownHandler;
 
     @Getter
@@ -83,6 +87,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	this.countdownHandler = new CountdownHandler(this);
 	this.nameTagColorer = new NameTagColorer();
 	this.defaultMapLoader = new DefaultMapLoader(this);
+	this.loggingHandler = new LoggingHandler(this);
     }
 
     @Override

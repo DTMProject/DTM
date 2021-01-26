@@ -174,7 +174,6 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	    return 0;
 
 	Double[] winLossdist = pl.getDataHandler().getWinLossDistribution();
-	System.out.println(Joiner.on(" ").join(winLossdist));
 
 	for (int i = 0; i < winLossdist.length; i++) {
 	    if (this.getWinLossRating() >= winLossdist[i])
