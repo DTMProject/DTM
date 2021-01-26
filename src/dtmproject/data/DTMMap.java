@@ -2,10 +2,10 @@ package dtmproject.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -237,6 +237,12 @@ public class DTMMap {
 		p.getInventory().setArmorContents(TeamArmorUtils.getArmorForTeam(p, pd.getTeam()));
 
 		pl.getLogicHandler().updateNameTag(p);
+
+		Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
+
+		Bukkit.getScheduler().runTaskAsynchronously(this.pl, () -> {
+			ProtocolLibrary.getProtocolManager().updateEntity(p, Arrays.asList(players));
+		});
 	}
 
 	public long getTimePlayed() {

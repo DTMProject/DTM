@@ -4,6 +4,7 @@ version: 5.0.0
 author: Juubes
 depends:
 - Nexus
+- ProtocolLib
 database: true
 api-version: 1.12.2
 commands:
