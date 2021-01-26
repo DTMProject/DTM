@@ -213,8 +213,15 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 	// Handle appropriate nametag colours
 	p.setDisplayName("§7" + p.getName());
-	p.setPlayerListName(
-		"§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] §7" + p.getName());
+
+	// Handle null prefixes
+	if (pd.getPrefix().isPresent()) {
+	    p.setPlayerListName(
+		    "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
+	} else {
+	    p.setPlayerListName("§7" + p.getName());
+	}
+
 	p.setCustomName("§7" + p.getName());
 	p.setCustomNameVisible(false);
 

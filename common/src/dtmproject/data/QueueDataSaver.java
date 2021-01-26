@@ -35,7 +35,7 @@ public class QueueDataSaver {
 		    while ((data = queuedData.poll()) != null) {
 			stmt1.setString(1, data.getUUID().toString());
 			stmt1.setString(2, data.getLastSeenName());
-			stmt1.setString(3, data.getPrefix());
+			stmt1.setString(3, data.getPrefix().orElse(null));
 			stmt1.setInt(4, data.getEmeralds());
 			stmt1.setInt(5, data.getKillStreak());
 			stmt1.addBatch();

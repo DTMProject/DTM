@@ -37,7 +37,14 @@ import dtmproject.shop.ShopHandler;
 import lombok.Getter;
 
 public final class DTM extends JavaPlugin implements DTMAPI {
-    public static final String DEFAULT_PREFIX = "§eDTM-Jonne";
+
+    /**
+     * This essentially makes seasons obsolete. Player's are rated using relative
+     * rating instead of points.
+     */
+    public final static boolean USE_RELATIVE_SKILL_LEVELS = true;
+
+    public static final String DEFAULT_PREFIX = null;
 
     @Getter
     private final ShopHandler shopHandler;
@@ -130,6 +137,8 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	scoreboardHandler.loadGlobalScoreboard();
 	scoreboardHandler.updateScoreboard();
 
+	final int MINUTE_IN_TICKS = 60 * 20;
+
 	// Broadcast map changes not saved
 	Bukkit.getScheduler()
 		.scheduleSyncRepeatingTask(this,
@@ -140,7 +149,11 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	// Autosave every 3 minutes
 	Bukkit.getScheduler().scheduleSyncRepeatingTask(this,
 		() -> Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId())),
-		3 * 60 * 20, 3 * 60 * 20);
+		3 * MINUTE_IN_TICKS, 3 * MINUTE_IN_TICKS);
+
+	// Reload winlossdistrcache
+	Bukkit.getScheduler().runTaskTimerAsynchronously(this, dataHandler::updateWinLossDistributionCache,
+		3 * MINUTE_IN_TICKS, 3 * MINUTE_IN_TICKS);
 
 	countdownHandler.startScheduling();
     }

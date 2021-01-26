@@ -1,10 +1,13 @@
 package dtmproject.data;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import com.google.common.base.Joiner;
 
 import dtmproject.DTM;
 import lombok.Getter;
@@ -20,7 +23,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 
     @Getter
     @Setter
-    private String lastSeenName, prefix;
+    private String lastSeenName;
+
+    @Setter
+    private String prefix;
 
     @Setter
     private UUID lastDamager, lastMessager;
@@ -126,7 +132,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	else
 	    str += "§b" + UUID.toString() + ": " + Bukkit.getOfflinePlayer(UUID).getName() + " \n";
 	if (prefix != null)
-	    str += "§bPrefix: " + ChatColor.translateAlternateColorCodes('&', this.getPrefix()) + "\n";
+	    str += "§bPrefix: " + ChatColor.translateAlternateColorCodes('&', prefix) + "\n";
 	else
 	    str += "§bEi prefixiä\n";
 	str += "§bTappoputki: " + killStreak + "\n";
@@ -149,10 +155,37 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
      * Returns 0 if player has played less than 10 games
      */
     public double getWinLossRating() {
-	return 0.0;
+	DTMSeasonStats stats = getSeasonStats();
+	if (stats.getWins() + stats.getLosses() < 10)
+	    return 0;
+
+	return (double) stats.getWins() / (double) stats.getLosses();
     }
 
+    /**
+     * @return a number from 1 to 10, indicating the players relative skill level.
+     * 
+     *         0 indicates unranked -- the player's skill level can't be evaluated.
+     */
     public int getRelativeRating() {
-	return 0;
+	System.out.println("Players elo -- " + this.lastSeenName + " -- " + getWinLossRating());
+
+	if (getWinLossRating() == 0)
+	    return 0;
+
+	Double[] winLossdist = pl.getDataHandler().getWinLossDistribution();
+	System.out.println(Joiner.on(" ").join(winLossdist));
+
+	for (int i = 0; i < winLossdist.length; i++) {
+	    if (this.getWinLossRating() >= winLossdist[i])
+		return 10 - i;
+	}
+
+	return 1;
+    }
+
+    @Override
+    public Optional<String> getPrefix() {
+	return Optional.ofNullable(prefix);
     }
 }

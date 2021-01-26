@@ -30,6 +30,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
+    private static final String GET_WIN_LOSS_DIST = "SELECT Wins, Losses FROM SeasonStats WHERE Season = ? AND Wins + Losses > 10 ORDER BY Wins / Losses DESC";
 
     private final DTM pl;
 
@@ -41,6 +42,8 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
      * with /nextmap.
      */
     private final ConcurrentHashMap<String, DTMMap> loadedMaps = new ConcurrentHashMap<>();
+
+    private Double[] cachedWinLossDistribution;
 
     @Getter
     private final QueueDataSaver dataSaver;
@@ -94,6 +97,9 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	}
 
 	dataSaver.init();
+
+	updateWinLossDistributionCache();
+
     }
 
     public void loadMaps() {
@@ -123,8 +129,8 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 			long playTimeLost = rs.getLong("PlayTimeLost");
 			int longestKillStreak = rs.getInt("LongestKillStreak");
 
-			stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
-				playTimeWon, playTimeLost, longestKillStreak));
+			stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, wins, losses,
+				longestKillStreak, playTimeWon, playTimeLost, monuments));
 		    }
 		}
 	    }
@@ -204,8 +210,8 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 		    int longestKillStreak = rs.getInt("LongestKillStreak");
 
 		    String lastSeenName = rs.getString("LastSeenName");
-		    DTMSeasonStats stats = new DTMSeasonStats(uuid, season, kills, deaths, monuments, wins, losses,
-			    playTimeWon, playTimeLost, longestKillStreak);
+		    DTMSeasonStats stats = new DTMSeasonStats(uuid, season, kills, deaths, wins, losses,
+			    longestKillStreak, playTimeWon, playTimeLost, monuments);
 
 		    // Emeralds and such isn't even loaded. We don't need that.
 		    DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName);
@@ -227,4 +233,36 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     public Set<String> getLoadedMaps() {
 	return loadedMaps.keySet();
     }
+
+    public Double[] getWinLossDistribution() {
+	return cachedWinLossDistribution;
+    }
+
+    public void updateWinLossDistributionCache() {
+	LinkedList<Double> allScores = new LinkedList<>();
+	try (Connection conn = HDS.getConnection(); PreparedStatement stmt = conn.prepareStatement(GET_WIN_LOSS_DIST)) {
+	    stmt.setInt(1, pl.getSeason());
+	    try (ResultSet rs = stmt.executeQuery()) {
+		while (rs.next()) {
+		    int wins = rs.getInt("Wins");
+		    int losses = rs.getInt("Losses");
+
+		    allScores.add((double) wins / (double) losses);
+		}
+	    }
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+	Double[] levels = new Double[9];
+
+	int size = allScores.size();
+	for (int i = 10; i < 100; i += 10) {
+	    double levelThreshold = allScores.get(i * size / 100);
+	    levels[i / 10 - 1] = levelThreshold;
+	}
+
+	this.cachedWinLossDistribution = levels;
+
+    }
+
 }

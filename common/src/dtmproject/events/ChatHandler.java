@@ -22,14 +22,27 @@ public class ChatHandler implements Listener {
 	final Player p = e.getPlayer();
 	final DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p.getUniqueId());
 
-	int points = pd.getSeasonStats().getSum();
-	e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
+	if (!DTM.USE_RELATIVE_SKILL_LEVELS) {
+	    int points = pd.getSeasonStats().getSum();
+	    e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
 
-	// Handle null prefixes
-	String prefixString = pd.getPrefix() == null ? ""
-		: "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] ";
+	    // Handle null prefixes
+	    String prefixString = pd.getPrefix().orElse("");
+	    prefixString = "§8[" + ChatColor.translateAlternateColorCodes('&', prefixString) + "§8] ";
 
-	e.setFormat("§8[§b" + points + "§8]" + " " + prefixString + pd.getDisplayName() + "§8: §f%2$s");
+	    e.setFormat("§8[§b" + points + "§8]" + " " + prefixString + pd.getDisplayName() + "§8: §f%2$s");
+	} else {
+	    int rating = pd.getRelativeRating();
+	    e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
+
+	    // Handle null prefixes
+	    String prefixString = pd.getPrefix().orElse("");
+	    prefixString = "§8[" + ChatColor.translateAlternateColorCodes('&', prefixString) + "§8] ";
+
+	    String ratingString = rating == 0 ? "-" : rating + "";
+	    e.setFormat("§8[§4§l" + ratingString + "§8]" + " " + prefixString + pd.getDisplayName() + "§8: §f%2$s");
+
+	}
 
     }
 

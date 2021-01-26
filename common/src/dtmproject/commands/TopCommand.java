@@ -61,9 +61,15 @@ public class TopCommand implements CommandExecutor {
 		DTMSeasonStats stats = Objects.requireNonNull(entry.getSeasonStats(season));
 		// Player possiblePlayer = Bukkit.getPlayer(stats.uuid);
 
-		sender.sendMessage("§e" + (i++) + ". " + entry.getLastSeenName() + ": §a" + stats.getSum() + " §c"
-			+ stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
-		if (i == finalCount + 1)
+		if (!DTM.USE_RELATIVE_SKILL_LEVELS)
+		    sender.sendMessage("§e" + i + ". " + entry.getLastSeenName() + ": §a" + stats.getSum() + " §c"
+			    + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
+		else
+		    sender.sendMessage("§4[" + (entry.getRelativeRating()) + "]§e " + entry.getLastSeenName() + ": §a"
+			    + stats.getSum() + " §c" + stats.getKills() + " §4" + stats.getDeaths() + " §7"
+			    + stats.getKDRatio());
+
+		if (++i == finalCount + 1)
 		    break;
 	    }
 

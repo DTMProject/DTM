@@ -195,11 +195,17 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	updateNameTag(p);
     }
 
+    // TODO: duplicate method with DTMMap#sendSpec
     public void updateNameTag(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	p.setDisplayName(pd.getDisplayName());
-	p.setPlayerListName(
-		"§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix()) + "§8] " + pd.getDisplayName());
+	// Handle null prefixes
+	if (pd.getPrefix().isPresent()) {
+	    p.setPlayerListName(
+		    "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
+	} else {
+	    p.setPlayerListName("§7" + p.getName());
+	}
 	p.setCustomName(pd.getDisplayName());
 	p.setCustomNameVisible(true);
 
