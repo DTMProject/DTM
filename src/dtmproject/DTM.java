@@ -1,8 +1,11 @@
 package dtmproject;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
+import dtmproject.configuration.LangConfig;
+import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,6 +38,9 @@ import dtmproject.scoreboard.ScoreboardHandler;
 import dtmproject.shop.ShopCommand;
 import dtmproject.shop.ShopHandler;
 import lombok.Getter;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 public class DTM extends JavaPlugin {
 	public static final String DEFAULT_PREFIX = "§eDTM-Jonne";
@@ -66,6 +72,10 @@ public class DTM extends JavaPlugin {
 	@Getter
 	private final DefaultMapLoader defaultMapLoader;
 
+	@Getter
+	private final LangConfig lang;
+
+	@SneakyThrows
 	public DTM() {
 		this.scoreboardHandler = new ScoreboardHandler(this);
 		this.shopHandler = new ShopHandler(this);
@@ -76,6 +86,17 @@ public class DTM extends JavaPlugin {
 		this.countdownHandler = new CountdownHandler(this);
 		this.nameTagColorer = new NameTagColorer();
 		this.defaultMapLoader = new DefaultMapLoader(this);
+
+		final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
+				.file(new File(this.getDataFolder().getAbsolutePath() + "/lang.yml"))
+				.nodeStyle(NodeStyle.BLOCK)
+				.build();
+
+		final ConfigurationNode node = loader.load();
+		this.lang = node.get(LangConfig.class);
+
+		node.set(LangConfig.class, this.lang);
+		loader.save(node);
 	}
 
 	@Override
