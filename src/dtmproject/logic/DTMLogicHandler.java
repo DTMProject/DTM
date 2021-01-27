@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -36,6 +37,7 @@ public class DTMLogicHandler {
 	@Getter
 	private GameState gameStatePrePause;
 
+	@Inject
 	public DTMLogicHandler(DTM pl) {
 		this.pl = pl;
 	}

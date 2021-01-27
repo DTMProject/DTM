@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import dtmproject.configuration.LangConfig;
+import dtmproject.injection.DTMBinderModule;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -45,48 +48,40 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 public class DTM extends JavaPlugin {
 	public static final String DEFAULT_PREFIX = "§eDTM-Jonne";
 
-	@Getter
-	private final ShopHandler shopHandler;
+	private final Injector injector;
 
 	@Getter
-	private final ScoreboardHandler scoreboardHandler;
+	private ShopHandler shopHandler;
 
 	@Getter
-	private final DTMDataHandler dataHandler;
+	private ScoreboardHandler scoreboardHandler;
 
 	@Getter
-	private final DTMLogicHandler logicHandler;
+	private DTMDataHandler dataHandler;
 
 	@Getter
-	private final EditModeCommand editModeHandler;
+	private DTMLogicHandler logicHandler;
 
 	@Getter
-	private final DeathHandler deathHandler;
+	private EditModeCommand editModeHandler;
 
 	@Getter
-	private final CountdownHandler countdownHandler;
+	private DeathHandler deathHandler;
 
 	@Getter
-	private final NameTagColorer nameTagColorer;
+	private CountdownHandler countdownHandler;
 
 	@Getter
-	private final DefaultMapLoader defaultMapLoader;
+	private NameTagColorer nameTagColorer;
+
+	@Getter
+	private DefaultMapLoader defaultMapLoader;
 
 	@Getter
 	private final LangConfig lang;
 
 	@SneakyThrows
 	public DTM() {
-		this.scoreboardHandler = new ScoreboardHandler(this);
-		this.shopHandler = new ShopHandler(this);
-		this.dataHandler = new DTMDataHandler(this);
-		this.logicHandler = new DTMLogicHandler(this);
-		this.editModeHandler = new EditModeCommand(this);
-		this.deathHandler = new DeathHandler(this);
-		this.countdownHandler = new CountdownHandler(this);
-		this.nameTagColorer = new NameTagColorer();
-		this.defaultMapLoader = new DefaultMapLoader(this);
-
 		final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
 				.file(new File(this.getDataFolder().getAbsolutePath() + "/lang.yml"))
 				.nodeStyle(NodeStyle.BLOCK)
@@ -97,10 +92,14 @@ public class DTM extends JavaPlugin {
 
 		node.set(LangConfig.class, this.lang);
 		loader.save(node);
+
+		this.injector = Guice.createInjector(new DTMBinderModule(this, this.lang));
 	}
 
 	@Override
 	public void onEnable() {
+		this.injector.injectMembers(this);
+
 		this.saveDefaultConfig();
 
 		// Events

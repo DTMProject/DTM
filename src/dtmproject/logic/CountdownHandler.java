@@ -2,6 +2,7 @@ package dtmproject.logic;
 
 import java.util.Optional;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 
 import dtmproject.DTM;
@@ -13,6 +14,7 @@ public class CountdownHandler {
 	private int startGame = -1;
 	private int changeMap = 0;
 
+	@Inject
 	public CountdownHandler(DTM pl) {
 		this.pl = pl;
 	}

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
@@ -48,6 +49,7 @@ public class DTMDataHandler {
 	@Getter
 	private final HikariDataSource HDS;
 
+	@Inject
 	public DTMDataHandler(DTM pl) {
 		this.pl = pl;
 		this.dataSaver = new QueueDataSaver(pl);

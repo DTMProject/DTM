@@ -3,6 +3,7 @@ package dtmproject.events;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -42,6 +43,7 @@ public class DeathHandler implements Listener {
 
 	private boolean broadcastMessages = true;
 
+	@Inject
 	public DeathHandler(DTM pl) {
 		this.pl = pl;
 	}

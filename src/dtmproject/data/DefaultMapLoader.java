@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.google.inject.Inject;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,6 +21,7 @@ public class DefaultMapLoader {
 	public static final ItemStack[] DEFAULT_KIT = getDefaultKit();
 	private final DTM pl;
 
+	@Inject
 	public DefaultMapLoader(DTM pl) {
 		this.pl = pl;
 	}

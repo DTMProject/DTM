@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.google.inject.Inject;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,7 @@ public class EditModeCommand implements CommandExecutor {
 	@Getter
 	private Set<CommandSender> pendingList = new HashSet<>();
 
+	@Inject
 	public EditModeCommand(DTM pl) {
 		this.pl = pl;
 	}

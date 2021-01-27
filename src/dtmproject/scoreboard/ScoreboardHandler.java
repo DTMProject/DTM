@@ -2,6 +2,7 @@ package dtmproject.scoreboard;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ public class ScoreboardHandler implements Listener {
 
 	private final ScoreboardSpacerHandler spacers;
 
+	@Inject
 	public ScoreboardHandler(DTM dtm) {
 		this.pl = dtm;
 		this.spacers = new ScoreboardSpacerHandler();

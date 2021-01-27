@@ -1,5 +1,6 @@
 package dtmproject.shop;
 
+import com.google.inject.Inject;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -21,6 +22,7 @@ public class ShopHandler implements Listener {
 	private final Inventory shopInventory;
 	private final ShopItem[] itemsInShop;
 
+	@Inject
 	public ShopHandler(DTM pl) {
 		this.pl = pl;
 		this.shopInventory = Bukkit.createInventory(null, 27, "§eKauppa");
