@@ -2,8 +2,7 @@ main: dtmproject.DTM
 name: DTM
 version: 5.0.0
 author: Juubes
-depends:
-- Nexus
+depend:
 - ProtocolLib
 database: true
 api-version: 1.12.2
