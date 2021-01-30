@@ -1,5 +1,6 @@
+
 bin
-target
+target/
 .settings
 .idea
 .classpath
