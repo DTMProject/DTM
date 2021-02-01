@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import dtmproject.data.IDTMMap;
 import dtmproject.data.IDTMTeam;
 
-public interface IDTMLogicHandler<M extends IDTMMap<?>, T extends IDTMTeam<?>> {
+public interface ILogicHandler<M extends IDTMMap<?>, T extends IDTMTeam<?>> {
     public M getCurrentMap();
 
     public GameState getGameState();

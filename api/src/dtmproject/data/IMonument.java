@@ -4,7 +4,7 @@ import org.bukkit.World;
 
 import dtmproject.WorldlessBlockLocation;
 
-public interface IDTMMonument {
+public interface IMonument {
     /**
      * The pretty emoji thingy for monuments.
      */

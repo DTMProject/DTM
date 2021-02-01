@@ -16,7 +16,7 @@ import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
 @AllArgsConstructor
-public class DTMTeam implements IDTMTeam<DTMMonument> {
+public class DTMTeam implements IDTMTeam<Monument> {
     private final DTM pl;
 
     @Getter
@@ -36,7 +36,7 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
 
     @Getter
     @Setter
-    private LinkedList<DTMMonument> monuments;
+    private LinkedList<Monument> monuments;
 
     public Set<Player> getPlayers() {
 	return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)

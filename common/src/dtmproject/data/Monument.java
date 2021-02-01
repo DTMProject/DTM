@@ -7,7 +7,7 @@ import dtmproject.WorldlessBlockLocation;
 import lombok.Getter;
 import lombok.Setter;
 
-public class DTMMonument implements IDTMMonument {
+public class Monument implements IMonument {
     @Getter
     @Setter
     private WorldlessBlockLocation block;
@@ -24,7 +24,7 @@ public class DTMMonument implements IDTMMonument {
     @Setter
     private boolean broken = false;
 
-    public DTMMonument(WorldlessBlockLocation block, String position, String customName) {
+    public Monument(WorldlessBlockLocation block, String position, String customName) {
 	this.block = block;
 	this.position = position;
 	this.customName = customName;

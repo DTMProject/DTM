@@ -3,7 +3,7 @@ package dtmproject.data;
 import java.text.NumberFormat;
 import java.util.UUID;
 
-public interface IDTMSeasonStats {
+public interface ISeasonStats {
     public UUID getUUID();
 
     public int getSeason();

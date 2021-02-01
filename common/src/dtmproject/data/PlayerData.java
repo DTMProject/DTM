@@ -7,14 +7,12 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Joiner;
-
 import dtmproject.DTM;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
-public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
+public class PlayerData implements IPlayerData<DTMTeam, DTMSeasonStats> {
     @Getter
     private final DTM pl;
 
@@ -54,12 +52,12 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Setter
     private long lastRespawn;
 
-    public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
+    public PlayerData(DTM dtm, UUID uuid, String lastSeenName) {
 	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashMap<>());
     }
 
     // TODO: injektaa plugin instanssi
-    public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
+    public PlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
 	    int eloRating, HashMap<Integer, DTMSeasonStats> seasonStats) {
 	this.pl = dtm;
 	this.UUID = uuid;
@@ -86,8 +84,8 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	return seasonStats.get(season);
     }
 
-    public DTMTotalStats getTotalStats() {
-	return new DTMTotalStats(this.UUID, this.seasonStats);
+    public TotalStats getTotalStats() {
+	return new TotalStats(this.UUID, this.seasonStats);
     }
 
     public boolean isSpectator() {
@@ -124,7 +122,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 
     @Override
     public String toString() {
-	DTMTotalStats totalStats = this.getTotalStats();
+	TotalStats totalStats = this.getTotalStats();
 
 	String str = "";
 	if (Bukkit.getPlayer(UUID) != null)

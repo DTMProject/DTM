@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTMMap<?>> {
+public interface IPlayerDataHandler<PD extends IPlayerData<?, ?>, M extends IDTMMap<?>> {
     /**
      * Initializes possible database connections and prepares for loading maps.
      */

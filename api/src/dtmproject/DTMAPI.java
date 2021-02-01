@@ -2,17 +2,17 @@ package dtmproject;
 
 import java.util.Collection;
 
-import dtmproject.data.IDTMDataHandler;
-import dtmproject.logic.IDTMLogicHandler;
+import dtmproject.data.IPlayerDataHandler;
+import dtmproject.logic.ILogicHandler;
 
 public interface DTMAPI {
     public IShopHandler getShopHandler();
 
     public IScoreboardHandler getScoreboardHandler();
 
-    public IDTMDataHandler<?, ?> getDataHandler();
+    public IPlayerDataHandler<?, ?> getDataHandler();
 
-    public IDTMLogicHandler<?, ?> getLogicHandler();
+    public ILogicHandler<?, ?> getLogicHandler();
 
     public int getSeason();
 

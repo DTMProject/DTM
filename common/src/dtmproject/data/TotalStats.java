@@ -6,13 +6,13 @@ import java.util.UUID;
 
 import lombok.Getter;
 
-public class DTMTotalStats {
+public class TotalStats {
     @Getter
     private final UUID uuid;
 
     private final HashMap<Integer, ? extends DTMSeasonStats> allStats;
 
-    public DTMTotalStats(UUID uuid, HashMap<Integer, DTMSeasonStats> allStats) {
+    public TotalStats(UUID uuid, HashMap<Integer, DTMSeasonStats> allStats) {
 	this.uuid = uuid;
 	this.allStats = allStats;
 

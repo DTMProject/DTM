@@ -26,7 +26,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import dtmproject.DTM;
 import lombok.Getter;
 
-public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
+public class DTMPlayerDataHandler implements IPlayerDataHandler<PlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
@@ -34,7 +34,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
     private final DTM pl;
 
-    private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
+    private final ConcurrentHashMap<UUID, PlayerData> loadedPlayerdata = new ConcurrentHashMap<>();
 
     /**
      * Loaded maps and active maps are a different thing. Active maps must be loaded
@@ -51,7 +51,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     @Getter
     private final HikariDataSource HDS;
 
-    public DTMDataHandler(DTM pl) {
+    public DTMPlayerDataHandler(DTM pl) {
 	this.pl = pl;
 	this.dataSaver = new QueueDataSaver(pl);
 	this.HDS = new HikariDataSource();
@@ -143,10 +143,10 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 			int emeralds = rs.getInt("Emeralds");
 			int killStreak = rs.getInt("KillStreak");
 			int eloRating = rs.getInt("EloRating");
-			loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix,
-				killStreak, eloRating, stats));
+			loadedPlayerdata.put(uuid,
+				new PlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, stats));
 		    } else {
-			loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
+			loadedPlayerdata.put(uuid, new PlayerData(pl, uuid, lastSeenName));
 		    }
 		}
 	    }
@@ -155,11 +155,11 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	}
     }
 
-    public DTMPlayerData getPlayerData(Player p) {
+    public PlayerData getPlayerData(Player p) {
 	return getPlayerData(p.getUniqueId());
     }
 
-    public DTMPlayerData getPlayerData(UUID uuid) {
+    public PlayerData getPlayerData(UUID uuid) {
 	return loadedPlayerdata.get(uuid);
     }
 
@@ -190,8 +190,8 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	throw new NotImplementedException();
     }
 
-    public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {
-	LinkedList<DTMPlayerData> allStats = new LinkedList<>();
+    public LinkedList<PlayerData> getLeaderboard(int count, int season) {
+	LinkedList<PlayerData> allStats = new LinkedList<>();
 
 	try (Connection conn = HDS.getConnection();
 		PreparedStatement stmt = conn.prepareStatement(GET_LEADERBOARD_QUERY)) {
@@ -214,7 +214,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 			    longestKillStreak, playTimeWon, playTimeLost, monuments);
 
 		    // Emeralds and such isn't even loaded. We don't need that.
-		    DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName);
+		    PlayerData data = new PlayerData(pl, uuid, lastSeenName);
 		    data.seasonStats.put(stats.getSeason(), stats);
 
 		    allStats.add(data);

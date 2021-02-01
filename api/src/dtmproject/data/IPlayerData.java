@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-public interface IDTMPlayerData<T extends IDTMTeam<?>, SS extends IDTMSeasonStats> {
+public interface IPlayerData<T extends IDTMTeam<?>, SS extends ISeasonStats> {
     public UUID getUUID();
 
     public String getLastSeenName();
