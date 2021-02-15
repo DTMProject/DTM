@@ -47,6 +47,7 @@
 							<include>org.slf4j:slf4j-simple</include>
 							<include>org.spongepowered:configurate-core</include>
 							<include>org.spongepowered:configurate-yaml</include>
+                            <include>com.google.inject:guice</include>
 						</includes>
 					</artifactSet>
 				</configuration>
