@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.dtmproject.dtm.configuration.LangConfig;
 import org.dtmproject.dtm.injection.DTMBinderModule;
 import lombok.SneakyThrows;
@@ -41,9 +43,7 @@ import org.dtmproject.dtm.scoreboard.ScoreboardHandler;
 import org.dtmproject.dtm.shop.ShopCommand;
 import org.dtmproject.dtm.shop.ShopHandler;
 import lombok.Getter;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.yaml.NodeStyle;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import org.yaml.snakeyaml.DumperOptions;
 
 public class DTM extends JavaPlugin {
 	public static final String DEFAULT_PREFIX = "§eDTM-Jonne";
@@ -82,15 +82,15 @@ public class DTM extends JavaPlugin {
 
 	@SneakyThrows
 	public DTM() {
-		final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
-				.file(new File(this.getDataFolder().getAbsolutePath() + "/lang.yml"))
-				.nodeStyle(NodeStyle.BLOCK)
+		final YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
+				.setFile(new File(this.getDataFolder().getAbsolutePath() + "/lang.yml"))
+                .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
 				.build();
 
 		final ConfigurationNode node = loader.load();
-		this.lang = node.get(LangConfig.class);
+		this.lang = LangConfig.loadFrom(node);
 
-		node.set(LangConfig.class, this.lang);
+		this.lang.saveTo(node);
 		loader.save(node);
 
 		this.injector = Guice.createInjector(new DTMBinderModule(this, this.lang));

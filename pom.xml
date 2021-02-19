@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -6,21 +7,14 @@
 	<artifactId>dtm</artifactId>
 	<version>5.0.0</version>
 
+    <name>DTM</name>
+
+    <packaging>jar</packaging>
+
 	<properties>
+        <java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-
-		<repository>
-			<id>jitpack</id>
-			<url>https://jitpack.io/</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -51,62 +45,55 @@
                             <relocations>
                                 <relocation>
                                     <pattern>com.zaxxer</pattern>
-                                    <shadedPattern>dtmproject.libs.hikari</shadedPattern>
+                                    <shadedPattern>org.dtmproject.dtm.libs.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>dtmproject.libs.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.spongepowered</pattern>
-                                    <shadedPattern>dtmproject.libs.sponge</shadedPattern>
+                                    <pattern>ninja.leaping.configurate</pattern>
+                                    <shadedPattern>org.dtmproject.dtm.libs.configurate</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.google.inject</pattern>
-                                    <shadedPattern>dtmproject.libs.guice</shadedPattern>
+                                    <shadedPattern>org.dtmproject.dtm.libs.guice</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.io</pattern>
+                                    <shadedPattern>org.dtmproject.dtm.libs.commonsio</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
                     </execution>
                 </executions>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>unpack-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <excludeScope>system</excludeScope>
-                            <excludes>META-INF/*.SF</excludes>
-                            <excludes>META-INF/*.DSA</excludes>
-                            <excludes>META-INF/*.RSA</excludes>
-                            <excludeGroupIds>junit,org.mockito,org.hamcrest,com.google.*,org.spongepowered</excludeGroupIds>
-                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-			</plugin>
 		</plugins>
 		<resources>
 			<resource>
 				<directory>res</directory>
+                <filtering>true</filtering>
 			</resource>
 			<resource>
 				<directory>maps</directory>
+                <filtering>true</filtering>
 			</resource>
 		</resources>
 	</build>
+
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io/</url>
+        </repository>
+
+        <repository>
+            <id>sponge</id>
+            <url>https://repo.spongepowered.org/maven/</url>
+        </repository>
+    </repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
@@ -118,12 +105,7 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>3.3.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
+            <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -135,28 +117,30 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
-			<scope>compile</scope>
+            <scope>compile</scope>
 		</dependency>
 		<!-- Configurate -->
 		<dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>configurate-core</artifactId>
-			<version>4.0.0</version>
+			<version>3.7.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>configurate-yaml</artifactId>
-			<version>4.0.0</version>
+			<version>3.7.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.dmulloy2</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.5.1</version>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>4.1.0</version>
+            <scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>
