@@ -1,6 +1,5 @@
 package dtmproject.events;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,10 +20,6 @@ public class LoggingHandler implements ILoggingHandler {
     public LoggingHandler(DTM pl) {
 	try {
 	    new File(pl.getDataFolder(), "logs").mkdirs();
-
-	    
-	    new BufferedWriter()
-	    
 	    
 	    this.gameLogger = new PrintWriter(new FileWriter(new File(pl.getDataFolder(), "logs/games.log")), true);
 	    this.connectionLogger = new PrintWriter(
