@@ -1,5 +1,6 @@
 package dtmproject.lang;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
@@ -23,8 +24,6 @@ public class LangConfig {
 	return MAPPER.bindToNew().populate(node);
     }
 
-    private String prefix = "prefix";
-
     public String prefix() {
 	return prefix;
     }
@@ -33,5 +32,36 @@ public class LangConfig {
     public void saveTo(ConfigurationNode node) {
 	MAPPER.bind(this).serialize(node);
     }
+
+    @Getter
+    private String prefix = "prefix";
+
+    @Getter
+    private String gameNotStarted = "§ePeli ei ole käynnissä.";
+
+    @Getter
+    private String joinWithCommand = "§eLiity peliin komennolla /liity.";
+
+    @Getter
+    private String invalidGamemode = "§eEt ole oikeassa pelitilassa.";
+
+    @Getter
+    private String DTMIsStopped = "§eDTM on pysäytetty!";
+
+    @Getter
+    private String DTMIsPausedTemporarilyPlayer = "§eDTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.";
+
+    @Getter
+    private String DTMIsPausedTemporarily = "§eDTM on pysäytetty väliaikaisesti.";
+
+    @Getter
+    private String gameUnpausedPlayer = "§ePeli jatkuu! Sinut on teleportattu spawnille.";
+
+    @Getter
+    private String notEnoughPlayers = "§ePelissä ei ole tarpeeksi pelaajia.";
+    
+    @Getter
+    private String gameStartsInSeconds = "§ePeli alkaa {0} sekunnissa.";
+
 
 }
