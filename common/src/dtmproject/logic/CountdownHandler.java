@@ -23,17 +23,17 @@ public class CountdownHandler {
 		return;
 	    if (changeMap > 0) {
 		if (changeMap < 4 || changeMap == 10 || changeMap == 20 || changeMap == 30 || changeMap % 60 == 0)
-		    Bukkit.broadcastMessage("§eVaihdetaan mappia " + changeMap + " sekunnissa.");
+		    Bukkit.broadcastMessage("3>§b> §8+ §7Vaihdetaan mappia " + changeMap + " sekunnissa.");
 	    }
 	    if (startGame > 0) {
 		if (startGame < 4 || startGame == 10 || startGame == 20 || startGame == 30 || startGame % 60 == 0)
-		    Bukkit.broadcastMessage("§ePeli alkaa " + startGame + " sekunnissa.");
+		    Bukkit.broadcastMessage("3>§b> §8+ §7Peli alkaa " + startGame + " sekunnissa.");
 	    }
 	    if (changeMap > 0) {
 		changeMap--;
 	    } else if (changeMap == 0) {
 		pl.getLogicHandler().loadNextGame(false, Optional.empty());
-		Bukkit.broadcastMessage("§eLiity peliin komennolla /liity");
+		Bukkit.broadcastMessage("3>§b> §8+ §7Liity peliin komennolla /liity");
 		changeMap = -1;
 	    }
 
@@ -42,7 +42,7 @@ public class CountdownHandler {
 	    } else if (startGame == 0) {
 		for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
 		    if (team.getPlayers().size() == 0) {
-			Bukkit.broadcastMessage("§ePelissä ei ole tarpeeksi pelaajia.");
+			Bukkit.broadcastMessage("3>§b> §8+ §7Pelissä ei ole tarpeeksi pelaajia.");
 			startGame = 30;
 			return;
 		    }

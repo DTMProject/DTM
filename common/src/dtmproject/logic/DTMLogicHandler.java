@@ -135,7 +135,7 @@ public class DTMLogicHandler implements ILogicHandler<DTMMap, DTMTeam> {
 	    gameState = PAUSED;
 
 	    pl.getCountdownHandler().stopChangeMapCountdown();
-	    Bukkit.broadcastMessage("§eDTM on pysäytetty!");
+	    Bukkit.broadcastMessage("3>§b> §8+ §7DTM on pysäytetty!");
 	    break;
 
 	case PRE_START:
@@ -143,7 +143,7 @@ public class DTMLogicHandler implements ILogicHandler<DTMMap, DTMTeam> {
 	    gameState = PAUSED;
 
 	    pl.getCountdownHandler().stopStartGameCountdown();
-	    Bukkit.broadcastMessage("§eDTM on pysäytetty!");
+	    Bukkit.broadcastMessage("3>§b> §8+ §7DTM on pysäytetty!");
 	    break;
 	case RUNNING:
 	    gameStatePrePause = gameState;
@@ -154,9 +154,9 @@ public class DTMLogicHandler implements ILogicHandler<DTMMap, DTMTeam> {
 		if (!pd.isSpectator()) {
 		    p.setGameMode(GameMode.SPECTATOR);
 		    p.sendMessage(
-			    "§eDTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.");
+			    "3>§b> §8+ §7DTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.");
 		} else {
-		    p.sendMessage("§eDTM on pysäytetty väliaikaisesti.");
+		    p.sendMessage("3>§b> §8+ §7DTM on pysäytetty väliaikaisesti.");
 		}
 	    });
 	    break;
@@ -174,7 +174,7 @@ public class DTMLogicHandler implements ILogicHandler<DTMMap, DTMTeam> {
 			p.setHealth(20);
 			p.setFoodLevel(20);
 
-			p.sendMessage("§ePeli jatkuu! Sinut on teleportattu spawnille.");
+			p.sendMessage("3>§b> §8+ §7Peli jatkuu! Sinut on teleportattu spawnille.");
 		    }
 		});
 		break;

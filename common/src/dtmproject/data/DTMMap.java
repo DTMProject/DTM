@@ -120,7 +120,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	    mon.setBroken(false);
 	}));
 
-	pl.getLogger().finer("§eLoaded world " + id);
+	pl.getLogger().finer("3>§b> §8+ §7Loaded world " + id);
     }
 
     /**

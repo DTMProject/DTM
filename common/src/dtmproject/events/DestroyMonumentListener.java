@@ -41,12 +41,12 @@ public class DestroyMonumentListener implements Listener {
 	// Destroyer is a spectator
 	if (data.getTeam() == null) {
 	    if (!p.isOp()) {
-		p.sendMessage("§eEt voi tuhota monumenttia spectatessa.");
+		p.sendMessage("3>§b> §8+ §7Et voi tuhota monumenttia spectatessa.");
 		e.setCancelled(true);
 	    } else {
 		if (p.getGameMode() != GameMode.CREATIVE) {
 		    p.sendMessage(
-			    "§eEt ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
+			    "3>§b> §8+ §7Et ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
 		    e.setCancelled(true);
 		}
 	    }
@@ -68,7 +68,7 @@ public class DestroyMonumentListener implements Listener {
 		// Monument destroyed
 		// Test if own
 		if (data.getTeam() == team) {
-		    p.sendMessage("§eTämä on oman tiimisi monumentti.");
+		    p.sendMessage("3>§b> §8+ §7Tämä on oman tiimisi monumentti.");
 		    e.setCancelled(true);
 		    return;
 		}
@@ -86,8 +86,7 @@ public class DestroyMonumentListener implements Listener {
 
 		    // Also give points to closeby teammates
 		    for (Player closeByPlayer : getCloseByTeammates(p, pd)) {
-			PlayerData closeByPlayerData = dtm.getDataHandler()
-				.getPlayerData(closeByPlayer.getUniqueId());
+			PlayerData closeByPlayerData = dtm.getDataHandler().getPlayerData(closeByPlayer.getUniqueId());
 			announcePlayerWhoBrokeTheMonument(closeByPlayer, closeByPlayerData, mon, team);
 		    }
 
@@ -101,7 +100,7 @@ public class DestroyMonumentListener implements Listener {
 		    dtm.getLoggingHandler().logMonumentDestroyed(dtm.getLogicHandler().getCurrentMap().getId(),
 			    team.getId(), mon.getPosition(), p.getUniqueId());
 		} else {
-		    p.sendMessage("§eTämä monumentti on jo kerran tuhottu.");
+		    p.sendMessage("3>§b> §8+ §7Tämä monumentti on jo kerran tuhottu.");
 		}
 		e.setCancelled(true);
 		e.getBlock().setType(Material.AIR);
@@ -114,7 +113,7 @@ public class DestroyMonumentListener implements Listener {
 	pd.getSeasonStats().increaseMonumentsDestroyed();
 	pd.increaseEmeralds(5);
 	Bukkit.broadcastMessage(
-		"§e" + p.getDisplayName() + " §etuhosi monumentin " + team.getTeamColor() + mon.getCustomName());
+		"3>§b> §8+ §7" + p.getDisplayName() + " §7tuhosi monumentin " + team.getTeamColor() + mon.getCustomName());
     }
 
     private Set<Player> getCloseByTeammates(Player p, PlayerData pd) {
