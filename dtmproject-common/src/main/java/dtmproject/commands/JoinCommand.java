@@ -21,44 +21,44 @@ public class JoinCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 	if (pl.getLogicHandler().getGameState() == GameState.PAUSED) {
-	    sender.sendMessage("§3>§b> §8+ §7Peli on pysäytetty.");
+	    sender.sendMessage("§ePeli on pysäytetty.");
 	    return true;
 	}
 
 	if (args.length == 0) {
 	    if (!(sender instanceof Player)) {
-		sender.sendMessage("§3>§b> §8+ §7Voit lähettää muita tiimeihin /join <pelaaja> <tiimi>");
+		sender.sendMessage("§eVoit lähettää muita tiimeihin /join <pelaaja> <tiimi>");
 		return true;
 	    }
 	    Player caller = (Player) sender;
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
 
 	    if (!pd.isSpectator()) {
-		caller.sendMessage("§3>§b> §8+ §7Olet jo tiimissä " + pd.getTeam().getDisplayName() + "§e.");
+		caller.sendMessage("§eOlet jo tiimissä " + pd.getTeam().getDisplayName() + "§e.");
 		return true;
 	    }
 
 	    pl.getLogicHandler().setPlayerToSmallestTeam(caller);
 	    DTMTeam team = pd.getTeam();
-
-	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());
+	    
+	    caller.sendMessage("§eOlet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());
 	    return true;
 	}
 
 	if (!sender.isOp()) {
-	    sender.sendMessage("§3>§b> §8+ §7Oopeekomento! Ei permejä.");
+	    sender.sendMessage("§eOopeekomento! Ei permejä.");
 	    return true;
 	}
 
 	if (args.length == 1) {
 	    if (!(sender instanceof Player)) {
-		sender.sendMessage("§3>§b> §8+ §7Voit lähettää muita tiimeihin /join <pelaaja> <tiimi>");
+		sender.sendMessage("§eVoit lähettää muita tiimeihin /join <pelaaja> <tiimi>");
 		return true;
 	    }
 
 	    DTMTeam team = pl.getLogicHandler().getCurrentMap().getTeamWithName(args[0]);
 	    if (team == null) {
-		sender.sendMessage("§3>§b> §8+ §7Pelissä ei ole tiimiä " + args[0] + ".");
+		sender.sendMessage("§ePelissä ei ole tiimiä " + args[0] + ".");
 		return true;
 	    }
 
@@ -68,20 +68,20 @@ public class JoinCommand implements CommandExecutor {
 	    pd.setTeam(team);
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(caller);
-	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName() + "§7.");
+	    caller.sendMessage("§eOlet nyt tiimissä " + team.getTeamColor() + team.getDisplayName() + "§e.");
 	    return true;
 	}
 
 	if (args.length == 2) {
 	    Player target = Bukkit.getPlayer(args[0]);
 	    if (target == null) {
-		sender.sendMessage("§3>§b> §8+ §7Tämä pelaaja ei ole paikalla.");
+		sender.sendMessage("§eTämä pelaaja ei ole paikalla.");
 		return true;
 	    }
 
 	    DTMTeam team = pl.getLogicHandler().getCurrentMap().getTeamWithName(args[1]);
 	    if (team == null) {
-		sender.sendMessage("§3>§b> §8+ §7Pelissä ei ole tiimiä " + args[1].toLowerCase() + ".");
+		sender.sendMessage("§ePelissä ei ole tiimiä " + args[1].toLowerCase() + ".");
 		return true;
 	    }
 
@@ -90,8 +90,8 @@ public class JoinCommand implements CommandExecutor {
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(target);
 
-	    sender.sendMessage("§3>§b> §8+ §7Pelaaja " + targetPlayerData.getDisplayName() + " §7lähetetty tiimiin "
-		    + team.getTeamColor() + team.getDisplayName() + "§7.");
+	    sender.sendMessage("§ePelaaja " + targetPlayerData.getDisplayName() + " §elähetetty tiimiin "
+		    + team.getTeamColor() + team.getDisplayName() + "§e.");
 	    return true;
 	}
 

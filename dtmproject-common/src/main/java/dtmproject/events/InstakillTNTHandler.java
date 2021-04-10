@@ -107,7 +107,7 @@ public class InstakillTNTHandler implements Listener {
 	    if (p != null) {
 		if (exploderData.getTeam() != null) {
 		    p.damage(10 * killedTeammates);
-		    p.sendMessage("3>§b> §8+ §7Tapoit oman tiimiläisesi, joten otat itsekin vahinkoa!");
+		    p.sendMessage("§eTapoit oman tiimiläisesi, joten otat itsekin vahinkoa!");
 		}
 	    }
 	}

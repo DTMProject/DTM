@@ -26,17 +26,17 @@ public class ShopCommand implements CommandExecutor {
 	Player p = (Player) sender;
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 	if (pl.getLogicHandler().getGameState() != GameState.RUNNING) {
-	    p.sendMessage("3>§b> §8+ §7Peli ei ole käynnissä.");
+	    p.sendMessage("§ePeli ei ole käynnissä.");
 	    return true;
 	}
 
 	if (pd.getTeam() == null) {
-	    p.sendMessage("3>§b> §8+ §7Liity peliin komennolla /liity.");
+	    p.sendMessage("§eLiity peliin komennolla /liity.");
 	    return true;
 	}
 
 	if (p.getGameMode() != GameMode.SURVIVAL) {
-	    p.sendMessage("3>§b> §8+ §7Et ole oikeassa pelitilassa.");
+	    p.sendMessage("§eEt ole oikeassa pelitilassa.");
 	    return true;
 	}
 

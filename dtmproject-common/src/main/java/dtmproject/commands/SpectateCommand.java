@@ -19,26 +19,26 @@ public class SpectateCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 	if (args.length == 0) {
 	    if (!(sender instanceof Player)) {
-		sender.sendMessage("3>§b> §8+ §7Bruhh.");
+		sender.sendMessage("§eBruhh.");
 		return true;
 	    }
 
 	    Player p = (Player) sender;
 	    pl.getLogicHandler().getCurrentMap().sendToSpectate(p);
 
-	    p.sendMessage("3>§b> §8+ §7Olet nyt katsoja.");
+	    p.sendMessage("§eOlet nyt katsoja.");
 	    return true;
 	}
 
 	Player target = Bukkit.getPlayer(args[0]);
 	if (target == null) {
-	    sender.sendMessage("3>§b> §8+ §7Pelaajaa ei löytynyt.");
+	    sender.sendMessage("§ePelaajaa ei löytynyt.");
 	    return true;
 	}
 
 	pl.getLogicHandler().getCurrentMap().sendToSpectate(target);
-	sender.sendMessage("3>§b> §8+ §7Lähetetty " + target.getName() + " katsojaksi.");
-	target.sendMessage("3>§b> §8+ §7Sinut on lähetetty katsojaksi.");
+	sender.sendMessage("§eLähetetty " + target.getName() + " katsojaksi.");
+	target.sendMessage("§eSinut on lähetetty katsojaksi.");
 	return true;
     }
 
