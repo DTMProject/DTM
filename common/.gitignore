@@ -6,3 +6,4 @@ target
 .project
 dtmproject.iml
 dependency-reduced-pom.xml
+.idea/
