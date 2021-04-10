@@ -69,6 +69,18 @@
 		</resources>
 	</build>
 	<dependencies>
+		<!-- Configurate -->
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>configurate-core</artifactId>
+			<version>3.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>configurate-yaml</artifactId>
+			<version>3.7.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>

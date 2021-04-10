@@ -19,7 +19,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.data.DTMTeam;
 
 public class InstakillTNTHandler implements Listener {
@@ -39,7 +39,7 @@ public class InstakillTNTHandler implements Listener {
 	if (b.getType() != Material.TNT)
 	    return;
 
-	DTMPlayerData pd = dtm.getDataHandler().getPlayerData(e.getPlayer());
+	PlayerData pd = dtm.getDataHandler().getPlayerData(e.getPlayer());
 
 	DTMTeam team = pd.getTeam();
 	if (team == null) {
@@ -75,7 +75,7 @@ public class InstakillTNTHandler implements Listener {
 
 	int killedTeammates = 0;
 	UUID exploderUUID = tnts.get(tnt.getUniqueId());
-	DTMPlayerData exploderData = dtm.getDataHandler().getPlayerData(exploderUUID);
+	PlayerData exploderData = dtm.getDataHandler().getPlayerData(exploderUUID);
 	// Instakill 10 block radius
 	for (Player target : Bukkit.getOnlinePlayers()) {
 	    if (target.getUniqueId() == exploderUUID)
@@ -83,7 +83,7 @@ public class InstakillTNTHandler implements Listener {
 	    if (target.getLocation().distance(tnt.getLocation()) > 7)
 		continue;
 
-	    DTMPlayerData targetData = dtm.getDataHandler().getPlayerData(target.getUniqueId());
+	    PlayerData targetData = dtm.getDataHandler().getPlayerData(target.getUniqueId());
 	    if (targetData == null)
 		continue;
 

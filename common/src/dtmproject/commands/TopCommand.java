@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.data.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
@@ -57,7 +57,7 @@ public class TopCommand implements CommandExecutor {
 	Bukkit.getScheduler().runTaskAsynchronously(dtm, () -> {
 	    int i = 1;
 	    // for (DTMPlayerData entry : topListCache) {
-	    for (DTMPlayerData entry : dtm.getDataHandler().getLeaderboard(100, season)) {
+	    for (PlayerData entry : dtm.getDataHandler().getLeaderboard(100, season)) {
 		DTMSeasonStats stats = Objects.requireNonNull(entry.getSeasonStats(season));
 		// Player possiblePlayer = Bukkit.getPlayer(stats.uuid);
 

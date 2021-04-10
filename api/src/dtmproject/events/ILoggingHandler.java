@@ -14,6 +14,8 @@ public interface ILoggingHandler {
 
     public void logPlayerJoin(UUID player);
 
-    public void logPlayerLeave(UUID player, String mapId, long timeAfterStart, GameState gameState);
+    public void logPlayerQuit(UUID player, String mapId, long timeAfterStart, GameState gameState);
+
+    public void stopLogging();
 
 }

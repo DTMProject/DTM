@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.data.DTMTeam;
 import dtmproject.logic.GameState;
 
@@ -31,7 +31,7 @@ public class JoinCommand implements CommandExecutor {
 		return true;
 	    }
 	    Player caller = (Player) sender;
-	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
+	    PlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
 
 	    if (!pd.isSpectator()) {
 		caller.sendMessage("§eOlet jo tiimissä " + pd.getTeam().getDisplayName() + "§e.");
@@ -63,7 +63,7 @@ public class JoinCommand implements CommandExecutor {
 	    }
 
 	    Player caller = (Player) sender;
-	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
+	    PlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
 
 	    pd.setTeam(team);
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
@@ -85,7 +85,7 @@ public class JoinCommand implements CommandExecutor {
 		return true;
 	    }
 
-	    DTMPlayerData targetPlayerData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+	    PlayerData targetPlayerData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 	    targetPlayerData.setTeam(team);
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(target);

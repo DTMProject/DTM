@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.logic.GameState;
 
 public class ShopCommand implements CommandExecutor {
@@ -24,7 +24,7 @@ public class ShopCommand implements CommandExecutor {
 	    return true;
 
 	Player p = (Player) sender;
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	PlayerData pd = pl.getDataHandler().getPlayerData(p);
 	if (pl.getLogicHandler().getGameState() != GameState.RUNNING) {
 	    p.sendMessage("§ePeli ei ole käynnissä.");
 	    return true;

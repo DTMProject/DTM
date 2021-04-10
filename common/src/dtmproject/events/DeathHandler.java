@@ -33,7 +33,7 @@ import org.bukkit.potion.PotionEffectType;
 import dtmproject.DTM;
 import dtmproject.WorldlessLocation;
 import dtmproject.data.DTMMap;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.logic.GameState;
 
 public class DeathHandler implements Listener {
@@ -110,7 +110,7 @@ public class DeathHandler implements Listener {
 	    e.printStackTrace();
 	}
 
-	DTMPlayerData playerData = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	PlayerData playerData = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 	// Reset
 	pl.getLogicHandler().getCurrentMap().sendPlayerToGame(p);
@@ -168,8 +168,8 @@ public class DeathHandler implements Listener {
 	Player shooter = (Player) arrow.getShooter();
 	Player target = (Player) e.getEntity();
 
-	DTMPlayerData shooterData = pl.getDataHandler().getPlayerData(shooter);
-	DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target);
+	PlayerData shooterData = pl.getDataHandler().getPlayerData(shooter);
+	PlayerData targetData = pl.getDataHandler().getPlayerData(target);
 
 	// Shot one of their teammate -> cancel event
 	if (shooterData.getTeam() == targetData.getTeam()) {
@@ -237,8 +237,8 @@ public class DeathHandler implements Listener {
 	Player attacker = (Player) e.getDamager();
 	Player target = (Player) e.getEntity();
 
-	DTMPlayerData attackerData = pl.getDataHandler().getPlayerData(attacker.getUniqueId());
-	DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+	PlayerData attackerData = pl.getDataHandler().getPlayerData(attacker.getUniqueId());
+	PlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 
 	if (lastHits.containsKey(attacker.getUniqueId())) {
 	    // 10 CPS limit lolzzzz
@@ -344,7 +344,7 @@ public class DeathHandler implements Listener {
 
 	Player target = (Player) e.getEntity();
 	if (target.getHealth() - e.getFinalDamage() <= 0) {
-	    DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+	    PlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 	    if (targetData.isSpectator()) {
 		pl.getLogicHandler().getCurrentMap().sendToSpectate(target);
 	    }
@@ -356,7 +356,7 @@ public class DeathHandler implements Listener {
 	    switch (e.getCause()) {
 	    case VOID:
 		if (damager != null) {
-		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
 			Bukkit.broadcastMessage(targetData.getDisplayName() + "§e putosi maailmasta. "
 				+ damagerData.getDisplayName() + " §esai kunnian.");
@@ -381,7 +381,7 @@ public class DeathHandler implements Listener {
 		break;
 	    case FALL:
 		if (damager != null) {
-		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
 			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eosui maahan liian kovaa. "
 				+ damagerData.getDisplayName() + " §esai kunnian.");
@@ -405,7 +405,7 @@ public class DeathHandler implements Listener {
 		break;
 	    case ENTITY_EXPLOSION:
 		if (damager != null) {
-		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
 			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eräjähti. "
 				+ damagerData.getDisplayName() + "§e sai kunnian.");
@@ -445,7 +445,7 @@ public class DeathHandler implements Listener {
 		break;
 	    case FIRE_TICK:
 		if (damager != null) {
-		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
 			Bukkit.broadcastMessage(targetData.getDisplayName() + " §epaloi hengiltä. "
 				+ damagerData.getDisplayName() + " §esai kunnian.");

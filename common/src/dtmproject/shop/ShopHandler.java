@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import dtmproject.DTM;
 import dtmproject.IShopHandler;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 
 public class ShopHandler implements IShopHandler, Listener {
     private final DTM pl;
@@ -92,7 +92,7 @@ public class ShopHandler implements IShopHandler, Listener {
 
 	int slot = e.getSlot();
 	ShopItem shopItem = itemsInShop[slot];
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	PlayerData pd = pl.getDataHandler().getPlayerData(p);
 
 	// TODO: Nullpointer below
 	if (shopItem.getPrice() > pd.getEmeralds()) {
@@ -139,7 +139,7 @@ public class ShopHandler implements IShopHandler, Listener {
 
     @Override
     public void openShop(Player p) {
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	PlayerData pd = pl.getDataHandler().getPlayerData(p);
 	Inventory inv = Bukkit.createInventory(null, 27, shopInventory.getName());
 	inv.setContents(shopInventory.getContents());
 
