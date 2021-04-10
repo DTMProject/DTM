@@ -21,7 +21,7 @@ import dtmproject.commands.StartCommand;
 import dtmproject.commands.StatsCommand;
 import dtmproject.commands.TopCommand;
 import dtmproject.commands.WorldsCommand;
-import dtmproject.data.DTMPlayerDataHandler;
+import dtmproject.data.DTMDataHandler;
 import dtmproject.data.DefaultMapLoader;
 import dtmproject.logic.CountdownHandler;
 import dtmproject.logic.DTMLogicHandler;
@@ -47,7 +47,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     private final ScoreboardHandler scoreboardHandler;
 
     @Getter
-    private final DTMPlayerDataHandler dataHandler;
+    private final DTMDataHandler dataHandler;
 
     @Getter
     private final DTMLogicHandler logicHandler;
@@ -73,7 +73,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     public DTM() {
 	this.scoreboardHandler = new ScoreboardHandler(this);
 	this.shopHandler = new ShopHandler(this);
-	this.dataHandler = new DTMPlayerDataHandler(this);
+	this.dataHandler = new DTMDataHandler(this);
 	this.logicHandler = new DTMLogicHandler(this);
 	this.editModeHandler = new EditModeCommand(this);
 	this.deathHandler = new DeathHandler(this);
@@ -164,9 +164,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 
 	// Empty playerdata saving queue
 	dataHandler.getDataSaver().emptyQueueSync();
-
-	// Stop logging
-	loggingHandler.stopLogging();
     }
 
     public int getSeason() {

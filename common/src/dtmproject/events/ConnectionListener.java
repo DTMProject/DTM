@@ -11,8 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.google.common.util.concurrent.RateLimiter;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMMap;
-import dtmproject.data.PlayerData;
+import dtmproject.data.DTMPlayerData;
 
 public class ConnectionListener implements Listener {
     private final DTM pl;
@@ -34,7 +33,7 @@ public class ConnectionListener implements Listener {
 	e.setJoinMessage(null);
 
 	Player p = e.getPlayer();
-	PlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
 	if (pd == null) {
 	    p.kickPlayer("§ewtf, null playerdata");
@@ -55,9 +54,6 @@ public class ConnectionListener implements Listener {
 	    Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getLastSeenName());
 
 	pl.getLogicHandler().getCurrentMap().sendToSpectate(p);
-
-	// Log it
-	pl.getLoggingHandler().logPlayerJoin(p.getUniqueId());
     }
 
     @EventHandler
@@ -66,17 +62,11 @@ public class ConnectionListener implements Listener {
 
 	Player p = e.getPlayer();
 	p.getActivePotionEffects().clear();
-	PlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 	if (Bukkit.getOnlinePlayers().size() <= 15)
 	    Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getLastSeenName());
 
 	pl.getDeathHandler().clearLastHits(p);
 	pl.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
-
-	DTMMap map = pl.getLogicHandler().getCurrentMap();
-
-	// Log it
-	pl.getLoggingHandler().logPlayerQuit(p.getUniqueId(), map.getId(), map.getTimePlayed(),
-		pl.getLogicHandler().getGameState());
     }
 }

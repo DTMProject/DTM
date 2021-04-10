@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
 import dtmproject.DTM;
-import dtmproject.data.PlayerData;
+import dtmproject.data.DTMPlayerData;
 
 public class TeamSpleefListener implements Listener {
     private HashMap<Block, Long> antiSpleef = new HashMap<>();
@@ -27,7 +27,7 @@ public class TeamSpleefListener implements Listener {
     public void stopSpleef(BlockBreakEvent e) {
 	Player p = e.getPlayer();
 	Location blockBroken = e.getBlock().getLocation();
-	PlayerData pd = dtm.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
 
 	if (pd.getTeam() == null)
 	    return;

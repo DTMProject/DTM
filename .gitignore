@@ -1,8 +1,1 @@
-bin
-target/
-.settings/
-.idea
-.classpath
-.project
-dtmproject.iml
-dependency-reduced-pom.xml
+/target/

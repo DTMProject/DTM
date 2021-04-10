@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import dtmproject.WorldlessLocation;
 import net.md_5.bungee.api.ChatColor;
 
-public interface IDTMTeam<M extends IMonument> {
+public interface IDTMTeam<M extends IDTMMonument> {
     public String getId();
 
     public String getDisplayName();

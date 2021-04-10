@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.data.PlayerData;
+import dtmproject.data.DTMPlayerData;
 
 public class StatsCommand implements CommandExecutor {
     private final DTM pl;
@@ -25,7 +25,7 @@ public class StatsCommand implements CommandExecutor {
 		return true;
 	    }
 	    Player p = (Player) sender;
-	    PlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    sender.sendMessage("§e§l    Kausi");
 	    sender.sendMessage(pd.getSeasonStats().toString());
 

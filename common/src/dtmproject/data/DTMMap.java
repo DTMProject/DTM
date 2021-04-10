@@ -2,7 +2,6 @@ package dtmproject.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -147,7 +146,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	// 50 points to the winner team, 15 to losers
 	pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
 	    team.getPlayers().forEach(p -> {
-		PlayerData pd = pl.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 		int minutesPlayed = Math
 			.min((int) ((System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime())
 				/ 1000 / 60), 90);
@@ -191,7 +190,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     }
 
     public void sendToSpectate(Player p) {
-	PlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	pd.setTeam(null);
 
 	p.setGameMode(GameMode.SPECTATOR);
@@ -235,7 +234,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 	Objects.requireNonNull(this.world);
 
-	PlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 	Objects.requireNonNull(pd.getTeam());
 
@@ -271,14 +270,5 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Override
     public void setLobby(WorldlessLocation lobby) {
 	this.lobby = Optional.of(lobby);
-    }
-
-    // TODO can be optimized
-    public HashMap<String, Integer> getPlayerCounts() {
-	HashMap<String, Integer> playersOfTeams = new HashMap<String, Integer>();
-	for (DTMTeam team : this.getTeams()) {
-	    playersOfTeams.put(team.getId(), team.getPlayers().size());
-	}
-	return playersOfTeams;
     }
 }
