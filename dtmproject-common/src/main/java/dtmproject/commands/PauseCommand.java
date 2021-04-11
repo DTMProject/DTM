@@ -17,14 +17,14 @@ public class PauseCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 	if (!sender.isOp()) {
-	    sender.sendMessage("§eHus! Tämä on liian oopee komento.");
+	    sender.sendMessage("§3>§b> §8+ §7Hus! Tämä on liian oopee komento.");
 	    return true;
 	}
 
 	pl.getLogicHandler().togglePause();
 
 	if (pl.getLogicHandler().getGameState() == GameState.PAUSED)
-	    sender.sendMessage("§ePeli on nyt paussilla. Jatka peliä komennolla /start tai /pause.");
+	    sender.sendMessage("§3>§b> §8+ §7Peli on nyt paussilla. Jatka peliä komennolla /start tai /pause.");
 
 	return true;
     }

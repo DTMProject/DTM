@@ -19,23 +19,23 @@ public class SetMonumentCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
 	if (!sender.isOp()) {
-	    sender.sendMessage("§cSulla ei ole permejä.");
+	    sender.sendMessage("3>§b> §8+ §7Sulla ei ole permejä.");
 	    return true;
 	}
 
 	if (!(sender instanceof Player)) {
-	    sender.sendMessage(ChatColor.GOLD + "Oof I am so confused now.");
+	    sender.sendMessage("3>§b> §8+ §7Oof I am so confused now.");
 	    return true;
 	}
 
 	Player p = (Player) sender;
 	if (args.length == 0) {
-	    sender.sendMessage(ChatColor.RED + "/setmonument <team ID> <l|m|r|bl|bm|mr|...> <custom name...>");
+	    sender.sendMessage("3>§b> §8+ §7/setmonument <team ID> <l|m|r|bl|bm|mr|...> <custom name...>");
 	} else if (args.length == 1) {
 	    sender.sendMessage(
-		    ChatColor.RED + "/setmonument " + args[0].toLowerCase() + " <l|m|r|bl|bm|mr|...> <custom name...>");
+		    "3>§b> §8+ §7/setmonument " + args[0].toLowerCase() + " <l|m|r|bl|bm|mr|...> <custom name...>");
 	} else if (args.length == 2) {
-	    sender.sendMessage(ChatColor.RED + "/setmonument " + args[0].toLowerCase() + " " + args[1].toLowerCase()
+	    sender.sendMessage("3>§b> §8+ §7/setmonument " + args[0].toLowerCase() + " " + args[1].toLowerCase()
 		    + " <custom name...>");
 	} else if (args.length > 2) {
 	    // TODO: rewrite the whole part

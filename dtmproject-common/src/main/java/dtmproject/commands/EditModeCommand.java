@@ -28,12 +28,12 @@ public class EditModeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
 	if (!sender.isOp()) {
-	    sender.sendMessage("§eSulla ei ole permejä muokkaustilaan senkin pelle.");
+	    sender.sendMessage("§4>§c> §8- §7Sulla ei ole permejä muokkaustilaan senkin pelle.");
 	    return true;
 	}
 
 	if (!(sender instanceof Player)) {
-	    sender.sendMessage("§eEt voi tehd§ tätä komentoa.");
+	    sender.sendMessage("§4>§c> §8- §7Et voi tehd§ tätä komentoa.");
 	    return true;
 	}
 
@@ -49,12 +49,12 @@ public class EditModeCommand implements CommandExecutor {
 		}
 	    }
 	    if (!foundMapID) {
-		sender.sendMessage("§eMappia ei löytynyt.");
+		sender.sendMessage("§4>§c> §8- §7Mappia ei löytynyt.");
 	    }
 
 	}
-	sender.sendMessage("§eMuokkaustilasi on maailma " + getEditWorld(p));
-	sender.sendMessage("§eVoit vaihtaa muokkaustilaa komennolla: /editmode <Map ID>");
+	sender.sendMessage("§3>§b> §8+ §7Muokkaustilasi on maailma " + getEditWorld(p));
+	sender.sendMessage("§3>§b> §8+ §7Voit vaihtaa muokkaustilaa komennolla: /editmode <Map ID>");
 	return true;
     }
 

@@ -18,11 +18,11 @@ import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
 import dtmproject.data.DTMMap;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.data.DTMTeam;
 import lombok.Getter;
 
-public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
+public class DTMLogicHandler implements ILogicHandler<DTMMap, DTMTeam> {
     public static int START_GAME_COUNTDOWN_SECONDS = 20;
     public static int CHANGE_MAP_COUNTDOWN_SECONDS = 30;
 
@@ -45,6 +45,9 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	this.gameState = RUNNING;
 	this.currentMap.startGame();
 	pl.getCountdownHandler().stopStartGameCountdown();
+
+	// Log it
+	pl.getLoggingHandler().logGameStart(this.getCurrentMap().getId(), currentMap.getPlayerCounts());
     }
 
     /**
@@ -88,7 +91,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	}
 
 	for (Player p : Bukkit.getOnlinePlayers()) {
-	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	    PlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    this.currentMap.sendToSpectate(p);
 	    pd.setTeam(null);
 	    pd.setLastDamager(null);
@@ -112,6 +115,8 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	this.gameState = CHANGING_MAP;
 	pl.getCountdownHandler().startChangeMapCountdown(CHANGE_MAP_COUNTDOWN_SECONDS);
 	currentMap.end(winner);
+
+	pl.getLoggingHandler().logGameEnd(currentMap.getId(), winner.getId(), currentMap.getPlayerCounts());
     }
 
     private String selectRandomMapId(Collection<String> mapSet, String lastMapId) {
@@ -130,7 +135,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    gameState = PAUSED;
 
 	    pl.getCountdownHandler().stopChangeMapCountdown();
-	    Bukkit.broadcastMessage("§eDTM on pysäytetty!");
+	    Bukkit.broadcastMessage("3>§b> §8+ §7DTM on pysäytetty!");
 	    break;
 
 	case PRE_START:
@@ -138,20 +143,20 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    gameState = PAUSED;
 
 	    pl.getCountdownHandler().stopStartGameCountdown();
-	    Bukkit.broadcastMessage("§eDTM on pysäytetty!");
+	    Bukkit.broadcastMessage("3>§b> §8+ §7DTM on pysäytetty!");
 	    break;
 	case RUNNING:
 	    gameStatePrePause = gameState;
 	    gameState = PAUSED;
 
 	    Bukkit.getOnlinePlayers().forEach(p -> {
-		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+		PlayerData pd = pl.getDataHandler().getPlayerData(p);
 		if (!pd.isSpectator()) {
 		    p.setGameMode(GameMode.SPECTATOR);
 		    p.sendMessage(
-			    "§eDTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.");
+			    "3>§b> §8+ §7DTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.");
 		} else {
-		    p.sendMessage("§eDTM on pysäytetty väliaikaisesti.");
+		    p.sendMessage("3>§b> §8+ §7DTM on pysäytetty väliaikaisesti.");
 		}
 	    });
 	    break;
@@ -162,14 +167,14 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    // If game was on, continue from spawn
 	    case RUNNING:
 		Bukkit.getOnlinePlayers().forEach(p -> {
-		    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+		    PlayerData pd = pl.getDataHandler().getPlayerData(p);
 		    if (!pd.isSpectator()) {
 			p.teleport(pd.getTeam().getSpawn().toLocation(currentMap.getWorld()));
 			p.setGameMode(GameMode.SURVIVAL);
 			p.setHealth(20);
 			p.setFoodLevel(20);
 
-			p.sendMessage("§ePeli jatkuu! Sinut on teleportattu spawnille.");
+			p.sendMessage("3>§b> §8+ §7Peli jatkuu! Sinut on teleportattu spawnille.");
 		    }
 		});
 		break;
@@ -186,7 +191,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
     }
 
     public void setPlayerToSmallestTeam(Player p) {
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	PlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	pd.setTeam(getSmallestTeam());
 
 	if (gameState == RUNNING)
@@ -197,7 +202,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 
     // TODO: duplicate method with DTMMap#sendSpec
     public void updateNameTag(Player p) {
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	PlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	p.setDisplayName(pd.getDisplayName());
 	// Handle null prefixes
 	if (pd.getPrefix().isPresent()) {

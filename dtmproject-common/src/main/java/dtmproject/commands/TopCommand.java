@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import dtmproject.data.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
@@ -35,7 +35,7 @@ public class TopCommand implements CommandExecutor {
 	    try {
 		rawCount = Integer.parseInt(args[0]);
 	    } catch (Exception e) {
-		sender.sendMessage("/top [määrä] [kausi]");
+		sender.sendMessage("3>§b> §8+ §7/top [määrä] [kausi]");
 	    }
 	}
 	final int finalCount = rawCount;
@@ -45,19 +45,19 @@ public class TopCommand implements CommandExecutor {
 	    try {
 		rawSeason = Integer.parseInt(args[1]);
 	    } catch (Exception e) {
-		sender.sendMessage("/top " + finalCount + " [kausi]");
+		sender.sendMessage("3>§b> §8+ §7/top " + finalCount + " [kausi]");
 	    }
 	}
 	final int season = rawSeason;
 	// God dammit Java... Rust did shading better
 
-	sender.sendMessage("§eHaetaan parhaiden pelaajien lista " + season + ". kaudelta...");
+	sender.sendMessage("3>§b> §8+ §7Haetaan parhaiden pelaajien lista " + season + ". kaudelta...");
 
 	// TODO: Caching
 	Bukkit.getScheduler().runTaskAsynchronously(dtm, () -> {
 	    int i = 1;
 	    // for (DTMPlayerData entry : topListCache) {
-	    for (DTMPlayerData entry : dtm.getDataHandler().getLeaderboard(100, season)) {
+	    for (PlayerData entry : dtm.getDataHandler().getLeaderboard(100, season)) {
 		DTMSeasonStats stats = Objects.requireNonNull(entry.getSeasonStats(season));
 		// Player possiblePlayer = Bukkit.getPlayer(stats.uuid);
 
