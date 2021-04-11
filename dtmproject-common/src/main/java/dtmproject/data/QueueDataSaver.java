@@ -12,7 +12,7 @@ import org.bukkit.Bukkit;
 import dtmproject.DTM;
 
 public class QueueDataSaver {
-    private Queue<PlayerData> queuedData = new LinkedBlockingQueue<>();
+    private Queue<DTMPlayerData> queuedData = new LinkedBlockingQueue<>();
     private final DTM dtm;
     private Runnable saveTask;
 
@@ -28,7 +28,7 @@ public class QueueDataSaver {
 	    if (queuedData.size() == 0)
 		return;
 	    try (Connection conn = dtm.getDataHandler().getHDS().getConnection()) {
-		PlayerData data;
+		DTMPlayerData data;
 		try (PreparedStatement stmt1 = conn.prepareStatement(SAVE_PLAYERDATA_SQL);
 			PreparedStatement stmt2 = conn.prepareStatement(SAVE_STATS_SQL)) {
 
@@ -66,12 +66,12 @@ public class QueueDataSaver {
 
     }
 
-    public void queue(PlayerData data) {
+    public void queue(DTMPlayerData data) {
 	queuedData.offer(data);
     }
 
     public boolean isSavingDataFor(UUID uuid) {
-	for (PlayerData data : queuedData) {
+	for (DTMPlayerData data : queuedData) {
 	    if (data.getUUID() == uuid)
 		return true;
 	}

@@ -17,12 +17,12 @@ public class PlayTimeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
 	if (args.length == 0) {
 	    long minutesPlayed = pl.getLogicHandler().getCurrentMap().getTimePlayed() / 1000 / 60;
-	    sender.sendMessage("3>§b> §8+ §7Pelattu " + minutesPlayed + " minuuttia");
+	    sender.sendMessage("§ePelattu " + minutesPlayed + " minuuttia");
 	    return true;
 	}
 
 	if (!sender.isOp()) {
-	    sender.sendMessage("3>§b> §8+ §7Tämä on liian oopee komento.");
+	    sender.sendMessage("§cTämä on liian oopee komento.");
 	    return true;
 	}
 
@@ -30,13 +30,13 @@ public class PlayTimeCommand implements CommandExecutor {
 	try {
 	    num = Integer.parseInt(args[0]);
 	} catch (Exception e) {
-	    sender.sendMessage("3>§b> §8+ §7Ei sopiva numero: " + args[0]);
+	    sender.sendMessage("Ei sopiva numero: " + args[0]);
 	    return true;
 	}
 
 	long newStartTime = (System.currentTimeMillis() - num * 60 * 1000);
 	pl.getLogicHandler().getCurrentMap().setStartTime(newStartTime);
-	sender.sendMessage("3>§b> §8+ §7Pelin uusi aika on " + num + " minuuttia.");
+	sender.sendMessage("§ePelin uusi aika on " + num + " minuuttia.");
 	return true;
     }
 

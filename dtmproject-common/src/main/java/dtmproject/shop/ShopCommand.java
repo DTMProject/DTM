@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import dtmproject.DTM;
-import dtmproject.data.PlayerData;
+import dtmproject.data.DTMPlayerData;
 import dtmproject.logic.GameState;
 
 public class ShopCommand implements CommandExecutor {
@@ -24,19 +24,19 @@ public class ShopCommand implements CommandExecutor {
 	    return true;
 
 	Player p = (Player) sender;
-	PlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 	if (pl.getLogicHandler().getGameState() != GameState.RUNNING) {
-	    p.sendMessage("3>§b> §8+ §7Peli ei ole käynnissä.");
+	    p.sendMessage("§ePeli ei ole käynnissä.");
 	    return true;
 	}
 
 	if (pd.getTeam() == null) {
-	    p.sendMessage("3>§b> §8+ §7Liity peliin komennolla /liity.");
+	    p.sendMessage("§eLiity peliin komennolla /liity.");
 	    return true;
 	}
 
 	if (p.getGameMode() != GameMode.SURVIVAL) {
-	    p.sendMessage("3>§b> §8+ §7Et ole oikeassa pelitilassa.");
+	    p.sendMessage("§eEt ole oikeassa pelitilassa.");
 	    return true;
 	}
 

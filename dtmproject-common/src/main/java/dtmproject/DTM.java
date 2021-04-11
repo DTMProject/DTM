@@ -3,6 +3,7 @@ package dtmproject;
 import java.util.List;
 import java.util.Optional;
 
+import dtmproject.events.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,16 +21,8 @@ import dtmproject.commands.StartCommand;
 import dtmproject.commands.StatsCommand;
 import dtmproject.commands.TopCommand;
 import dtmproject.commands.WorldsCommand;
-import dtmproject.data.DTMPlayerDataHandler;
+import dtmproject.data.DTMDataHandler;
 import dtmproject.data.DefaultMapLoader;
-import dtmproject.events.AnvilPlaceListener;
-import dtmproject.events.ChatHandler;
-import dtmproject.events.ConnectionListener;
-import dtmproject.events.DeathHandler;
-import dtmproject.events.DestroyMonumentListener;
-import dtmproject.events.LoggingHandler;
-import dtmproject.events.SpawnProtectionListener;
-import dtmproject.events.TeamSpleefListener;
 import dtmproject.logic.CountdownHandler;
 import dtmproject.logic.DTMLogicHandler;
 import dtmproject.scoreboard.ScoreboardHandler;
@@ -54,7 +47,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     private final ScoreboardHandler scoreboardHandler;
 
     @Getter
-    private final DTMPlayerDataHandler dataHandler;
+    private final DTMDataHandler dataHandler;
 
     @Getter
     private final DTMLogicHandler logicHandler;
@@ -80,7 +73,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     public DTM() {
 	this.scoreboardHandler = new ScoreboardHandler(this);
 	this.shopHandler = new ShopHandler(this);
-	this.dataHandler = new DTMPlayerDataHandler(this);
+	this.dataHandler = new DTMDataHandler(this);
 	this.logicHandler = new DTMLogicHandler(this);
 	this.editModeHandler = new EditModeCommand(this);
 	this.deathHandler = new DeathHandler(this);
@@ -102,6 +95,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	pm.registerEvents(new TeamSpleefListener(this), this);
 	pm.registerEvents(new ChatHandler(this), this);
 	pm.registerEvents(new AnvilPlaceListener(), this);
+	pm.registerEvents(new TNTListener(), this);
 	pm.registerEvents(deathHandler, this);
 	pm.registerEvents(shopHandler, this);
 	pm.registerEvents(scoreboardHandler, this);
@@ -148,7 +142,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	Bukkit.getScheduler()
 		.scheduleSyncRepeatingTask(this,
 			() -> this.getEditModeHandler().getPendingList()
-				.forEach(sender -> sender.sendMessage("§3>§b> §8+ §7DTM-mappeja ei ole tallennettu.")),
+				.forEach(sender -> sender.sendMessage("§eDTM-mappeja ei ole tallennettu.")),
 			20 * 20, 20 * 20);
 
 	// Autosave every 3 minutes
@@ -170,9 +164,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 
 	// Empty playerdata saving queue
 	dataHandler.getDataSaver().emptyQueueSync();
-
-	// Stop logging
-	loggingHandler.stopLogging();
     }
 
     public int getSeason() {

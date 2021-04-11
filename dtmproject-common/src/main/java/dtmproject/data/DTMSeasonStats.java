@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import lombok.Getter;
 
-public class DTMSeasonStats implements ISeasonStats {
+public class DTMSeasonStats implements IDTMSeasonStats {
     @Getter
     private final UUID UUID;
 

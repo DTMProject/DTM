@@ -79,54 +79,54 @@ public class DefaultMapLoader {
 	return teams;
     }
 
-    public static LinkedList<Monument> getMonuments(DefaultMapID id, DefaultTeamID team) {
-	LinkedList<Monument> monuments = new LinkedList<>();
+    public static LinkedList<DTMMonument> getMonuments(DefaultMapID id, DefaultTeamID team) {
+	LinkedList<DTMMonument> monuments = new LinkedList<>();
 	switch (id) {
 	case HK1:
 	    if (team == DefaultTeamID.YELLOW) {
-		monuments.add(new Monument(new WorldlessBlockLocation(-32, 104, -56), "l", "Vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(0, 104, -88), "m", "Midi"));
-		monuments.add(new Monument(new WorldlessBlockLocation(32, 104, -56), "r", "Oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-32, 104, -56), "l", "Vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(0, 104, -88), "m", "Midi"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(32, 104, -56), "r", "Oikea"));
 	    } else if (team == DefaultTeamID.PURPLE) {
-		monuments.add(new Monument(new WorldlessBlockLocation(32, 104, 56), "l", "Vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(0, 104, 88), "m", "Midi"));
-		monuments.add(new Monument(new WorldlessBlockLocation(-32, 104, 56), "r", "Oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(32, 104, 56), "l", "Vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(0, 104, 88), "m", "Midi"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-32, 104, 56), "r", "Oikea"));
 	    }
 
 	    break;
 	case HK2:
 	    if (team == DefaultTeamID.YELLOW) {
-		monuments.add(new Monument(new WorldlessBlockLocation(36, 104, 51), "l", "Vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(0, 104, 87), "m", "Midi"));
-		monuments.add(new Monument(new WorldlessBlockLocation(-36, 104, 51), "r", "Oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(36, 104, 51), "l", "Vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(0, 104, 87), "m", "Midi"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-36, 104, 51), "r", "Oikea"));
 	    } else if (team == DefaultTeamID.PURPLE) {
-		monuments.add(new Monument(new WorldlessBlockLocation(-36, 104, -51), "l", "Vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(0, 104, -87), "m", "Midi"));
-		monuments.add(new Monument(new WorldlessBlockLocation(36, 104, -51), "r", "Oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-36, 104, -51), "l", "Vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(0, 104, -87), "m", "Midi"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(36, 104, -51), "r", "Oikea"));
 	    }
 	    break;
 	case HK3:
 	    if (team == DefaultTeamID.VESI) {
-		monuments.add(new Monument(new WorldlessBlockLocation(58, 102, 50), "fr", "Etu-oikea"));
-		monuments.add(new Monument(new WorldlessBlockLocation(90, 102, 18), "br", "Taka-oikea"));
-		monuments.add(new Monument(new WorldlessBlockLocation(58, 102, -50), "fl", "Etu-vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(90, 102, -18), "bl", "Taka-vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(58, 102, 50), "fr", "Etu-oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(90, 102, 18), "br", "Taka-oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(58, 102, -50), "fl", "Etu-vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(90, 102, -18), "bl", "Taka-vasen"));
 	    } else if (team == DefaultTeamID.AURINKO) {
-		monuments.add(new Monument(new WorldlessBlockLocation(-58, 102, -50), "fr", "Etu-oikea"));
-		monuments.add(new Monument(new WorldlessBlockLocation(-90, 102, -18), "br", "Taka-oikea"));
-		monuments.add(new Monument(new WorldlessBlockLocation(-58, 102, 50), "fl", "Etu-vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(-90, 102, 18), "bl", "Taka-vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-58, 102, -50), "fr", "Etu-oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-90, 102, -18), "br", "Taka-oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-58, 102, 50), "fl", "Etu-vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-90, 102, 18), "bl", "Taka-vasen"));
 	    }
 	    break;
 	case HK4:
 	    if (team == DefaultTeamID.MANSIKKA) {
-		monuments.add(new Monument(new WorldlessBlockLocation(-31, 103, -65), "l", "Vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(0, 103, -96), "m", "Midi"));
-		monuments.add(new Monument(new WorldlessBlockLocation(31, 103, -65), "r", "Oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-31, 103, -65), "l", "Vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(0, 103, -96), "m", "Midi"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(31, 103, -65), "r", "Oikea"));
 	    } else if (team == DefaultTeamID.MUSTIKKA) {
-		monuments.add(new Monument(new WorldlessBlockLocation(31, 103, 65), "l", "Vasen"));
-		monuments.add(new Monument(new WorldlessBlockLocation(0, 103, 96), "m", "Midi"));
-		monuments.add(new Monument(new WorldlessBlockLocation(-31, 103, 65), "r", "Oikea"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(31, 103, 65), "l", "Vasen"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(0, 103, 96), "m", "Midi"));
+		monuments.add(new DTMMonument(new WorldlessBlockLocation(-31, 103, 65), "r", "Oikea"));
 	    }
 	    break;
 	}

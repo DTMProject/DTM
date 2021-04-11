@@ -33,7 +33,7 @@ import org.bukkit.potion.PotionEffectType;
 import dtmproject.DTM;
 import dtmproject.WorldlessLocation;
 import dtmproject.data.DTMMap;
-import dtmproject.data.PlayerData;
+import dtmproject.data.DTMPlayerData;
 import dtmproject.logic.GameState;
 
 public class DeathHandler implements Listener {
@@ -110,7 +110,7 @@ public class DeathHandler implements Listener {
 	    e.printStackTrace();
 	}
 
-	PlayerData playerData = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	DTMPlayerData playerData = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 	// Reset
 	pl.getLogicHandler().getCurrentMap().sendPlayerToGame(p);
@@ -168,8 +168,8 @@ public class DeathHandler implements Listener {
 	Player shooter = (Player) arrow.getShooter();
 	Player target = (Player) e.getEntity();
 
-	PlayerData shooterData = pl.getDataHandler().getPlayerData(shooter);
-	PlayerData targetData = pl.getDataHandler().getPlayerData(target);
+	DTMPlayerData shooterData = pl.getDataHandler().getPlayerData(shooter);
+	DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target);
 
 	// Shot one of their teammate -> cancel event
 	if (shooterData.getTeam() == targetData.getTeam()) {
@@ -189,8 +189,8 @@ public class DeathHandler implements Listener {
 	    if (broadcastMessages)
 		Bukkit.broadcastMessage(shooter.getCustomName() + " §eampui pelaajan " + target.getCustomName());
 	    else {
-		target.sendMessage("3>§b> §8+ §7Sinut ampui pelaaja " + shooter.getDisplayName());
-		shooter.sendMessage("3>§b> §8+ §7Ammuit pelaajan " + target.getDisplayName());
+		target.sendMessage("§eSinut ampui pelaaja " + shooter.getDisplayName());
+		shooter.sendMessage("§eAmmuit pelaajan " + target.getDisplayName());
 	    }
 	    fakeKillPlayer(target);
 	    e.setCancelled(true);
@@ -237,8 +237,8 @@ public class DeathHandler implements Listener {
 	Player attacker = (Player) e.getDamager();
 	Player target = (Player) e.getEntity();
 
-	PlayerData attackerData = pl.getDataHandler().getPlayerData(attacker.getUniqueId());
-	PlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+	DTMPlayerData attackerData = pl.getDataHandler().getPlayerData(attacker.getUniqueId());
+	DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 
 	if (lastHits.containsKey(attacker.getUniqueId())) {
 	    // 10 CPS limit lolzzzz
@@ -267,10 +267,10 @@ public class DeathHandler implements Listener {
 	if (target.getHealth() - e.getFinalDamage() < 0) {
 	    if (broadcastMessages) {
 		Bukkit.broadcastMessage(
-			attackerData.getDisplayName() + " §7teurasti pelaajan " + targetData.getDisplayName() + "§7.");
+			attackerData.getDisplayName() + " §eteurasti pelaajan " + targetData.getDisplayName() + "§e.");
 	    } else {
-		target.sendMessage("3>§b> §8+ §7Sinut tappoi pelaaja " + attackerData.getDisplayName() + "§7.");
-		attacker.sendMessage("3>§b> §8+ §7Tapoit pelaajan " + targetData.getDisplayName() + "§7.");
+		target.sendMessage("§eSinut tappoi pelaaja " + attackerData.getDisplayName() + "§e.");
+		attacker.sendMessage("§eTapoit pelaajan " + targetData.getDisplayName() + "§e.");
 	    }
 
 	    fakeKillPlayer(target);
@@ -296,7 +296,7 @@ public class DeathHandler implements Listener {
 	if (e.getItem().getType().equals(Material.EXPLOSIVE_MINECART)) {
 	    if (Math.random() < 0.1)
 		e.getPlayer().sendMessage(
-			"3>§b> §8+ §7TNT-Minecarttei ei voi laittaa enää, koska eräät nimeltä mainitsemattomat JEDI ja xVolt tuhosivat spawnin!");
+			"§cTNT-Minecarttei ei voi laittaa enää, koska eräät nimeltä mainitsemattomat JEDI ja xVolt tuhosivat spawnin!");
 	    e.setCancelled(true);
 	}
     }
@@ -344,7 +344,7 @@ public class DeathHandler implements Listener {
 
 	Player target = (Player) e.getEntity();
 	if (target.getHealth() - e.getFinalDamage() <= 0) {
-	    PlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
+	    DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 	    if (targetData.isSpectator()) {
 		pl.getLogicHandler().getCurrentMap().sendToSpectate(target);
 	    }
@@ -356,14 +356,14 @@ public class DeathHandler implements Listener {
 	    switch (e.getCause()) {
 	    case VOID:
 		if (damager != null) {
-		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + "§7 putosi maailmasta. "
-				+ damagerData.getDisplayName() + " §7sai kunnian.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + "§e putosi maailmasta. "
+				+ damagerData.getDisplayName() + " §esai kunnian.");
 
 		    else {
-			target.sendMessage("3>§b> §8+ §7Sinut tappoi pelaaja " + damagerData.getDisplayName() + "§7.");
-			damager.sendMessage("3>§b> §8+ §7Tapoit pelaajan " + targetData.getDisplayName() + "§7.");
+			target.sendMessage("§eSinut tappoi pelaaja " + damagerData.getDisplayName() + "§e.");
+			damager.sendMessage("§eTapoit pelaajan " + targetData.getDisplayName() + "§e.");
 		    }
 
 		    // TODO Pointless line?
@@ -376,18 +376,18 @@ public class DeathHandler implements Listener {
 		    }
 		} else {
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + " §7putosi maailmasta.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eputosi maailmasta.");
 		}
 		break;
 	    case FALL:
 		if (damager != null) {
-		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName()
-				+ " §7osui maahan liian kovaa. " + damagerData.getDisplayName() + " §7sai kunnian.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eosui maahan liian kovaa. "
+				+ damagerData.getDisplayName() + " §esai kunnian.");
 		    else {
-			target.sendMessage("3>§b> §8+ §7Sinut tappoi pelaaja " + damagerData.getDisplayName());
-			damager.sendMessage("3>§b> §8+ §7Tapoit pelaajan " + targetData.getDisplayName());
+			target.sendMessage("§eSinut tappoi pelaaja " + damagerData.getDisplayName());
+			damager.sendMessage("§eTapoit pelaajan " + targetData.getDisplayName());
 		    }
 		    /* TODO: error */
 		    damagerData.increaseEmeralds();
@@ -397,23 +397,21 @@ public class DeathHandler implements Listener {
 		    targetData.getSeasonStats().increaseDeaths();
 		} else {
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage(
-				"3>§b> §8+ §7" + targetData.getDisplayName() + " §7osui maahan liian kovaa.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eosui maahan liian kovaa.");
 		}
 		break;
 	    case STARVATION:
-		Bukkit.broadcastMessage(
-			"3>§b> §8+ §7" + targetData.getDisplayName() + " §7ei viitsinyt syödä ja kuoli nälkään.");
+		Bukkit.broadcastMessage(targetData.getDisplayName() + " §eei viitsinyt syödä ja kuoli nälkään.");
 		break;
 	    case ENTITY_EXPLOSION:
 		if (damager != null) {
-		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage(targetData.getDisplayName() + " §7räjähti. "
-				+ damagerData.getDisplayName() + "§7 sai kunnian.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eräjähti. "
+				+ damagerData.getDisplayName() + "§e sai kunnian.");
 		    else {
-			target.sendMessage("3>§b> §8+ §7Sinut tappoi pelaaja " + damagerData.getDisplayName() + "§7.");
-			damager.sendMessage("3>§b> §8+ §7Tapoit pelaajan " + targetData.getDisplayName() + "§7.");
+			target.sendMessage("§eSinut tappoi pelaaja " + damagerData.getDisplayName() + "§e.");
+			damager.sendMessage("§eTapoit pelaajan " + targetData.getDisplayName() + "§e.");
 		    }
 		    damagerData.increaseEmeralds();
 		    damager.sendMessage("§a+1 emerald");
@@ -422,41 +420,38 @@ public class DeathHandler implements Listener {
 		    targetData.getSeasonStats().increaseDeaths();
 		} else {
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + " §7räjähti. ");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §eräjähti. ");
 		}
 		break;
 	    case DROWNING:
 		if (broadcastMessages)
-		    Bukkit.broadcastMessage(
-			    "3>§b> §8+ §7" + targetData.getDisplayName() + " §7yritti hengittää vettä.");
+		    Bukkit.broadcastMessage(targetData.getDisplayName() + " §eyritti hengittää vettä.");
 		break;
 	    case CONTACT:
 		if (broadcastMessages)
-		    Bukkit.broadcastMessage(
-			    "3>§b> §8+ §7" + targetData.getDisplayName() + " §7halasi kaktusta ja kuoli.");
+		    Bukkit.broadcastMessage(targetData.getDisplayName() + " §ehalasi kaktusta ja kuoli.");
 		break;
 	    case LAVA:
 		if (broadcastMessages)
-		    Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + " §7paloi hengiltä.");
+		    Bukkit.broadcastMessage(targetData.getDisplayName() + " §epaloi hengiltä.");
 		break;
 	    case FIRE:
 		if (broadcastMessages)
-		    Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + " §7paloi hengiltä.");
+		    Bukkit.broadcastMessage(targetData.getDisplayName() + " §epaloi hengiltä.");
 		break;
 	    case SUFFOCATION:
 		if (broadcastMessages)
-		    Bukkit.broadcastMessage(
-			    "3>§b> §8+ §7" + target.getDisplayName() + "§7 haisteli maata ja tukehtui palikkaan");
+		    Bukkit.broadcastMessage(target.getDisplayName() + "§e haisteli maata ja tukehtui palikkaan");
 		break;
 	    case FIRE_TICK:
 		if (damager != null) {
-		    PlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
+		    DTMPlayerData damagerData = pl.getDataHandler().getPlayerData(damager.getUniqueId());
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + " §7paloi hengiltä. "
-				+ damagerData.getDisplayName() + " §7sai kunnian.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §epaloi hengiltä. "
+				+ damagerData.getDisplayName() + " §esai kunnian.");
 		    else {
-			target.sendMessage("3>§b> §8+ §7Sinut tappoi pelaaja " + damagerData.getDisplayName() + "§7.");
-			damager.sendMessage("3>§b> §8+ §7Tapoit pelaajan " + damagerData.getDisplayName() + "§7.");
+			target.sendMessage("§eSinut tappoi pelaaja " + damagerData.getDisplayName() + "§e.");
+			damager.sendMessage("§eTapoit pelaajan " + damagerData.getDisplayName() + "§e.");
 		    }
 
 		    damagerData.increaseEmeralds();
@@ -467,12 +462,12 @@ public class DeathHandler implements Listener {
 		    break;
 		} else {
 		    if (broadcastMessages)
-			Bukkit.broadcastMessage("3>§b> §8+ §7" + targetData.getDisplayName() + " §7paloi elävältä.");
+			Bukkit.broadcastMessage(targetData.getDisplayName() + " §epaloi elävältä.");
 		}
 		break;
 	    default:
 		if (broadcastMessages)
-		    Bukkit.broadcastMessage("3>§b> §8+ §7"+target.getDisplayName() + " §7died but we don't know why");
+		    Bukkit.broadcastMessage(target.getDisplayName() + " §edied but we don't know why");
 		System.out.println("The player died to " + e.getCause().name());
 		break;
 	    }

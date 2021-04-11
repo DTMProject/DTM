@@ -19,7 +19,7 @@ public class StartCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
 	if (!sender.isOp()) {
-	    sender.sendMessage("3>§b> §8+ §7Ei permejä.");
+	    sender.sendMessage("§cEi permejä.");
 	    return true;
 	}
 
@@ -34,7 +34,7 @@ public class StartCommand implements CommandExecutor {
 	    logic.startGame();
 	    break;
 	case RUNNING:
-	    sender.sendMessage("3>§b> §8+ §7Peli on jo käynnissä.");
+	    sender.sendMessage("§ePeli on jo käynnissä.");
 	    break;
 	}
 	return true;
