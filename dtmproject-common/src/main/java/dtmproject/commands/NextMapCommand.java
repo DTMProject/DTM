@@ -18,7 +18,7 @@ public class NextMapCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 	if (!sender.isOp()) {
-	    sender.sendMessage("§cVain operaattorit voivat skipata mapin.");
+	    sender.sendMessage("§3>§b> §8+ §7Vain operaattorit voivat skipata mapin.");
 	    return true;
 	}
 
@@ -28,12 +28,12 @@ public class NextMapCommand implements CommandExecutor {
 
 	    if (pl.getDataHandler().mapExists(req)) {
 		if (pl.getLogicHandler().getCurrentMap().getId().equals(req)) {
-		    sender.sendMessage("§eTämä mappi on jo pelattavana.");
+		    sender.sendMessage("§3>§b> §8+ §7Tämä mappi on jo pelattavana.");
 		    return true;
 		}
 		mapRequest = Optional.of(req);
 	    } else {
-		sender.sendMessage("§eMappia ei ole ladattu: " + req);
+		sender.sendMessage("§3>§b> §8+ §7Mappia ei ole ladattu: " + req);
 		return true;
 	    }
 	}

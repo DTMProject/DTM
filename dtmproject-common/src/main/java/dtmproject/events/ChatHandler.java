@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import dtmproject.DTM;
-import dtmproject.data.DTMPlayerData;
+import dtmproject.data.PlayerData;
 import net.md_5.bungee.api.ChatColor;
 
 public class ChatHandler implements Listener {
@@ -20,7 +20,7 @@ public class ChatHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent e) {
 	final Player p = e.getPlayer();
-	final DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p.getUniqueId());
+	final PlayerData pd = dtm.getDataHandler().getPlayerData(p.getUniqueId());
 
 	if (!DTM.USE_RELATIVE_SKILL_LEVELS) {
 	    int points = pd.getSeasonStats().getSum();
