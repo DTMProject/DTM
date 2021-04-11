@@ -20,13 +20,13 @@ public class StatsCommand implements CommandExecutor {
 	if (args.length == 0) {
 	    // Print own stats
 	    if (!(sender instanceof Player)) {
-		sender.sendMessage("§eDude... Ei sul oo statsei.");
-		sender.sendMessage("§e/stats <nimi>");
+		sender.sendMessage("3>§b> §8+ §7Dude... Ei sul oo statsei.");
+		sender.sendMessage("3>§b> §8+ §7/stats <nimi>");
 		return true;
 	    }
 	    Player p = (Player) sender;
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-	    sender.sendMessage("§e§l    Kausi");
+	    sender.sendMessage("3>§b> §8+ §7§l    Kausi");
 	    sender.sendMessage(pd.getSeasonStats().toString());
 
 	    // TODO: all stats have to be loaded from db if they want to be shown
@@ -35,7 +35,7 @@ public class StatsCommand implements CommandExecutor {
 	} else {
 	    // Print target's stats
 	    // TODO: idk, gotta do sql stuff
-	    sender.sendMessage("§eEi löydetty statseja pelaajalle " + args[0] + ".");
+	    sender.sendMessage("3>§b> §8+ §7Ei löydetty statseja pelaajalle " + args[0] + ".");
 	    return true;
 	}
 	return true;

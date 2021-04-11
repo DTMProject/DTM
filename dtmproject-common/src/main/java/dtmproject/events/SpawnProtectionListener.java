@@ -35,7 +35,7 @@ public class SpawnProtectionListener implements Listener {
 	    spawn.subtract(new Vector(0.5, 0, 0.5));
 	    if (spawn.distance(e.getBlock().getLocation()) < 4) {
 		e.setCancelled(true);
-		p.sendMessage("§eEt voi tuhota " + team.getDisplayName() + "§e spawnia.");
+		p.sendMessage("3>§b> §8+ §7Et voi tuhota " + team.getDisplayName() + "§7 spawnia.");
 		return;
 	    }
 	}
@@ -56,7 +56,7 @@ public class SpawnProtectionListener implements Listener {
 	    spawn.subtract(new Vector(0.5, 0, 0.5));
 	    if (spawn.distance(e.getBlock().getLocation()) < 4) {
 		e.setCancelled(true);
-		p.sendMessage("§eEt voi rakentaa tiimin " + team.getDisplayName() + "§e spawnille");
+		p.sendMessage("3>§b> §8+ §7Et voi rakentaa tiimin " + team.getDisplayName() + "§7 spawnille");
 		return;
 	    }
 	}

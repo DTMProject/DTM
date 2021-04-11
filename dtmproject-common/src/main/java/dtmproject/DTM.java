@@ -142,7 +142,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	Bukkit.getScheduler()
 		.scheduleSyncRepeatingTask(this,
 			() -> this.getEditModeHandler().getPendingList()
-				.forEach(sender -> sender.sendMessage("§eDTM-mappeja ei ole tallennettu.")),
+				.forEach(sender -> sender.sendMessage("§3>§b> §8+ §7DTM-mappeja ei ole tallennettu.")),
 			20 * 20, 20 * 20);
 
 	// Autosave every 3 minutes
