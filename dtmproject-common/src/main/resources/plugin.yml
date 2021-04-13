@@ -1,4 +1,4 @@
-main: dtmproject.DTM
+main: dtmproject.common.DTM
 name: DTM
 version: 5.0.0
 author: Juubes
