@@ -33,7 +33,7 @@ public class TeamSpleefListener implements Listener {
 	    return;
 	if (antiSpleef.containsKey(e.getBlock())) {
 	    if (antiSpleef.get(e.getBlock()) + 500 > System.currentTimeMillis()) {
-		p.sendMessage("3>§b> §8+ §7Et voi vielä rikkoa tuota.");
+		p.sendMessage("§3>§b> §8+ §7Et voi vielä rikkoa tuota.");
 		e.setCancelled(true);
 		return;
 	    } else {
@@ -53,10 +53,10 @@ public class TeamSpleefListener implements Listener {
 	    if (blockBroken.distance(blockBelowPlayer.getLocation()) != 0)
 		continue;
 	    e.setCancelled(true);
-	    p.sendMessage("3>§b> §8+ §7Et voi rikkoa palikoita omien tiimiläisten alta.");
+	    p.sendMessage("§3>§b> §8+ §7Et voi rikkoa palikoita omien tiimiläisten alta.");
 	    if (p.getHealth() <= 6) {
 		dtm.getDeathHandler().fakeKillPlayer(p);
-		Bukkit.broadcastMessage("3>§b> §8+ §7" + p.getDisplayName() + " §7kuoli yrittäessään sabotoida omaa tiimiänsä!");
+		Bukkit.broadcastMessage("§3>§b> §8+ §7" + p.getDisplayName() + " §7kuoli yrittäessään sabotoida omaa tiimiänsä!");
 	    } else {
 		p.setHealth(p.getHealth() - 5);
 		p.damage(-1);

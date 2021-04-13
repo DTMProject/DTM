@@ -17,23 +17,23 @@ public class WorldsCommand implements CommandExecutor {
         }
 
         if (cmd.getName().equals("worlds")) {
-            sender.sendMessage("3>§b> §8+ §7Ladatut maailmat:");
+            sender.sendMessage("§3>§b> §8+ §7Ladatut maailmat:");
             for (World world : Bukkit.getWorlds()) {
                 sender.sendMessage("§7    " + world.getName());
             }
         } else if (cmd.getName().equals("world")) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage("3>§b> §8+ §7Tämän komennon voi suorittaa vain pelaajana.");
+                sender.sendMessage("§3>§b> §8+ §7Tämän komennon voi suorittaa vain pelaajana.");
                 return true;
             }
 
             Player p = (Player) sender;
             if (args.length == 0) {
-                sender.sendMessage("3>§b> §8+ §7Maailma: " + p.getWorld().getName());
+                sender.sendMessage("§3>§b> §8+ §7Maailma: " + p.getWorld().getName());
             } else {
                 World world = Bukkit.getWorld(args[0]);
                 if (world == null) {
-                    sender.sendMessage("3>§b> §8+ §7Maailmaa " + args[0] + " ei ole ladattu.");
+                    sender.sendMessage("§3>§b> §8+ §7Maailmaa " + args[0] + " ei ole ladattu.");
                 } else {
                     p.teleport(new Location(world, 0, 100, 0));
                 }

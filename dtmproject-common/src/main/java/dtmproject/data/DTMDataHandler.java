@@ -256,10 +256,11 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	Double[] levels = new Double[9];
 
 	int size = allScores.size();
-	for (int i = 10; i < 100; i += 10) {
-	    double levelThreshold = allScores.get(i * size / 100);
-	    levels[i / 10 - 1] = levelThreshold;
-	}
+	if (size != 0)
+	    for (int i = 10; i < 100; i += 10) {
+		double levelThreshold = allScores.get(i * size / 100);
+		levels[i / 10 - 1] = levelThreshold;
+	    }
 
 	this.cachedWinLossDistribution = levels;
 

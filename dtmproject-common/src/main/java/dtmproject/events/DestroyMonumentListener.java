@@ -41,12 +41,12 @@ public class DestroyMonumentListener implements Listener {
 	// Destroyer is a spectator
 	if (data.getTeam() == null) {
 	    if (!p.isOp()) {
-		p.sendMessage("3>§b> §8+ §7Et voi tuhota monumenttia spectatessa.");
+		p.sendMessage("§3>§b> §8+ §7Et voi tuhota monumenttia spectatessa.");
 		e.setCancelled(true);
 	    } else {
 		if (p.getGameMode() != GameMode.CREATIVE) {
 		    p.sendMessage(
-                    "3>§b> §8+ §7Et ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
+                    "§3>§b> §8+ §7Et ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
 		    e.setCancelled(true);
 		}
 	    }
@@ -68,7 +68,7 @@ public class DestroyMonumentListener implements Listener {
 		// Monument destroyed
 		// Test if own
 		if (data.getTeam() == team) {
-		    p.sendMessage("3>§b> §8+ §7Tämä on oman tiimisi monumentti.");
+		    p.sendMessage("§3>§b> §8+ §7Tämä on oman tiimisi monumentti.");
 		    e.setCancelled(true);
 		    return;
 		}
@@ -97,7 +97,7 @@ public class DestroyMonumentListener implements Listener {
 		    }
 		    handleBrokenMonument(mon);
 		} else {
-		    p.sendMessage("3>§b> §8+ §7Tämä monumentti on jo kerran tuhottu.");
+		    p.sendMessage("§3>§b> §8+ §7Tämä monumentti on jo kerran tuhottu.");
 		}
 		e.setCancelled(true);
 		e.getBlock().setType(Material.AIR);
@@ -110,7 +110,7 @@ public class DestroyMonumentListener implements Listener {
 	pd.getSeasonStats().increaseMonumentsDestroyed();
 	pd.increaseEmeralds(5);
 	Bukkit.broadcastMessage(
-            "3>§b> §8+ §7" + p.getDisplayName() + " §7tuhosi monumentin " + team.getTeamColor() + mon.getCustomName());
+            "§3>§b> §8+ §7" + p.getDisplayName() + " §7tuhosi monumentin " + team.getTeamColor() + mon.getCustomName());
     }
 
     private Set<Player> getCloseByTeammates(Player p, DTMPlayerData pd) {

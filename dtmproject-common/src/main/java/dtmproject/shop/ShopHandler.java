@@ -96,7 +96,7 @@ public class ShopHandler implements IShopHandler, Listener {
 
 	// TODO: Nullpointer below
 	if (shopItem.getPrice() > pd.getEmeralds()) {
-	    p.sendMessage("3>§b> §8+ §7Sinulla ei ole tarpeeksi emeraldeja.");
+	    p.sendMessage("§3>§b> §8+ §7Sinulla ei ole tarpeeksi emeraldeja.");
 	    p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
 	    return;
 	}
@@ -132,7 +132,7 @@ public class ShopHandler implements IShopHandler, Listener {
     private void setIndexToEmerald(Inventory inv, int index, int emeralds) {
 	ItemStack item = new ItemStack(Material.EMERALD);
 	ItemMeta meta = item.getItemMeta();
-	meta.setDisplayName("3>§b> §8+ §7Emeraldeja: " + emeralds);
+	meta.setDisplayName("§3>§b> §8+ §7Emeraldeja: " + emeralds);
 	item.setItemMeta(meta);
 	inv.setItem(index, item);
     }
