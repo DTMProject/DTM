@@ -1,5 +1,7 @@
 package dtmproject.common.events;
 
+import dtmproject.common.DTM;
+import lombok.AllArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -12,15 +14,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
 
+@AllArgsConstructor
 public class TNTListener implements Listener {
+
+    private DTM plugin;
 
     @EventHandler
     public void onFallingBlockLand(EntityChangeBlockEvent event) {
-        if(event.getEntityType() != EntityType.FALLING_BLOCK) {
+        if(event.getEntityType() != EntityType.FALLING_BLOCK && !event.getEntity().hasMetadata("dtm_tnt")) {
             return;
         }
 
@@ -47,11 +53,19 @@ public class TNTListener implements Listener {
             velocity.add(new Vector(randomInt(0, 50) / 100, 0, randomInt(0, 50) / 100));
             velocity.setY(velocity.getY() > 0 ? velocity.getY() + randomInt(0, 50) / 100.0 : (-1 * velocity.getY()) + randomInt(0, 50) / 100.0);
 
-            FallingBlock fallingBlock = world.spawnFallingBlock(block.getLocation(), block.getType().getNewData(block.getData()));
+            Location spawnLoc = block.getLocation();
+            spawnLoc.setY(location.getY());
+            spawnLoc = spawnLoc.toCenterLocation().add(0, 1, 0);
+
+            FallingBlock fallingBlock = world.spawnFallingBlock(spawnLoc, block.getType().getNewData(block.getData()));
+
+            fallingBlock.setMetadata("dtm_tnt", new FixedMetadataValue(plugin, ""));
 
             fallingBlock.setVelocity(velocity);
             fallingBlock.setDropItem(false);
         });
+
+        event.blockList().clear();
     }
 
     private static final Random rand = new Random();

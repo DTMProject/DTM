@@ -96,7 +96,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	pm.registerEvents(new TeamSpleefListener(this), this);
 	pm.registerEvents(new ChatHandler(this), this);
 	pm.registerEvents(new AnvilPlaceListener(), this);
-	pm.registerEvents(new TNTListener(), this);
+	pm.registerEvents(new TNTListener(this), this);
 	pm.registerEvents(deathHandler, this);
 	pm.registerEvents(shopHandler, this);
 	pm.registerEvents(scoreboardHandler, this);

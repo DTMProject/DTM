@@ -12,6 +12,11 @@ repositories {
     mavenCentral()
 
     maven {
+        name = 'papermc-repo'
+        url = 'https://papermc.io/repo/repository/maven-public/'
+    }
+
+    maven {
         url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/')
     }
 
@@ -22,7 +27,7 @@ repositories {
 
 dependencies {
     compileOnly 'org.slf4j:slf4j-api:1.7.25'
-    compileOnly 'org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT'
+    compileOnly 'com.destroystokyo.paper:paper-api:1.12.2-R0.1-SNAPSHOT'
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
