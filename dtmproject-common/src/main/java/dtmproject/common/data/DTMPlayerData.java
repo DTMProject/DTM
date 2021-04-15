@@ -1,5 +1,6 @@
 package dtmproject.common.data;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -154,8 +155,13 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
      */
     public double getWinLossRating() {
 	DTMSeasonStats stats = getSeasonStats();
+
 	if (stats.getWins() + stats.getLosses() < 10)
 	    return 0;
+
+	// Some nerd wins 10 games in a row so let's have them be level 10
+	if (stats.getLosses() == 0)
+	    return 1E6;
 
 	return (double) stats.getWins() / (double) stats.getLosses();
     }
@@ -166,15 +172,17 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
      *         0 indicates unranked -- the player's skill level can't be evaluated.
      */
     public int getRelativeRating() {
-	System.out.println("Players elo -- " + this.lastSeenName + " -- " + getWinLossRating());
-
 	if (getWinLossRating() == 0)
 	    return 0;
 
-	Double[] winLossdist = pl.getDataHandler().getWinLossDistribution();
+	Double[] winLossDist = pl.getDataHandler().getWinLossDistribution();
 
-	for (int i = 0; i < winLossdist.length; i++) {
-	    if (this.getWinLossRating() >= winLossdist[i])
+	for (int i = 0; i < winLossDist.length; i++) {
+	    
+	    System.out.println(this.getWinLossRating());
+	    System.out.println(Arrays.toString(winLossDist));
+
+	    if (this.getWinLossRating() >= winLossDist[i])
 		return 10 - i;
 	}
 

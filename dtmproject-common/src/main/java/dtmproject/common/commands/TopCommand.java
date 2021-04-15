@@ -63,10 +63,14 @@ public class TopCommand implements CommandExecutor {
 		if (!DTM.USE_RELATIVE_SKILL_LEVELS)
 		    sender.sendMessage("§e" + i + ". " + entry.getLastSeenName() + ": §a" + stats.getSum() + " §c"
 			    + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
-		else
-		    sender.sendMessage("§4[" + (entry.getRelativeRating()) + "]§e " + entry.getLastSeenName() + ": §a"
-			    + stats.getSum() + " §c" + stats.getKills() + " §4" + stats.getDeaths() + " §7"
-			    + stats.getKDRatio());
+		else {
+
+		    String rating = "" + entry.getRelativeRating();
+		    if (rating.equals("0"))
+			rating = "-";
+		    sender.sendMessage("§4[" + rating + "]§e " + entry.getLastSeenName() + ": §a" + stats.getSum()
+			    + " §c" + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
+		}
 
 		if (++i == finalCount + 1)
 		    break;

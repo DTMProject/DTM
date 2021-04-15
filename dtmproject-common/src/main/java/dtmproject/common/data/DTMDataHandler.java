@@ -137,18 +137,18 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
 	    try (PreparedStatement stmt = conn.prepareStatement(LOAD_PLAYERDATA_QUERY)) {
 		stmt.setString(1, uuid.toString());
-		try (ResultSet rs = stmt.executeQuery()) {
-		    if (rs.next()) {
-			String prefix = rs.getString("Prefix");
-			int emeralds = rs.getInt("Emeralds");
-			int killStreak = rs.getInt("KillStreak");
-			int eloRating = rs.getInt("EloRating");
-			loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix,
-				killStreak, eloRating, stats));
-		    } else {
-			loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
-		    }
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next()) {
+		    String prefix = rs.getString("Prefix");
+		    int emeralds = rs.getInt("Emeralds");
+		    int killStreak = rs.getInt("KillStreak");
+		    int eloRating = rs.getInt("EloRating");
+		    loadedPlayerdata.put(uuid,
+			    new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, stats));
+		} else {
+		    loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
 		}
+
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -253,7 +253,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
-	Double[] levels = new Double[9];
+	Double[] levels = new Double[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d };
 
 	int size = allScores.size();
 	if (size != 0)
