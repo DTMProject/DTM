@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.sql.PooledConnection;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
@@ -21,6 +23,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.common.DTM;
@@ -79,6 +84,18 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	HDS.setLeakDetectionThreshold(5000);
 	HDS.setMinimumIdle(5);
 	HDS.setMaximumPoolSize(15);
+
+	try {
+	    JdbcPooledConnectionSource jdbcConnectionSource = new JdbcPooledConnectionSource(
+		    "jdbc:mysql://" + server + "/" + db);
+	    jdbcConnectionSource.setUsername(user);
+	    jdbcConnectionSource.setPassword(pw);
+
+	    DaoManager.createDao(jdbcConnectionSource, DTMMap.class);
+	} catch (SQLException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
+	}
 
 	// Create tables
 	try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {

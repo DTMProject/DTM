@@ -34,7 +34,9 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'commons-io:commons-io:2.8.0'
-
+    implementation 'com.j256.ormlite:ormlite-core:5.4'
+	implementation 'com.j256.ormlite:ormlite-jdbc:5.4'
+    
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
