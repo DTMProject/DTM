@@ -2,11 +2,6 @@ package dtmproject.common.scoreboard;
 
 import java.util.Objects;
 
-import dtmproject.common.DTM;
-import dtmproject.api.IScoreboardHandler;
-import dtmproject.common.data.DTMMap;
-import dtmproject.common.data.DTMMonument;
-import dtmproject.common.data.DTMTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,7 +9,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.Team.Option;
 
+import dtmproject.api.IScoreboardHandler;
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMMap;
+import dtmproject.common.data.DTMMonument;
+import dtmproject.common.data.DTMTeam;
 import lombok.Getter;
 
 public class ScoreboardHandler implements IScoreboardHandler, Listener {
@@ -78,11 +80,18 @@ public class ScoreboardHandler implements IScoreboardHandler, Listener {
     public void changeNameTag(Player p, ChatColor color) {
 	String teamName = color + "";
 
-	if (globalScoreboard.getTeam(teamName) == null)
-	    globalScoreboard.registerNewTeam(teamName);
+	Team team = globalScoreboard.getTeam(teamName);
 
-	globalScoreboard.getTeam(teamName).setPrefix("Yeet " + teamName);
-	globalScoreboard.getTeam(teamName).addPlayer(p);
+	if (team == null) {
+	    globalScoreboard.registerNewTeam(teamName);
+	    team = globalScoreboard.getTeam(teamName);
+	}
+
+	team.setPrefix("Yeet " + teamName);
+	team.addPlayer(p);
+	
+	team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+
 	p.setScoreboard(globalScoreboard);
     }
 }
