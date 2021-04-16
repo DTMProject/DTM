@@ -8,20 +8,26 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import dtmproject.common.DTM;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
+@DatabaseTable(tableName = "PlayerDataTest")
 public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Getter
-    private final DTM pl;
+    private DTM pl;
 
     @Getter
-    private final UUID UUID;
+    @DatabaseField(id = true)
+    private UUID UUID;
 
     @Getter
     @Setter
+    @DatabaseField(canBeNull = false)
     private String lastSeenName;
 
     @Setter
@@ -35,6 +41,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     private DTMTeam team;
 
     @Getter
+    @DatabaseField(canBeNull = false)
     private int emeralds, killStreak;
 
     @Getter
@@ -53,6 +60,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Setter
     private long lastRespawn;
 
+    public DTMPlayerData() {
+	// TODO Auto-generated constructor stub
+    }
+    
     public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
 	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashMap<>());
     }
@@ -178,7 +189,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	Double[] winLossDist = pl.getDataHandler().getWinLossDistribution();
 
 	for (int i = 0; i < winLossDist.length; i++) {
-	    
+
 	    System.out.println(this.getWinLossRating());
 	    System.out.println(Arrays.toString(winLossDist));
 

@@ -21,6 +21,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
+import com.j256.ormlite.dao.DaoManager;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.common.DTM;
@@ -99,6 +100,9 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	dataSaver.init();
 
 	updateWinLossDistributionCache();
+
+	// Testing ORMLite
+	DaoManager.createDao(HDS.getDataSource(), DTMPlayerData.class);
 
     }
 
