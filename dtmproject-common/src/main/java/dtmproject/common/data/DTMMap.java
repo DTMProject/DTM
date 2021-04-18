@@ -111,6 +111,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	world.setGameRuleValue("doDaylightCycle", "false");
 	world.setGameRuleValue("randomTickSpeed", "5");
 	world.setGameRuleValue("announceAdvancements", "false");
+	world.setGameRuleValue("maxEntityCramming", "-1");
 
 	// Regenerate monuments if any are missing
 	teams.forEach(team -> team.getMonuments().forEach(mon -> {
