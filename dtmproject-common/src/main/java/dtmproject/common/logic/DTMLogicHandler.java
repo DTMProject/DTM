@@ -144,7 +144,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 		if (!pd.isSpectator()) {
 		    p.setGameMode(GameMode.SPECTATOR);
 		    p.sendMessage(
-                    "§3>§b> §8+ §7DTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.");
+			    "§3>§b> §8+ §7DTM on pysäytetty väliaikaisesti. Kun peli jatkuu, sinut teleportataan spawnille.");
 		} else {
 		    p.sendMessage("§3>§b> §8+ §7DTM on pysäytetty väliaikaisesti.");
 		}
@@ -190,22 +190,30 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	updateNameTag(p);
     }
 
-    // TODO: duplicate method with DTMMap#sendSpec
     public void updateNameTag(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	p.setDisplayName(pd.getDisplayName());
 	// Handle null prefixes
-	if (pd.getPrefix().isPresent()) {
-	    p.setPlayerListName(
-		    "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
+	if (pd.isSpectator()) {
+	    if (pd.getPrefix().isPresent()) {
+		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7"
+			+ p.getName());
+	    } else {
+		p.setPlayerListName("§7" + p.getName());
+	    }
 	} else {
-	    p.setPlayerListName("§7" + p.getName());
+	    if (pd.getPrefix().isPresent()) {
+		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] "
+			+ pd.getTeam().getTeamColor() + p.getName());
+	    } else {
+		p.setPlayerListName(pd.getTeam().getTeamColor() + p.getName());
+	    }
 	}
 	p.setCustomName(pd.getDisplayName());
 	p.setCustomNameVisible(true);
 
 	if (pd.getTeam() != null)
-	    pl.getNameTagColorer().changeNameTag(p, pd.getTeam().getTeamColor());
+	    pl.getNameTagColorer().changeNameTagAboveHead(p, pd.getTeam().getTeamColor());
     }
 
     public DTMTeam getSmallestTeam() {

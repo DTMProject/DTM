@@ -8,7 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class NameTagColorer {
 
-    public void changeNameTag(Player p, ChatColor chatColor) {
+    public void changeNameTagAboveHead(Player p, ChatColor chatColor) {
 	String teamName = chatColor + "";
 
 	Scoreboard sb = p.getScoreboard();
