@@ -6,8 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 
-import dtmproject.api.WorldlessLocation;
-import dtmproject.common.logic.GameState;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -21,12 +19,13 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
 
+import dtmproject.api.WorldlessLocation;
 import dtmproject.common.DTM;
 import dtmproject.common.TeamArmorUtils;
+import dtmproject.common.logic.GameState;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import net.md_5.bungee.api.ChatColor;
 
 public class DTMMap implements IDTMMap<DTMTeam> {
     private final DTM pl;
@@ -211,20 +210,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	p.setGameMode(GameMode.SPECTATOR);
 	p.getInventory().clear();
 
-	// Handle appropriate nametag colours
-	p.setDisplayName("§7" + p.getName());
-
-	// Handle null prefixes
-	if (pd.getPrefix().isPresent()) {
-	    p.setPlayerListName(
-		    "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
-	} else {
-	    p.setPlayerListName("§7" + p.getName());
-	}
-
-	p.setCustomName("§7" + p.getName());
-	p.setCustomNameVisible(false);
-
+	pl.getLogicHandler().updateNameTag(p);
     }
 
     @Override
