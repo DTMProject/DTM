@@ -325,7 +325,7 @@ public class DeathHandler implements Listener {
 	    else {
 		DTMMap currentMap = pl.getLogicHandler().getCurrentMap();
 		World gameWorld = currentMap.getWorld();
-		p.teleport(currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(gameWorld));
+		p.teleport(currentMap.getLobby().orElse(DTMMap.DEFAULT_LOBBY).toLocation(gameWorld));
 	    }
 	}
     }

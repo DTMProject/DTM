@@ -28,6 +28,8 @@ import lombok.NonNull;
 import lombok.Setter;
 
 public class DTMMap implements IDTMMap<DTMTeam> {
+    public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
+
     private final DTM pl;
 
     @NonNull
@@ -39,8 +41,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Setter
     private String displayName;
 
-    @Getter
-    private Optional<WorldlessLocation> lobby;
+    private WorldlessLocation lobby;
 
     @Getter
     @Setter
@@ -66,7 +67,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	this.pl = pl;
 	this.id = id;
 	this.displayName = displayName;
-	this.lobby = Optional.of(lobby);
+	this.lobby = lobby;
 	this.ticks = ticks;
 	this.kit = kit;
 	this.teams = teams;
@@ -196,7 +197,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	p.setGameMode(GameMode.SPECTATOR);
 
 	// Teleport to lobby
-	Location lobby = getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(world);
+	Location lobby = getLobby().orElse(DTMMap.DEFAULT_LOBBY).toLocation(world);
 	p.teleport(lobby);
 
 	if (p.getWorld() != world)
@@ -206,7 +207,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	    p.teleport(lobby);
 	} else {
 	    System.err.println("Lobby null for map " + getDisplayName());
-	    p.teleport(new Location(world, 0, 100, 0));
+	    p.teleport(DTMMap.DEFAULT_LOBBY.toLocation(world));
 	}
 	p.setGameMode(GameMode.SPECTATOR);
 	p.getInventory().clear();
@@ -256,6 +257,11 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Override
     public void setLobby(WorldlessLocation lobby) {
-	this.lobby = Optional.of(lobby);
+	this.lobby = lobby;
+    }
+
+    @Override
+    public Optional<WorldlessLocation> getLobby() {
+	return Optional.ofNullable(lobby);
     }
 }
