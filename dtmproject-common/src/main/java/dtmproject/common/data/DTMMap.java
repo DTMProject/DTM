@@ -149,31 +149,37 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
 	    team.getPlayers().forEach(p -> {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
-		int minutesPlayed = Math
-			.min((int) ((System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime())
-				/ 1000 / 60), 90);
 
-		int loserPoints = minutesPlayed * 5;
-		int winnerPoints = minutesPlayed * 25;
-
-		if (team == winner) {
-		    p.sendTitle("§a§lVoitto", "§aSait " + winnerPoints + " pistettä!");
-		} else if (pd.getTeam() != null) {
-		    p.sendTitle("§c§lHäviö", "§aSait " + loserPoints + " pistettä!");
-		}
+		long matchTime = System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime();
+		int minutesPlayed = Math.min((int) ((matchTime) / 1000 / 60), 90);
 
 		DTMSeasonStats stats = pd.getSeasonStats();
+		long timeForTeam = pl.getContributionCounter().getTimePlayedForTeam(p.getUniqueId(), team);
 
-//		long relativeContribution = contributionPoints.get(p.getUniqueId()).get(team) / this.getTimePlayed();
+		double factor = (double) timeForTeam / (double) matchTime;
 
-		long playTime = loserPoints * 60 * 1000;
-		if (team == winner) {
+		int winnerPoints = (int) (factor * minutesPlayed * 25);
+		int loserPoints = (int) ((1 - factor) * minutesPlayed * 5);
+
+		int totalPoints = winnerPoints + loserPoints;
+
+		System.out.println(p.getName() + "'s time for team: " + timeForTeam);
+		if (pd.getTeam() == winner) {
+		    p.sendTitle("§a§lVoitto", "§aSait " + totalPoints + " pistettä!");
+
 		    stats.increaseWins();
-		    stats.increasePlayTimeWon(playTime);
+
+		    stats.increasePlayTimeWon(timeForTeam);
+		    stats.increasePlayTimeLost(matchTime - timeForTeam);
 		} else {
+		    p.sendTitle("§c§lHäviö", "§aSait " + totalPoints + " pistettä!");
+
 		    stats.increaseLosses();
-		    stats.increasePlayTimeLost(playTime);
+
+		    stats.increasePlayTimeLost(timeForTeam);
+		    stats.increasePlayTimeWon(matchTime - timeForTeam);
 		}
+
 	    });
 	});
     }

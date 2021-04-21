@@ -27,6 +27,12 @@ public class ContributionTest extends TestCase {
 
 	cc.playerJoined(testPlayerUUID, testingTeam);
 	cc.playerLeaved(testPlayerUUID, testingTeam);
+
+	cc.getTimePlayedForTeam(testPlayerUUID, testingTeam);
+
+	cc.gameEnded();
+
+	cc.getTimePlayedForTeam(testPlayerUUID, testingTeam);
     }
 
 }
