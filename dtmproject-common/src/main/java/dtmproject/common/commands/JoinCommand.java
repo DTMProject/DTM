@@ -40,7 +40,7 @@ public class JoinCommand implements CommandExecutor {
 
 	    pl.getLogicHandler().setPlayerToSmallestTeam(caller);
 	    DTMTeam team = pd.getTeam();
-	    
+
 	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());
 	    return true;
 	}
@@ -66,6 +66,8 @@ public class JoinCommand implements CommandExecutor {
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
 
 	    pd.setTeam(team);
+	    pl.getContributionCounter().playerJoined(caller.getUniqueId(), team);
+
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(caller);
 	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName() + "§7.");
@@ -87,6 +89,8 @@ public class JoinCommand implements CommandExecutor {
 
 	    DTMPlayerData targetPlayerData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 	    targetPlayerData.setTeam(team);
+	    pl.getContributionCounter().playerJoined(target.getUniqueId(), team);
+
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(target);
 

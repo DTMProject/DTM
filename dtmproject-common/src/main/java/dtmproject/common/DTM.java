@@ -21,6 +21,7 @@ import dtmproject.common.commands.StartCommand;
 import dtmproject.common.commands.StatsCommand;
 import dtmproject.common.commands.TopCommand;
 import dtmproject.common.commands.WorldsCommand;
+import dtmproject.common.data.ContributionCounter;
 import dtmproject.common.data.DTMDataHandler;
 import dtmproject.common.data.DefaultMapLoader;
 import dtmproject.common.events.AnvilPlaceListener;
@@ -79,6 +80,13 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     @Getter
     private final DefaultMapLoader defaultMapLoader;
 
+    /**
+     * Handles information on the playtime of each player for each team. Helps to
+     * determine who gets how much credit for a win.
+     */
+    @Getter
+    private final ContributionCounter contributionCounter;
+
     public DTM() {
 	this.scoreboardHandler = new ScoreboardHandler(this);
 	this.shopHandler = new ShopHandler(this);
@@ -90,6 +98,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	this.nameTagColorer = new NameTagColorer();
 	this.defaultMapLoader = new DefaultMapLoader(this);
 	this.loggingHandler = new LoggingHandler(this);
+	this.contributionCounter = new ContributionCounter();
     }
 
     @Override
@@ -148,11 +157,10 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	final int MINUTE_IN_TICKS = 60 * 20;
 
 	// Broadcast map changes not saved
-	Bukkit.getScheduler()
-		.scheduleSyncRepeatingTask(this,
-			() -> this.getEditModeHandler().getPendingList()
-				.forEach(sender -> sender.sendMessage("§3>§b> §8+ §7DTM-mappeja ei ole tallennettu.")),
-			20 * 20, 20 * 20);
+	Bukkit.getScheduler().scheduleSyncRepeatingTask(this,
+		() -> this.getEditModeHandler().getPendingList()
+			.forEach(sender -> sender.sendMessage("§3>§b> §8+ §7DTM-mappeja ei ole tallennettu.")),
+		20 * 20, 20 * 20);
 
 	// Autosave every 3 minutes
 	Bukkit.getScheduler().scheduleSyncRepeatingTask(this,

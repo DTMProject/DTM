@@ -85,7 +85,13 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	for (Player p : Bukkit.getOnlinePlayers()) {
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    this.currentMap.sendToSpectate(p);
+
+	    DTMTeam oldTeam = pd.getTeam();
 	    pd.setTeam(null);
+
+	    if (oldTeam != null)
+		pl.getContributionCounter().playerLeaved(p.getUniqueId(), oldTeam);
+
 	    pd.setLastDamager(null);
 	}
 
@@ -188,6 +194,8 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    currentMap.sendPlayerToGame(p);
 
 	updateNameTag(p);
+
+	pl.getContributionCounter().playerJoined(p.getUniqueId(), pd.getTeam());
     }
 
     public void updateNameTag(Player p) {

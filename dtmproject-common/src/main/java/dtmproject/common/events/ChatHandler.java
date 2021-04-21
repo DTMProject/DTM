@@ -32,7 +32,7 @@ public class ChatHandler implements Listener {
 
 	    e.setFormat("§8[§b" + points + "§8]" + " " + prefixString + pd.getDisplayName() + "§8: §f%2$s");
 	} else {
-	    int rating = pd.getRelativeRating();
+	    int rating = pd.getRatingLevel();
 	    e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
 
 	    // Handle null prefixes

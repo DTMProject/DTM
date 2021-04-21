@@ -38,6 +38,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
+	testImplementation 'junit:junit:4.12'
     testCompileOnly 'org.projectlombok:lombok:1.18.20'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
@@ -48,6 +49,12 @@ publishing {
             from(components.java)
         }
     }
+}
+
+test {
+    useJUnit()
+
+    maxHeapSize = '1G'
 }
 
 sourceCompatibility = '1.8'

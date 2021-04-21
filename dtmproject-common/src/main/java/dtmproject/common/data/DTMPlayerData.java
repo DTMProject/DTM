@@ -1,6 +1,5 @@
 package dtmproject.common.data;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +30,6 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     private UUID lastDamager, lastMessager;
 
     @Getter
-    @Setter
     private DTMTeam team;
 
     @Getter
@@ -153,9 +151,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     /**
      * Returns 0 if player has played less than 10 games
      */
-    public double getWinLossRating() {
+    public double getRatingScore() {
 	DTMSeasonStats stats = getSeasonStats();
 
+	// Don't get anything if less than 10 games
 	if (stats.getWins() + stats.getLosses() < 10)
 	    return 0;
 
@@ -163,7 +162,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	if (stats.getLosses() == 0)
 	    return 1E6;
 
-	return (double) stats.getWins() / (double) stats.getLosses();
+	return (double) stats.getPlayTimeWon() / (double) stats.getPlayTimeLost();
     }
 
     /**
@@ -171,18 +170,16 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
      * 
      *         0 indicates unranked -- the player's skill level can't be evaluated.
      */
-    public int getRelativeRating() {
-	if (getWinLossRating() == 0)
+    public int getRatingLevel() {
+	double ratingScore = getRatingScore();
+
+	if (ratingScore == 0)
 	    return 0;
 
 	Double[] winLossDist = pl.getDataHandler().getWinLossDistribution();
 
 	for (int i = 0; i < winLossDist.length; i++) {
-	    
-	    System.out.println(this.getWinLossRating());
-	    System.out.println(Arrays.toString(winLossDist));
-
-	    if (this.getWinLossRating() >= winLossDist[i])
+	    if (ratingScore >= winLossDist[i])
 		return 10 - i;
 	}
 
@@ -193,4 +190,11 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     public Optional<String> getPrefix() {
 	return Optional.ofNullable(prefix);
     }
+    
+    @Override
+    public void setTeam(DTMTeam team) {
+	this.team = team;
+    }
+    
+  
 }

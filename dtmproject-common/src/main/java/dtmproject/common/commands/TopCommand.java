@@ -66,7 +66,7 @@ public class TopCommand implements CommandExecutor {
 			    + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
 		else {
 
-		    String rating = "" + entry.getRelativeRating();
+		    String rating = "" + entry.getRatingLevel();
 		    if (rating.equals("0"))
 			rating = "/";
 		    sender.sendMessage("§4[" + rating + "]§e " + entry.getLastSeenName() + ": §a" + stats.getSum()
