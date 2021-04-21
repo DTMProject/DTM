@@ -29,8 +29,6 @@ public class ConnectionListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-	e.setJoinMessage(null);
-
 	Player p = e.getPlayer();
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
@@ -49,8 +47,11 @@ public class ConnectionListener implements Listener {
 	pd.setLastSeenName(p.getName());
 
 	// Join message
-	if (Bukkit.getOnlinePlayers().size() <= 15)
-	    Bukkit.broadcastMessage("§8[§a+§8] §e" + pd.getLastSeenName());
+	if (Bukkit.getOnlinePlayers().size() <= 15) {
+	    e.setJoinMessage("§8[§a+§8] §e" + pd.getLastSeenName());
+	} else {
+	    e.setJoinMessage(null);
+	}
 
 	pl.getLogicHandler().getCurrentMap().sendToSpectate(p);
     }
