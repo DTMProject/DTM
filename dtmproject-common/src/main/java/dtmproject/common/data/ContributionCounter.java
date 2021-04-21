@@ -80,10 +80,6 @@ class ContributionKey {
 	this.team = team2;
     }
 
-    @Override
-    public int hashCode() {
-	return Objects.hash(player, team);
-    }
 
     @Override
     public String toString() {
