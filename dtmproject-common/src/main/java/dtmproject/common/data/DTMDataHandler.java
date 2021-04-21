@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.common.DTM;
@@ -68,9 +69,11 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	System.out.println("Connecting to " + server + "/" + db + " as user " + user);
 
 	// Initialize HikariCP connection pooling
+	String url = "jdbc:mysql://" + server + "/" + db;
+
 	HDS.setPassword(pw);
 	HDS.setUsername(user);
-	HDS.setJdbcUrl("jdbc:mysql://" + server + "/" + db);
+	HDS.setJdbcUrl(url);
 	HDS.addDataSourceProperty("cachePrepStmts", "true");
 	HDS.addDataSourceProperty("prepStmtCacheSize", "250");
 	HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -101,8 +104,13 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
 	updateWinLossDistributionCache();
 
-	// Testing ORMLite
-	DaoManager.createDao(HDS.getDataSource(), DTMPlayerData.class);
+	try {
+	    // Testing ORMLite
+	    JdbcPooledConnectionSource connectionSource = new JdbcPooledConnectionSource(url, user, pw);
+	    DaoManager.createDao(connectionSource, DTMMap.class);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
 
     }
 

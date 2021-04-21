@@ -1,5 +1,7 @@
 package dtmproject.api;
 
+import java.io.Serializable;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -10,7 +12,9 @@ import lombok.Setter;
  * A class to replace org.bukkit.Location in some cases, where a reference to a
  * World is not necessary.
  */
-public class WorldlessLocation implements Cloneable {
+public class WorldlessLocation implements Cloneable, Serializable {
+    private static final long serialVersionUID = 6025759660753086901L;
+
     @Getter
     @Setter
     private double x;

@@ -20,6 +20,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import dtmproject.api.WorldlessLocation;
 import dtmproject.common.DTM;
@@ -28,7 +31,9 @@ import dtmproject.common.logic.GameState;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
+@DatabaseTable(tableName = "Maps")
 public class DTMMap implements IDTMMap<DTMTeam> {
     public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
 
@@ -36,6 +41,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @NonNull
     @Getter
+    @DatabaseField(columnName = "MapID", id = true)
     private final String id;
 
     @NonNull
@@ -43,6 +49,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Setter
     private String displayName;
 
+    @DatabaseField(columnName = "Lobby", dataType = DataType.SERIALIZABLE)
     private WorldlessLocation lobby;
 
     @Getter
