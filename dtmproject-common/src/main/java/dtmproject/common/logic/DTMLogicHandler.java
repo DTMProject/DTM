@@ -214,6 +214,9 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 
 	if (pd.getTeam() != null)
 	    pl.getNameTagColorer().changeNameTagAboveHead(p, pd.getTeam().getTeamColor());
+	else {
+	    pl.getNameTagColorer().changeNameTagAboveHead(p, net.md_5.bungee.api.ChatColor.GRAY);
+	}
     }
 
     public DTMTeam getSmallestTeam() {

@@ -2,9 +2,11 @@ package dtmproject.common.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -62,6 +64,11 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Setter
     private World world;
 
+    /**
+     * Stores the time each player spent in each team.
+     */
+    private final HashMap<UUID, HashMap<DTMTeam, Integer>> contributionPoints;
+
     public DTMMap(DTM pl, @NonNull String id, @NonNull String displayName, WorldlessLocation lobby, int ticks,
 	    ItemStack[] kit, LinkedHashSet<DTMTeam> teams) {
 	this.pl = pl;
@@ -71,6 +78,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	this.ticks = ticks;
 	this.kit = kit;
 	this.teams = teams;
+	this.contributionPoints = new HashMap<>();
     }
 
     /**
@@ -110,6 +118,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	world.setTime(this.ticks);
 	world.setWeatherDuration(5000000);
 	world.setGameRuleValue("doDaylightCycle", "false");
+	world.setGameRuleValue("doWeatherCycle", "false");
 	world.setGameRuleValue("randomTickSpeed", "5");
 	world.setGameRuleValue("announceAdvancements", "false");
 	world.setGameRuleValue("maxEntityCramming", "-1");
@@ -188,6 +197,8 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 	// For memory leak prevention (idk if it works) - Juubes
 	this.setWorld(null);
+
+	this.contributionPoints.clear();
     }
 
     public void sendToSpectate(Player p) {
