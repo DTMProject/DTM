@@ -2,12 +2,12 @@ package dtmproject.common.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
-import dtmproject.api.WorldlessLocation;
-import dtmproject.common.logic.GameState;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -21,14 +21,17 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
 
+import dtmproject.api.WorldlessLocation;
 import dtmproject.common.DTM;
 import dtmproject.common.TeamArmorUtils;
+import dtmproject.common.logic.GameState;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import net.md_5.bungee.api.ChatColor;
 
 public class DTMMap implements IDTMMap<DTMTeam> {
+    public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
+
     private final DTM pl;
 
     @NonNull
@@ -40,8 +43,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Setter
     private String displayName;
 
-    @Getter
-    private Optional<WorldlessLocation> lobby;
+    private WorldlessLocation lobby;
 
     @Getter
     @Setter
@@ -62,15 +64,21 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Setter
     private World world;
 
+    /**
+     * Stores the time each player spent in each team.
+     */
+    private final HashMap<UUID, HashMap<DTMTeam, Integer>> contributionPoints;
+
     public DTMMap(DTM pl, @NonNull String id, @NonNull String displayName, WorldlessLocation lobby, int ticks,
 	    ItemStack[] kit, LinkedHashSet<DTMTeam> teams) {
 	this.pl = pl;
 	this.id = id;
 	this.displayName = displayName;
-	this.lobby = Optional.of(lobby);
+	this.lobby = lobby;
 	this.ticks = ticks;
 	this.kit = kit;
 	this.teams = teams;
+	this.contributionPoints = new HashMap<>();
     }
 
     /**
@@ -110,8 +118,10 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	world.setTime(this.ticks);
 	world.setWeatherDuration(5000000);
 	world.setGameRuleValue("doDaylightCycle", "false");
+	world.setGameRuleValue("doWeatherCycle", "false");
 	world.setGameRuleValue("randomTickSpeed", "5");
 	world.setGameRuleValue("announceAdvancements", "false");
+	world.setGameRuleValue("maxEntityCramming", "-1");
 
 	// Regenerate monuments if any are missing
 	teams.forEach(team -> team.getMonuments().forEach(mon -> {
@@ -187,6 +197,8 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 	// For memory leak prevention (idk if it works) - Juubes
 	this.setWorld(null);
+
+	this.contributionPoints.clear();
     }
 
     public void sendToSpectate(Player p) {
@@ -196,7 +208,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	p.setGameMode(GameMode.SPECTATOR);
 
 	// Teleport to lobby
-	Location lobby = getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(world);
+	Location lobby = getLobby().orElse(DTMMap.DEFAULT_LOBBY).toLocation(world);
 	p.teleport(lobby);
 
 	if (p.getWorld() != world)
@@ -206,25 +218,12 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	    p.teleport(lobby);
 	} else {
 	    System.err.println("Lobby null for map " + getDisplayName());
-	    p.teleport(new Location(world, 0, 100, 0));
+	    p.teleport(DTMMap.DEFAULT_LOBBY.toLocation(world));
 	}
 	p.setGameMode(GameMode.SPECTATOR);
 	p.getInventory().clear();
 
-	// Handle appropriate nametag colours
-	p.setDisplayName("§7" + p.getName());
-
-	// Handle null prefixes
-	if (pd.getPrefix().isPresent()) {
-	    p.setPlayerListName(
-		    "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
-	} else {
-	    p.setPlayerListName("§7" + p.getName());
-	}
-
-	p.setCustomName("§7" + p.getName());
-	p.setCustomNameVisible(false);
-
+	pl.getLogicHandler().updateNameTag(p);
     }
 
     @Override
@@ -269,6 +268,11 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Override
     public void setLobby(WorldlessLocation lobby) {
-	this.lobby = Optional.of(lobby);
+	this.lobby = lobby;
+    }
+
+    @Override
+    public Optional<WorldlessLocation> getLobby() {
+	return Optional.ofNullable(lobby);
     }
 }
