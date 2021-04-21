@@ -58,13 +58,15 @@ public class ConnectionListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-	e.setQuitMessage(null);
-
 	Player p = e.getPlayer();
 	p.getActivePotionEffects().clear();
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
-	if (Bukkit.getOnlinePlayers().size() <= 15)
-	    Bukkit.broadcastMessage("§8[§c-§8] §e" + pd.getLastSeenName());
+
+	if (Bukkit.getOnlinePlayers().size() <= 15) {
+	    e.setQuitMessage("§8[§c-§8] §e" + pd.getLastSeenName());
+	} else {
+	    e.setQuitMessage(null);
+	}
 
 	pl.getDeathHandler().clearLastHits(p);
 	pl.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
