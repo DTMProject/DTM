@@ -1,14 +1,15 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.data.DTMTeam;
-import dtmproject.common.logic.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMTeam;
+import dtmproject.common.logic.GameState;
 
 public class JoinCommand implements CommandExecutor {
     private final DTM pl;

@@ -2,10 +2,11 @@ package dtmproject.common.commands;
 
 import java.util.Optional;
 
-import dtmproject.common.DTM;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
 
 public class NextMapCommand implements CommandExecutor {
     private final DTM pl;

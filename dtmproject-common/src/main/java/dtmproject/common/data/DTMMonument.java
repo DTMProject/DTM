@@ -1,9 +1,9 @@
 package dtmproject.common.data;
 
-import dtmproject.api.WorldlessBlockLocation;
 import org.bukkit.Material;
 import org.bukkit.World;
 
+import dtmproject.api.WorldlessBlockLocation;
 import lombok.Getter;
 import lombok.Setter;
 

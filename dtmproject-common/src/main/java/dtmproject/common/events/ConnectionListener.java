@@ -1,7 +1,5 @@
 package dtmproject.common.events;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +9,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.google.common.util.concurrent.RateLimiter;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
 
 public class ConnectionListener implements Listener {
     private final DTM pl;

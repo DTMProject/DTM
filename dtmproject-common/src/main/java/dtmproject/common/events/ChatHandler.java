@@ -1,13 +1,13 @@
 package dtmproject.common.events;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
 import net.md_5.bungee.api.ChatColor;
 
 public class ChatHandler implements Listener {

@@ -2,11 +2,12 @@ package dtmproject.common.commands;
 
 import java.util.Optional;
 
-import dtmproject.common.DTM;
-import dtmproject.common.logic.DTMLogicHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
+import dtmproject.common.logic.DTMLogicHandler;
 
 public class StartCommand implements CommandExecutor {
     private final DTMLogicHandler logic;

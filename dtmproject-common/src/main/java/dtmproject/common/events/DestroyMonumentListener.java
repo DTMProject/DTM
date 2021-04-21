@@ -4,11 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMMonument;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.data.DTMTeam;
-import dtmproject.common.logic.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -18,6 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMMonument;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMTeam;
+import dtmproject.common.logic.GameState;
 
 public class DestroyMonumentListener implements Listener {
     private final DTM dtm;
