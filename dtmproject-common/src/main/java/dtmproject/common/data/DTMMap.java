@@ -145,16 +145,20 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	Bukkit.broadcastMessage(winner.getTeamColor() + "§l" + winner.getDisplayName() + " §e§lvoitti pelin!");
 	Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
-	// 50 points to the winner team, 15 to losers
+	// 50 points to the winner team, 15 to losers -- weighted by played time in winnerteam
 	pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
 	    team.getPlayers().forEach(p -> {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
-		long matchTime = System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime();
-		int minutesPlayed = Math.min((int) ((matchTime) / 1000 / 60), 90);
+		final int MAX_PLAY_TIME = 90 * 1000 * 60;
+
+		long matchTime = Math.min(MAX_PLAY_TIME,
+			System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime());
+		int minutesPlayed = (int) (matchTime / 1000 / 60);
 
 		DTMSeasonStats stats = pd.getSeasonStats();
-		long timeForTeam = pl.getContributionCounter().getTimePlayedForTeam(p.getUniqueId(), team);
+		long timeForTeam = Math.min(MAX_PLAY_TIME,
+			pl.getContributionCounter().getTimePlayedForTeam(p.getUniqueId(), team));
 
 		double factor = (double) timeForTeam / (double) matchTime;
 

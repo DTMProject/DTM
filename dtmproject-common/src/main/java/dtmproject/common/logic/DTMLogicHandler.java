@@ -213,8 +213,9 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    }
 	} else {
 	    String name = pd.getTeam().getTeamColor() + p.getName();
-	    String prefixString = "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] ";
 	    if (pd.getPrefix().isPresent()) {
+		String prefixString = "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get())
+			+ "§8] ";
 		p.setPlayerListName(ratingPrefix + prefixString + name);
 	    } else {
 		p.setPlayerListName(ratingPrefix + name);
