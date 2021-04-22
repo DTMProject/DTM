@@ -202,19 +202,22 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	p.setDisplayName(pd.getDisplayName());
 	// Handle null prefixes
+	String ratingLevelSymbol = pd.getRatingLevel() == 0 ? "/" : "" + pd.getRatingLevel();
+	String ratingPrefix = "§8[§4" + ratingLevelSymbol + "§8] ";
 	if (pd.isSpectator()) {
 	    if (pd.getPrefix().isPresent()) {
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7"
-			+ p.getName());
+		p.setPlayerListName(ratingPrefix + "§8["
+			+ ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
 	    } else {
-		p.setPlayerListName("§7" + p.getName());
+		p.setPlayerListName(ratingPrefix + "§7" + p.getName());
 	    }
 	} else {
+	    String name = pd.getTeam().getTeamColor() + p.getName();
+	    String prefixString = "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] ";
 	    if (pd.getPrefix().isPresent()) {
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] "
-			+ pd.getTeam().getTeamColor() + p.getName());
+		p.setPlayerListName(ratingPrefix + prefixString + name);
 	    } else {
-		p.setPlayerListName(pd.getTeam().getTeamColor() + p.getName());
+		p.setPlayerListName(ratingPrefix + name);
 	    }
 	}
 	p.setCustomName(pd.getDisplayName());

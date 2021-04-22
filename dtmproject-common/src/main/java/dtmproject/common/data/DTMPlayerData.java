@@ -42,6 +42,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Getter
     private int eloRating;
 
+    @Setter
+    @Getter
+    private long lastGamePlayed;
+
     /**
      * Maps season number to stats.
      */
@@ -190,11 +194,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     public Optional<String> getPrefix() {
 	return Optional.ofNullable(prefix);
     }
-    
+
     @Override
     public void setTeam(DTMTeam team) {
 	this.team = team;
     }
-    
-  
+
 }

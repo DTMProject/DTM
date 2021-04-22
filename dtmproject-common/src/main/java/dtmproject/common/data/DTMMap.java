@@ -180,6 +180,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 		    stats.increasePlayTimeWon(matchTime - timeForTeam);
 		}
 
+		pd.setLastGamePlayed(System.currentTimeMillis());
 	    });
 	});
     }
