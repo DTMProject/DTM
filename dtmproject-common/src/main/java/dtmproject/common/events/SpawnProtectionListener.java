@@ -33,7 +33,7 @@ public class SpawnProtectionListener implements Listener {
 		continue;
 	    Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
 	    spawn.subtract(new Vector(0.5, 0, 0.5));
-	    if (spawn.distance(e.getBlock().getLocation()) < 4) {
+	    if (spawn.distanceSquared(e.getBlock().getLocation()) < 16) {
 		e.setCancelled(true);
 		p.sendMessage("§3>§b> §8+ §7Et voi tuhota " + team.getDisplayName() + "§7 spawnia.");
 		return;
@@ -54,7 +54,7 @@ public class SpawnProtectionListener implements Listener {
 		continue;
 	    Location spawn = team.getSpawn().toLocation(p.getWorld()).clone();
 	    spawn.subtract(new Vector(0.5, 0, 0.5));
-	    if (spawn.distance(e.getBlock().getLocation()) < 4) {
+	    if (spawn.distanceSquared(e.getBlock().getLocation()) < 16) {
 		e.setCancelled(true);
 		p.sendMessage("§3>§b> §8+ §7Et voi rakentaa tiimin " + team.getDisplayName() + "§7 spawnille");
 		return;

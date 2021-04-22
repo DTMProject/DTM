@@ -38,7 +38,7 @@ public class JoinCommand implements CommandExecutor {
 		return true;
 	    }
 
-	    pl.getLogicHandler().setPlayerToSmallestTeam(caller);
+	    pl.getLogicHandler().setPlayerToWorstTeam(caller);
 	    DTMTeam team = pd.getTeam();
 
 	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());

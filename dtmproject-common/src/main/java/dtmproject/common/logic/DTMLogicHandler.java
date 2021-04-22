@@ -186,9 +186,9 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	}
     }
 
-    public void setPlayerToSmallestTeam(Player p) {
+    public void setPlayerToWorstTeam(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-	pd.setTeam(getSmallestTeam());
+	pd.setTeam(getWorstTeam());
 
 	if (gameState == GameState.RUNNING)
 	    currentMap.sendPlayerToGame(p);
@@ -196,6 +196,34 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	updateNameTag(p);
 
 	pl.getContributionCounter().playerJoined(p.getUniqueId(), pd.getTeam());
+    }
+
+    /**
+     * Rates the teams by the levels of the players in them.
+     */
+    public DTMTeam getWorstTeam() {
+	Iterator<DTMTeam> teams = this.currentMap.getTeams().iterator();
+	DTMTeam worst = teams.next();
+	while (teams.hasNext()) {
+	    DTMTeam anotherTeam = teams.next();
+
+	    int cumulativeRating1 = getCumulativeRating(worst);
+	    int cumulativeRating2 = getCumulativeRating(anotherTeam);
+
+	    if (cumulativeRating1 > cumulativeRating2)
+		worst = anotherTeam;
+	}
+	return worst;
+    }
+
+    private int getCumulativeRating(DTMTeam team) {
+	int total = 0;
+
+	for (Player p : team.getPlayers()) {
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	    total += pd.getRatingLevel();
+	}
+	return total;
     }
 
     public void updateNameTag(Player p) {
