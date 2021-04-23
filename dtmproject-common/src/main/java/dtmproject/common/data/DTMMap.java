@@ -140,20 +140,23 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Override
     public void end(DTMTeam winner) {
+	DTMMap map = pl.getLogicHandler().getCurrentMap();
+
 	String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
 	Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
 	Bukkit.broadcastMessage(winner.getTeamColor() + "§l" + winner.getDisplayName() + " §e§lvoitti pelin!");
 	Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
-	// 50 points to the winner team, 15 to losers -- weighted by played time in winnerteam
-	pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
+	// 50 points to the winner team, 15 to losers -- weighted by played time in
+	// winnerteam
+	map.getTeams().forEach(team -> {
 	    team.getPlayers().forEach(p -> {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
 		final int MAX_PLAY_TIME = 90 * 1000 * 60;
 
-		long matchTime = Math.min(MAX_PLAY_TIME,
-			System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime());
+		long uncutMatchTime = System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime();
+		long matchTime = Math.min(MAX_PLAY_TIME, uncutMatchTime);
 		int minutesPlayed = (int) (matchTime / 1000 / 60);
 
 		DTMSeasonStats stats = pd.getSeasonStats();
@@ -161,6 +164,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 			pl.getContributionCounter().getTimePlayedForTeam(p.getUniqueId(), team));
 
 		double factor = (double) timeForTeam / (double) matchTime;
+		long unCutTimeForWinningTeam = winner == pd.getTeam() ? timeForTeam : matchTime - timeForTeam;
 
 		int winnerPoints = (int) (factor * minutesPlayed * 25);
 		int loserPoints = (int) ((1 - factor) * minutesPlayed * 5);
@@ -185,6 +189,19 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 		}
 
 		pd.setLastGamePlayed(System.currentTimeMillis());
+
+		int teammateCount = pd.getTeam().getPlayers().size();
+		int enemyCount = 0;
+		for (DTMTeam enemyTeam : teams) {
+		    if (enemyTeam != pd.getTeam())
+			enemyCount += enemyTeam.getPlayers().size();
+		}
+
+		WinRecord record = new WinRecord(p.getUniqueId(), map.getId(), pd.getTeam() == winner,
+			System.currentTimeMillis(), unCutTimeForWinningTeam, uncutMatchTime - unCutTimeForWinningTeam,
+			teammateCount, enemyCount);
+		
+		pl.getWinRecordDao()
 	    });
 	});
     }

@@ -34,6 +34,9 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
     private final DTM pl;
 
+    @Getter
+    private final WinRecordDao winRecordDao;
+
     private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
 
     /**

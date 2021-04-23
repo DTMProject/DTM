@@ -24,6 +24,7 @@ import dtmproject.common.commands.WorldsCommand;
 import dtmproject.common.data.ContributionCounter;
 import dtmproject.common.data.DTMDataHandler;
 import dtmproject.common.data.DefaultMapLoader;
+import dtmproject.common.data.WinRecordDao;
 import dtmproject.common.events.AnvilPlaceListener;
 import dtmproject.common.events.ChatHandler;
 import dtmproject.common.events.ConnectionListener;
@@ -118,7 +119,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	pm.registerEvents(shopHandler, this);
 	pm.registerEvents(scoreboardHandler, this);
 
-	// Commands
 	getCommand("DTM").setExecutor(new DTMCommand(this));
 	getCommand("top").setExecutor(new TopCommand(this));
 	getCommand("shop").setExecutor(new ShopCommand(this));
