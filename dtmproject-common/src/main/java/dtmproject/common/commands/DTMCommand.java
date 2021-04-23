@@ -31,8 +31,10 @@ public class DTMCommand implements CommandExecutor {
 		sender.sendMessage("§3>§b> §8+ §7Map ID: " + map.getId());
 		sender.sendMessage("§3>§b> §8+ §7Map name: " + map.getDisplayName());
 		map.getTeams().forEach(team -> {
+		    int cumulativeRating = pl.getLogicHandler().getCumulativeRating(team);
+
 		    sender.sendMessage(team.getTeamColor() + team.getDisplayName() + "§7: " + team.getPlayers().size()
-			    + " pelaajaa");
+			    + " pelaajaa (" + (int) cumulativeRating + ")");
 		    team.getMonuments().forEach(mon -> {
 			String intactStr = mon.isBroken() ? "§crikki" : "§aehjä";
 			sender.sendMessage("    " + team.getTeamColor() + mon.getCustomName() + ": " + intactStr);
