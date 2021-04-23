@@ -3,18 +3,11 @@ package dtmproject.common;
 import java.util.List;
 import java.util.Optional;
 
-import dtmproject.api.DTMAPI;
-import dtmproject.common.data.DTMDataHandler;
-import dtmproject.common.data.DefaultMapLoader;
-import dtmproject.common.events.*;
-import dtmproject.common.logic.CountdownHandler;
-import dtmproject.common.logic.DTMLogicHandler;
-import dtmproject.common.shop.ShopCommand;
-import dtmproject.common.shop.ShopHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import dtmproject.api.DTMAPI;
 import dtmproject.common.commands.DTMCommand;
 import dtmproject.common.commands.EditModeCommand;
 import dtmproject.common.commands.GetposCommand;
@@ -28,7 +21,23 @@ import dtmproject.common.commands.StartCommand;
 import dtmproject.common.commands.StatsCommand;
 import dtmproject.common.commands.TopCommand;
 import dtmproject.common.commands.WorldsCommand;
+import dtmproject.common.data.ContributionCounter;
+import dtmproject.common.data.DTMDataHandler;
+import dtmproject.common.data.DefaultMapLoader;
+import dtmproject.common.events.AnvilPlaceListener;
+import dtmproject.common.events.ChatHandler;
+import dtmproject.common.events.ConnectionListener;
+import dtmproject.common.events.DeathHandler;
+import dtmproject.common.events.DestroyMonumentListener;
+import dtmproject.common.events.LoggingHandler;
+import dtmproject.common.events.SpawnProtectionListener;
+import dtmproject.common.events.TNTListener;
+import dtmproject.common.events.TeamSpleefListener;
+import dtmproject.common.logic.CountdownHandler;
+import dtmproject.common.logic.DTMLogicHandler;
 import dtmproject.common.scoreboard.ScoreboardHandler;
+import dtmproject.common.shop.ShopCommand;
+import dtmproject.common.shop.ShopHandler;
 import lombok.Getter;
 
 public final class DTM extends JavaPlugin implements DTMAPI {
@@ -71,6 +80,13 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     @Getter
     private final DefaultMapLoader defaultMapLoader;
 
+    /**
+     * Handles information on the playtime of each player for each team. Helps to
+     * determine who gets how much credit for a win.
+     */
+    @Getter
+    private final ContributionCounter contributionCounter;
+
     public DTM() {
 	this.scoreboardHandler = new ScoreboardHandler(this);
 	this.shopHandler = new ShopHandler(this);
@@ -82,6 +98,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	this.nameTagColorer = new NameTagColorer();
 	this.defaultMapLoader = new DefaultMapLoader(this);
 	this.loggingHandler = new LoggingHandler(this);
+	this.contributionCounter = new ContributionCounter();
     }
 
     @Override
@@ -140,11 +157,10 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	final int MINUTE_IN_TICKS = 60 * 20;
 
 	// Broadcast map changes not saved
-	Bukkit.getScheduler()
-		.scheduleSyncRepeatingTask(this,
-			() -> this.getEditModeHandler().getPendingList()
-				.forEach(sender -> sender.sendMessage("§3>§b> §8+ §7DTM-mappeja ei ole tallennettu.")),
-			20 * 20, 20 * 20);
+	Bukkit.getScheduler().scheduleSyncRepeatingTask(this,
+		() -> this.getEditModeHandler().getPendingList()
+			.forEach(sender -> sender.sendMessage("§3>§b> §8+ §7DTM-mappeja ei ole tallennettu.")),
+		20 * 20, 20 * 20);
 
 	// Autosave every 3 minutes
 	Bukkit.getScheduler().scheduleSyncRepeatingTask(this,

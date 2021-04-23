@@ -1,10 +1,13 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMMap;
+import java.text.NumberFormat;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMMap;
 
 public class DTMCommand implements CommandExecutor {
     private final DTM pl;
@@ -30,8 +33,16 @@ public class DTMCommand implements CommandExecutor {
 		sender.sendMessage("§3>§b> §8+ §7Map ID: " + map.getId());
 		sender.sendMessage("§3>§b> §8+ §7Map name: " + map.getDisplayName());
 		map.getTeams().forEach(team -> {
+		    double cumulativeRating = pl.getLogicHandler().getCumulativeRating(team);
+
+		    NumberFormat format = NumberFormat.getInstance();
+		    format.setMaximumFractionDigits(2);
+		    format.setMinimumFractionDigits(2);
+
+		    String cum = format.format(cumulativeRating);
+
 		    sender.sendMessage(team.getTeamColor() + team.getDisplayName() + "§7: " + team.getPlayers().size()
-			    + " pelaajaa");
+			    + " pelaajaa (" + cum + ")");
 		    team.getMonuments().forEach(mon -> {
 			String intactStr = mon.isBroken() ? "§crikki" : "§aehjä";
 			sender.sendMessage("    " + team.getTeamColor() + mon.getCustomName() + ": " + intactStr);

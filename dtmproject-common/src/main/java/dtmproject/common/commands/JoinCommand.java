@@ -1,14 +1,15 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.data.DTMTeam;
-import dtmproject.common.logic.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMTeam;
+import dtmproject.common.logic.GameState;
 
 public class JoinCommand implements CommandExecutor {
     private final DTM pl;
@@ -37,9 +38,9 @@ public class JoinCommand implements CommandExecutor {
 		return true;
 	    }
 
-	    pl.getLogicHandler().setPlayerToSmallestTeam(caller);
+	    pl.getLogicHandler().setPlayerToWorstTeam(caller);
 	    DTMTeam team = pd.getTeam();
-	    
+
 	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName());
 	    return true;
 	}
@@ -65,6 +66,8 @@ public class JoinCommand implements CommandExecutor {
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(caller.getUniqueId());
 
 	    pd.setTeam(team);
+	    pl.getContributionCounter().playerJoined(caller.getUniqueId(), team);
+
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(caller);
 	    caller.sendMessage("§3>§b> §8+ §7Olet nyt tiimissä " + team.getTeamColor() + team.getDisplayName() + "§7.");
@@ -86,6 +89,8 @@ public class JoinCommand implements CommandExecutor {
 
 	    DTMPlayerData targetPlayerData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 	    targetPlayerData.setTeam(team);
+	    pl.getContributionCounter().playerJoined(target.getUniqueId(), team);
+
 	    if (pl.getLogicHandler().getGameState() == GameState.RUNNING)
 		pl.getLogicHandler().getCurrentMap().sendPlayerToGame(target);
 

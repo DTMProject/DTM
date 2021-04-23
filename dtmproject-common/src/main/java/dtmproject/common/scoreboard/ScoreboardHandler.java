@@ -10,7 +10,6 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.scoreboard.Team.Option;
 
 import dtmproject.api.IScoreboardHandler;
 import dtmproject.common.DTM;

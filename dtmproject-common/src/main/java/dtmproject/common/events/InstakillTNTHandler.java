@@ -3,9 +3,6 @@ package dtmproject.common.events;
 import java.util.HashMap;
 import java.util.UUID;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.data.DTMTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,6 +17,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMTeam;
 
 public class InstakillTNTHandler implements Listener {
 

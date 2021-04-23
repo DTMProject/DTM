@@ -1,7 +1,7 @@
 package dtmproject.common.events;
 
-import dtmproject.common.DTM;
-import lombok.AllArgsConstructor;
+import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -17,7 +17,8 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.Random;
+import dtmproject.common.DTM;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class TNTListener implements Listener {

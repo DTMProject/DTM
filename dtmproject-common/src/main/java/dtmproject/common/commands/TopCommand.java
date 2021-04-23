@@ -2,13 +2,14 @@ package dtmproject.common.commands;
 
 import java.util.Objects;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.data.DTMSeasonStats;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
 
@@ -65,9 +66,9 @@ public class TopCommand implements CommandExecutor {
 			    + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
 		else {
 
-		    String rating = "" + entry.getRelativeRating();
+		    String rating = "" + entry.getRatingLevel();
 		    if (rating.equals("0"))
-			rating = "-";
+			rating = "/";
 		    sender.sendMessage("§4[" + rating + "]§e " + entry.getLastSeenName() + ": §a" + stats.getSum()
 			    + " §c" + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
 		}

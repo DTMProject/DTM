@@ -4,11 +4,11 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import dtmproject.api.WorldlessLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
+import dtmproject.api.WorldlessLocation;
 import dtmproject.common.DTM;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

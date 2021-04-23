@@ -85,7 +85,13 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	for (Player p : Bukkit.getOnlinePlayers()) {
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    this.currentMap.sendToSpectate(p);
+
+	    DTMTeam oldTeam = pd.getTeam();
 	    pd.setTeam(null);
+
+	    if (oldTeam != null)
+		pl.getContributionCounter().playerLeaved(p.getUniqueId(), oldTeam);
+
 	    pd.setLastDamager(null);
 	}
 
@@ -180,33 +186,73 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	}
     }
 
-    public void setPlayerToSmallestTeam(Player p) {
+    public void setPlayerToWorstTeam(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
-	pd.setTeam(getSmallestTeam());
+
+	pd.setTeam(getWorstTeam());
 
 	if (gameState == GameState.RUNNING)
 	    currentMap.sendPlayerToGame(p);
 
 	updateNameTag(p);
+
+	pl.getContributionCounter().playerJoined(p.getUniqueId(), pd.getTeam());
+    }
+
+    /**
+     * Rates the teams by the levels of the players in them.
+     */
+    public DTMTeam getWorstTeam() {
+	Iterator<DTMTeam> teams = this.currentMap.getTeams().iterator();
+	DTMTeam worst = teams.next();
+	while (teams.hasNext()) {
+	    DTMTeam anotherTeam = teams.next();
+
+	    double worstCumulative = getCumulativeRating(worst);
+	    double anotherCumulative = getCumulativeRating(anotherTeam);
+
+	    if (worstCumulative > anotherCumulative)
+		worst = anotherTeam;
+	}
+	return worst;
+    }
+
+    public double getCumulativeRating(DTMTeam team) {
+	double total = 0;
+
+	for (Player p : team.getPlayers()) {
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+
+	    int rating = pd.getRatingLevel();
+	    if (rating == 0)
+		total += Math.sqrt(3);
+	    else
+		total += Math.sqrt(rating);
+	}
+	return total;
     }
 
     public void updateNameTag(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	p.setDisplayName(pd.getDisplayName());
 	// Handle null prefixes
+	String ratingLevelSymbol = pd.getRatingLevel() == 0 ? "/" : "" + pd.getRatingLevel();
+	String ratingPrefix = "§8[§4" + ratingLevelSymbol + "§8] ";
 	if (pd.isSpectator()) {
 	    if (pd.getPrefix().isPresent()) {
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7"
-			+ p.getName());
+		p.setPlayerListName(ratingPrefix + "§8["
+			+ ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] §7" + p.getName());
 	    } else {
-		p.setPlayerListName("§7" + p.getName());
+		p.setPlayerListName(ratingPrefix + "§7" + p.getName());
 	    }
 	} else {
+	    String name = pd.getTeam().getTeamColor() + p.getName();
 	    if (pd.getPrefix().isPresent()) {
-		p.setPlayerListName("§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get()) + "§8] "
-			+ pd.getTeam().getTeamColor() + p.getName());
+		String prefixString = "§8[" + ChatColor.translateAlternateColorCodes('&', pd.getPrefix().get())
+			+ "§8] ";
+		p.setPlayerListName(ratingPrefix + prefixString + name);
 	    } else {
-		p.setPlayerListName(pd.getTeam().getTeamColor() + p.getName());
+		p.setPlayerListName(ratingPrefix + name);
 	    }
 	}
 	p.setCustomName(pd.getDisplayName());
@@ -214,6 +260,9 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 
 	if (pd.getTeam() != null)
 	    pl.getNameTagColorer().changeNameTagAboveHead(p, pd.getTeam().getTeamColor());
+	else {
+	    pl.getNameTagColorer().changeNameTagAboveHead(p, net.md_5.bungee.api.ChatColor.GRAY);
+	}
     }
 
     public DTMTeam getSmallestTeam() {

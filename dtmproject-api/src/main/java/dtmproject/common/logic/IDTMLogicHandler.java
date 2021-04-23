@@ -25,7 +25,7 @@ public interface IDTMLogicHandler<M extends IDTMMap<?>, T extends IDTMTeam<?>> {
 
     public void togglePause();
 
-    public void setPlayerToSmallestTeam(Player p);
+    public void setPlayerToWorstTeam(Player p);
 
     public void updateNameTag(Player p);
 

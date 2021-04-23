@@ -3,11 +3,6 @@ package dtmproject.common.events;
 import java.util.HashMap;
 import java.util.UUID;
 
-import dtmproject.common.DTM;
-import dtmproject.api.WorldlessLocation;
-import dtmproject.common.data.DTMMap;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.logic.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -34,6 +29,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import dtmproject.api.WorldlessLocation;
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMMap;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.logic.GameState;
 
 public class DeathHandler implements Listener {
     private final DTM pl;
@@ -325,7 +326,7 @@ public class DeathHandler implements Listener {
 	    else {
 		DTMMap currentMap = pl.getLogicHandler().getCurrentMap();
 		World gameWorld = currentMap.getWorld();
-		p.teleport(currentMap.getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(gameWorld));
+		p.teleport(currentMap.getLobby().orElse(DTMMap.DEFAULT_LOBBY).toLocation(gameWorld));
 	    }
 	}
     }

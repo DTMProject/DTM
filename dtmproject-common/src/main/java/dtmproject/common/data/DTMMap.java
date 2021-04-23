@@ -28,6 +28,8 @@ import lombok.NonNull;
 import lombok.Setter;
 
 public class DTMMap implements IDTMMap<DTMTeam> {
+    public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
+
     private final DTM pl;
 
     @NonNull
@@ -39,8 +41,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Setter
     private String displayName;
 
-    @Getter
-    private Optional<WorldlessLocation> lobby;
+    private WorldlessLocation lobby;
 
     @Getter
     @Setter
@@ -66,7 +67,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	this.pl = pl;
 	this.id = id;
 	this.displayName = displayName;
-	this.lobby = Optional.of(lobby);
+	this.lobby = lobby;
 	this.ticks = ticks;
 	this.kit = kit;
 	this.teams = teams;
@@ -109,8 +110,10 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	world.setTime(this.ticks);
 	world.setWeatherDuration(5000000);
 	world.setGameRuleValue("doDaylightCycle", "false");
+	world.setGameRuleValue("doWeatherCycle", "false");
 	world.setGameRuleValue("randomTickSpeed", "5");
 	world.setGameRuleValue("announceAdvancements", "false");
+	world.setGameRuleValue("maxEntityCramming", "-1");
 
 	// Regenerate monuments if any are missing
 	teams.forEach(team -> team.getMonuments().forEach(mon -> {
@@ -142,33 +145,46 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	Bukkit.broadcastMessage(winner.getTeamColor() + "§l" + winner.getDisplayName() + " §e§lvoitti pelin!");
 	Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
-	// 50 points to the winner team, 15 to losers
+	// 50 points to the winner team, 15 to losers -- weighted by played time in winnerteam
 	pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
 	    team.getPlayers().forEach(p -> {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
-		int minutesPlayed = Math
-			.min((int) ((System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime())
-				/ 1000 / 60), 90);
 
-		int loserPoints = minutesPlayed * 5;
-		int winnerPoints = minutesPlayed * 25;
+		final int MAX_PLAY_TIME = 90 * 1000 * 60;
 
-		if (team == winner) {
-		    p.sendTitle("§a§lVoitto", "§aSait " + winnerPoints + " pistettä!");
-		} else if (pd.getTeam() != null) {
-		    p.sendTitle("§c§lHäviö", "§aSait " + loserPoints + " pistettä!");
-		}
+		long matchTime = Math.min(MAX_PLAY_TIME,
+			System.currentTimeMillis() - pl.getLogicHandler().getCurrentMap().getStartTime());
+		int minutesPlayed = (int) (matchTime / 1000 / 60);
 
 		DTMSeasonStats stats = pd.getSeasonStats();
+		long timeForTeam = Math.min(MAX_PLAY_TIME,
+			pl.getContributionCounter().getTimePlayedForTeam(p.getUniqueId(), team));
 
-		long playTime = loserPoints * 60 * 1000;
-		if (team == winner) {
+		double factor = (double) timeForTeam / (double) matchTime;
+
+		int winnerPoints = (int) (factor * minutesPlayed * 25);
+		int loserPoints = (int) ((1 - factor) * minutesPlayed * 5);
+
+		int totalPoints = winnerPoints + loserPoints;
+
+		System.out.println(p.getName() + "'s time for team: " + timeForTeam);
+		if (pd.getTeam() == winner) {
+		    p.sendTitle("§a§lVoitto", "§aSait " + totalPoints + " pistettä!");
+
 		    stats.increaseWins();
-		    stats.increasePlayTimeWon(playTime);
+
+		    stats.increasePlayTimeWon(timeForTeam);
+		    stats.increasePlayTimeLost(matchTime - timeForTeam);
 		} else {
+		    p.sendTitle("§c§lHäviö", "§aSait " + totalPoints + " pistettä!");
+
 		    stats.increaseLosses();
-		    stats.increasePlayTimeLost(playTime);
+
+		    stats.increasePlayTimeLost(timeForTeam);
+		    stats.increasePlayTimeWon(matchTime - timeForTeam);
 		}
+
+		pd.setLastGamePlayed(System.currentTimeMillis());
 	    });
 	});
     }
@@ -186,16 +202,19 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 	// For memory leak prevention (idk if it works) - Juubes
 	this.setWorld(null);
+
+	pl.getContributionCounter().gameEnded();
     }
 
     public void sendToSpectate(Player p) {
 	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	DTMTeam oldTeam = pd.getTeam();
 	pd.setTeam(null);
 
 	p.setGameMode(GameMode.SPECTATOR);
 
 	// Teleport to lobby
-	Location lobby = getLobby().orElse(new WorldlessLocation(0, 100, 0)).toLocation(world);
+	Location lobby = getLobby().orElse(DTMMap.DEFAULT_LOBBY).toLocation(world);
 	p.teleport(lobby);
 
 	if (p.getWorld() != world)
@@ -205,12 +224,15 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	    p.teleport(lobby);
 	} else {
 	    System.err.println("Lobby null for map " + getDisplayName());
-	    p.teleport(new Location(world, 0, 100, 0));
+	    p.teleport(DTMMap.DEFAULT_LOBBY.toLocation(world));
 	}
 	p.setGameMode(GameMode.SPECTATOR);
 	p.getInventory().clear();
 
 	pl.getLogicHandler().updateNameTag(p);
+
+	if (oldTeam != null)
+	    pl.getContributionCounter().playerLeaved(p.getUniqueId(), oldTeam);
     }
 
     @Override
@@ -255,6 +277,11 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Override
     public void setLobby(WorldlessLocation lobby) {
-	this.lobby = Optional.of(lobby);
+	this.lobby = lobby;
+    }
+
+    @Override
+    public Optional<WorldlessLocation> getLobby() {
+	return Optional.ofNullable(lobby);
     }
 }

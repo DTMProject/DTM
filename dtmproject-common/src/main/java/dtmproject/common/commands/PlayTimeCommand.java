@@ -1,9 +1,10 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
 
 public class PlayTimeCommand implements CommandExecutor {
     private final DTM pl;
