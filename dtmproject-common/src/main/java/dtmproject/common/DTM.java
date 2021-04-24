@@ -118,7 +118,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	pm.registerEvents(shopHandler, this);
 	pm.registerEvents(scoreboardHandler, this);
 
-	// Commands
 	getCommand("DTM").setExecutor(new DTMCommand(this));
 	getCommand("top").setExecutor(new TopCommand(this));
 	getCommand("shop").setExecutor(new ShopCommand(this));
