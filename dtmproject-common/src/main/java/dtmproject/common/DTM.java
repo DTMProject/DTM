@@ -24,7 +24,6 @@ import dtmproject.common.commands.WorldsCommand;
 import dtmproject.common.data.ContributionCounter;
 import dtmproject.common.data.DTMDataHandler;
 import dtmproject.common.data.DefaultMapLoader;
-import dtmproject.common.data.WinRecordDao;
 import dtmproject.common.events.AnvilPlaceListener;
 import dtmproject.common.events.ChatHandler;
 import dtmproject.common.events.ConnectionListener;
