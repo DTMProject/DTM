@@ -2,7 +2,7 @@ package dtmproject.common.data;
 
 import org.bukkit.World;
 
-import dtmproject.api.WorldlessBlockLocation;
+import dtmproject.api.IWorldlessBlockLocation;
 
 public interface IDTMMonument {
     /**
@@ -10,9 +10,9 @@ public interface IDTMMonument {
      */
     public static char CHAR = (char) 0x1f844;
 
-    public WorldlessBlockLocation getBlock();
+    public IWorldlessBlockLocation getBlock();
 
-    public void setBlock(WorldlessBlockLocation block);
+    public void setBlock(IWorldlessBlockLocation block);
 
     public String getPosition();
 

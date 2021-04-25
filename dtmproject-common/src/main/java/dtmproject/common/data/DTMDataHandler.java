@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
@@ -21,6 +20,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
@@ -52,6 +52,15 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
     @Getter
     private final HikariDataSource HDS;
+
+    @Getter
+    public Dao<DTMPlayerData, UUID> playerDataDAO;
+
+    @Getter
+    public Dao<DTMMap, UUID> mapDAO;
+
+    @Getter
+    public Dao<DTMSeasonStats, UUID> seasonStatsDAO;
 
     public DTMDataHandler(DTM pl) {
 	this.pl = pl;
@@ -104,12 +113,17 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
 	updateWinLossDistributionCache();
 
+	JdbcPooledConnectionSource connectionSource = null;
 	try {
-	    // Testing ORMLite
-	    JdbcPooledConnectionSource connectionSource = new JdbcPooledConnectionSource(url, user, pw);
+	    connectionSource = new JdbcPooledConnectionSource(url, user, pw);
+
+	    DaoManager.createDao(connectionSource, DTMPlayerData.class);
 	    DaoManager.createDao(connectionSource, DTMMap.class);
+
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    System.err.println("DTM failed to connect to database.");
+	    Bukkit.shutdown();
+	    return;
 	}
 
     }
@@ -124,47 +138,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     }
 
     public void loadPlayerData(UUID uuid, String lastSeenName) {
-	try (Connection conn = HDS.getConnection()) {
-	    // Load stats
-	    HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
-	    try (PreparedStatement stmt = conn.prepareStatement(LOAD_PLAYERDATA_STATS_QUERY)) {
-		stmt.setString(1, uuid.toString());
-		try (ResultSet rs = stmt.executeQuery()) {
-		    while (rs.next()) {
-			int season = rs.getInt("Season");
-			int kills = rs.getInt("Kills");
-			int deaths = rs.getInt("Deaths");
-			int monuments = rs.getInt("MonumentsDestroyed");
-			int wins = rs.getInt("Wins");
-			int losses = rs.getInt("Losses");
-			long playTimeWon = rs.getLong("PlayTimeWon");
-			long playTimeLost = rs.getLong("PlayTimeLost");
-			int longestKillStreak = rs.getInt("LongestKillStreak");
 
-			stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, wins, losses,
-				longestKillStreak, playTimeWon, playTimeLost, monuments));
-		    }
-		}
-	    }
-
-	    try (PreparedStatement stmt = conn.prepareStatement(LOAD_PLAYERDATA_QUERY)) {
-		stmt.setString(1, uuid.toString());
-		ResultSet rs = stmt.executeQuery();
-		if (rs.next()) {
-		    String prefix = rs.getString("Prefix");
-		    int emeralds = rs.getInt("Emeralds");
-		    int killStreak = rs.getInt("KillStreak");
-		    int eloRating = rs.getInt("EloRating");
-		    loadedPlayerdata.put(uuid,
-			    new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, stats));
-		} else {
-		    loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
-		}
-
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
     }
 
     public DTMPlayerData getPlayerData(Player p) {

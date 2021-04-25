@@ -2,22 +2,54 @@ package dtmproject.common.data;
 
 import java.util.UUID;
 
-import lombok.Getter;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@DatabaseTable(tableName = "SeasonStats")
 public class DTMSeasonStats implements IDTMSeasonStats {
+
     @Getter
+    @DatabaseField(columnName = "UUID", canBeNull = false)
     private final UUID UUID;
 
     @Getter
+    @DatabaseField(columnName = "Season", id = true, canBeNull = false)
     private final int season;
 
     @Getter
-    private int kills, deaths, wins, losses, longestKillStreak, /* current */killStreak = 0;
+    @DatabaseField(columnName = "Kills")
+    private int kills;
 
     @Getter
-    private long playTimeWon, playTimeLost;
+    @DatabaseField(columnName = "Deaths")
+    private int deaths;
 
     @Getter
+    @DatabaseField(columnName = "Wins")
+    private int wins;
+
+    @Getter
+    @DatabaseField(columnName = "Losses")
+    private int losses;
+
+    @Getter
+    @Setter
+    @DatabaseField(columnName = "LongestKillStreak")
+    private int longestKillStreak;
+
+    @Getter
+    @DatabaseField(columnName = "PlayTimeWon")
+    private long playTimeWon;
+
+    @Getter
+    @DatabaseField(columnName = "PlayTimeLost")
+    private long playTimeLost;
+
+    @Getter
+    @DatabaseField(columnName = "MonumentsDestroyed")
     private int monumentsDestroyed;
 
     /**
@@ -66,17 +98,10 @@ public class DTMSeasonStats implements IDTMSeasonStats {
 
     public void increaseKills() {
 	kills++;
-
     }
 
     public void increaseDeaths() {
 	deaths++;
-    }
-
-    public void increaseKillStreak() {
-	killStreak++;
-
-	longestKillStreak = Math.max(longestKillStreak, killStreak);
     }
 
     public void increaseWins() {

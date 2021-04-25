@@ -6,7 +6,7 @@ import java.util.Set;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
-import dtmproject.api.WorldlessLocation;
+import dtmproject.api.IWorldlessLocation;
 import net.md_5.bungee.api.ChatColor;
 
 public interface IDTMTeam<M extends IDTMMonument> {
@@ -20,9 +20,9 @@ public interface IDTMTeam<M extends IDTMMonument> {
 
     public void setTeamColor(ChatColor color);
 
-    public WorldlessLocation getSpawn();
+    public IWorldlessLocation getSpawn();
 
-    public void setSpawn(WorldlessLocation spawn);
+    public void setSpawn(IWorldlessLocation spawn);
 
     public LinkedList<M> getMonuments();
 

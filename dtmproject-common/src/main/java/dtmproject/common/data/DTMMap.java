@@ -24,14 +24,13 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import dtmproject.api.WorldlessLocation;
 import dtmproject.common.DTM;
 import dtmproject.common.TeamArmorUtils;
+import dtmproject.common.WorldlessLocation;
 import dtmproject.common.logic.GameState;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 
 @DatabaseTable(tableName = "Maps")
 public class DTMMap implements IDTMMap<DTMTeam> {
@@ -41,19 +40,21 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @NonNull
     @Getter
-    @DatabaseField(columnName = "MapID", id = true)
+    @DatabaseField(columnName = "MapID", id = true, canBeNull = false)
     private final String id;
 
     @NonNull
     @Getter
     @Setter
+    @DatabaseField(columnName = "DisplayName", canBeNull = false)
     private String displayName;
 
-    @DatabaseField(columnName = "Lobby", dataType = DataType.SERIALIZABLE)
+    @DatabaseField(columnName = "Lobby", foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
     private WorldlessLocation lobby;
 
     @Getter
     @Setter
+    @DatabaseField(columnName = "Ticks", canBeNull = false)
     private int ticks;
 
     @Getter
@@ -65,6 +66,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Getter
     @Setter
+    @DatabaseField(columnName = "Kit", dataType = DataType.SERIALIZABLE)
     private ItemStack[] kit;
 
     @Getter

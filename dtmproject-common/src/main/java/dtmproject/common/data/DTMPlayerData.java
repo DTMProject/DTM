@@ -22,15 +22,16 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     private DTM pl;
 
     @Getter
-    @DatabaseField(id = true)
+    @DatabaseField(columnName = "UUID", canBeNull = false, id = true)
     private UUID UUID;
 
     @Getter
     @Setter
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(columnName = "LastSeenName", canBeNull = false)
     private String lastSeenName;
 
     @Setter
+    @DatabaseField(columnName = "Prefix")
     private String prefix;
 
     @Setter
@@ -41,29 +42,35 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     private DTMTeam team;
 
     @Getter
-    @DatabaseField(canBeNull = false)
-    private int emeralds, killStreak;
+    @DatabaseField(columnName = "Emeralds", canBeNull = false)
+    private int emeralds;
 
+    @Getter
+    @DatabaseField(columnName = "KillStreak", canBeNull = false)
+    private int killStreak;
+
+    // TODO: autojoin not implemented properly
     @Getter
     @Setter
     private boolean autoJoin;
 
     @Getter
+    @DatabaseField(columnName = "EloRating", canBeNull = false)
     private int eloRating;
 
     /**
      * Maps season number to stats.
      */
-    protected final HashMap<Integer, DTMSeasonStats> seasonStats;
+    protected HashMap<Integer, DTMSeasonStats> seasonStats;
 
     @Getter
     @Setter
     private long lastRespawn;
 
-    public DTMPlayerData() {
-	// TODO Auto-generated constructor stub
+    DTMPlayerData() {
+	// Constructor for ORMLite
     }
-    
+
     public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
 	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashMap<>());
     }

@@ -4,26 +4,32 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import dtmproject.api.WorldlessLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import dtmproject.common.DTM;
+import dtmproject.common.WorldlessLocation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
+@DatabaseTable(tableName = "Teams")
 @AllArgsConstructor
 public class DTMTeam implements IDTMTeam<DTMMonument> {
     private final DTM pl;
 
     @Getter
+    @DatabaseField(id = true, columnName = "MapID", canBeNull = false)
     private final String Id;
 
     @Getter
     @Setter
+    @DatabaseField(columnName = "DisplayName", canBeNull = false)
     private String displayName;
 
     @Getter

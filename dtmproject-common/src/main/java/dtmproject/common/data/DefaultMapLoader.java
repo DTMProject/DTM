@@ -8,12 +8,12 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import dtmproject.api.WorldlessBlockLocation;
-import dtmproject.api.WorldlessLocation;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import dtmproject.common.DTM;
+import dtmproject.common.WorldlessBlockLocation;
+import dtmproject.common.WorldlessLocation;
 import net.md_5.bungee.api.ChatColor;
 
 public class DefaultMapLoader {

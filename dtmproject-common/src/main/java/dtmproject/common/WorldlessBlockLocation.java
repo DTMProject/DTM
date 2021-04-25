@@ -1,9 +1,12 @@
-package dtmproject.api;
+package dtmproject.common;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-public class WorldlessBlockLocation implements Cloneable {
+import dtmproject.api.IWorldlessBlockLocation;
+import dtmproject.api.IWorldlessLocation;
+
+public class WorldlessBlockLocation implements IWorldlessBlockLocation {
     private WorldlessLocation loc;
 
     public WorldlessBlockLocation(int x, int y, int z) {
@@ -37,7 +40,7 @@ public class WorldlessBlockLocation implements Cloneable {
 	return (int) loc.getZ();
     }
 
-    public WorldlessLocation getLocation() {
+    public IWorldlessLocation getLocation() {
 	return loc;
     }
 

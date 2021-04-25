@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import dtmproject.common.DTM;
-import dtmproject.api.WorldlessLocation;
+import dtmproject.common.WorldlessLocation;
 import dtmproject.common.data.DTMMap;
 import dtmproject.common.data.DTMPlayerData;
 import dtmproject.common.logic.GameState;

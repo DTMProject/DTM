@@ -7,7 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import dtmproject.api.WorldlessLocation;
+import dtmproject.api.IWorldlessLocation;
 import lombok.NonNull;
 
 public interface IDTMMap<T extends IDTMTeam<?>> {
@@ -21,9 +21,9 @@ public interface IDTMMap<T extends IDTMTeam<?>> {
      * @implSpec returns Optional of the map lobby. If the lobby isn't set, returns
      *           an empty Optional.
      */
-    public Optional<WorldlessLocation> getLobby();
+    public Optional<IWorldlessLocation> getLobby();
 
-    public void setLobby(@NonNull WorldlessLocation lobby);
+    public void setLobby(@NonNull IWorldlessLocation lobby);
 
     public int getTicks();
 

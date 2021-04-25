@@ -42,8 +42,6 @@ public interface IDTMSeasonStats {
 
     public void increaseDeaths();
 
-    public void increaseKillStreak();
-
     public void increaseWins();
 
     public void increaseLosses();
@@ -53,4 +51,5 @@ public interface IDTMSeasonStats {
     public void increasePlayTimeLost(long time);
 
     public void increaseMonumentsDestroyed();
+    
 }
