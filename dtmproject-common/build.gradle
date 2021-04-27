@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'commons-io:commons-io:2.8.0'
 
-	implementation group: 'com.j256.ormlite', name: 'ormlite-android', version: '4.45'
+	implementation group: 'com.j256.ormlite', name: 'ormlite-jdbc', version: '5.3'
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'

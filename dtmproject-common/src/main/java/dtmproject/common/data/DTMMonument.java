@@ -3,13 +3,13 @@ package dtmproject.common.data;
 import org.bukkit.Material;
 import org.bukkit.World;
 
+import dtmproject.api.IWorldlessBlockLocation;
 import dtmproject.common.WorldlessBlockLocation;
 import lombok.Getter;
 import lombok.Setter;
 
 public class DTMMonument implements IDTMMonument {
     @Getter
-    @Setter
     private WorldlessBlockLocation block;
 
     @Getter
@@ -24,8 +24,8 @@ public class DTMMonument implements IDTMMonument {
     @Setter
     private boolean broken = false;
 
-    public DTMMonument(WorldlessBlockLocation block, String position, String customName) {
-	this.block = block;
+    public DTMMonument(IWorldlessBlockLocation block, String position, String customName) {
+	this.block = (WorldlessBlockLocation) block;
 	this.position = position;
 	this.customName = customName;
     }
@@ -37,4 +37,10 @@ public class DTMMonument implements IDTMMonument {
 	this.block.getBlock(world).setType(Material.OBSIDIAN);
 	this.broken = false;
     }
+
+    @Override
+    public void setBlock(IWorldlessBlockLocation block) {
+	this.block = (WorldlessBlockLocation) block;
+    }
+
 }

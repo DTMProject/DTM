@@ -24,6 +24,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import dtmproject.api.IWorldlessLocation;
 import dtmproject.common.DTM;
 import dtmproject.common.TeamArmorUtils;
 import dtmproject.common.WorldlessLocation;
@@ -276,12 +277,12 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     }
 
     @Override
-    public void setLobby(WorldlessLocation lobby) {
-	this.lobby = lobby;
+    public void setLobby(IWorldlessLocation lobby) {
+	this.lobby = (WorldlessLocation) lobby;
     }
 
     @Override
-    public Optional<WorldlessLocation> getLobby() {
+    public Optional<IWorldlessLocation> getLobby() {
 	return Optional.ofNullable(lobby);
     }
 }

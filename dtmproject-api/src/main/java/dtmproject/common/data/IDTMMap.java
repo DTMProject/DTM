@@ -21,7 +21,7 @@ public interface IDTMMap<T extends IDTMTeam<?>> {
      * @implSpec returns Optional of the map lobby. If the lobby isn't set, returns
      *           an empty Optional.
      */
-    public Optional<IWorldlessLocation> getLobby();
+    public Optional<? extends IWorldlessLocation> getLobby();
 
     public void setLobby(@NonNull IWorldlessLocation lobby);
 

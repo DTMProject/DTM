@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import dtmproject.api.IWorldlessLocation;
 import dtmproject.common.DTM;
 import dtmproject.common.WorldlessLocation;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,6 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
     private ChatColor teamColor;
 
     @Getter
-    @Setter
     private WorldlessLocation spawn;
 
     @Getter
@@ -84,4 +84,10 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
 	}
 	return null;
     }
+
+    @Override
+    public void setSpawn(IWorldlessLocation spawn) {
+	this.spawn = (WorldlessLocation) spawn;
+    }
+
 }
