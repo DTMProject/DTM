@@ -29,8 +29,6 @@ import dtmproject.common.DTM;
 import lombok.Getter;
 
 public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
-    private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
-    private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
     private static final String GET_WIN_LOSS_DIST = "SELECT Wins, Losses FROM SeasonStats WHERE Season = ? AND Wins + Losses > 10 ORDER BY Wins / Losses DESC";
 
@@ -117,8 +115,9 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	try {
 	    connectionSource = new JdbcPooledConnectionSource(url, user, pw);
 
-	    DaoManager.createDao(connectionSource, DTMPlayerData.class);
-	    DaoManager.createDao(connectionSource, DTMMap.class);
+	    this.playerDataDAO = DaoManager.createDao(connectionSource, DTMPlayerData.class);
+	    this.mapDAO = DaoManager.createDao(connectionSource, DTMMap.class);
+	    this.seasonStatsDAO = DaoManager.createDao(connectionSource, DTMSeasonStats.class);
 
 	} catch (Exception e) {
 	    System.err.println("DTM failed to connect to database.");

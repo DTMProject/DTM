@@ -2,13 +2,14 @@ package dtmproject.common.commands;
 
 import java.util.Objects;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
-import dtmproject.common.data.DTMSeasonStats;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMSeasonStats;
 
 public class TopCommand implements CommandExecutor {
 

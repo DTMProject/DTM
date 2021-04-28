@@ -1,6 +1,5 @@
 package dtmproject.common.shop;
 
-import dtmproject.common.logic.GameState;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.logic.GameState;
 
 public class ShopCommand implements CommandExecutor {
 

@@ -1,6 +1,5 @@
 package dtmproject.common.events;
 
-import dtmproject.common.logic.GameState;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +10,7 @@ import org.bukkit.util.Vector;
 
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMTeam;
+import dtmproject.common.logic.GameState;
 
 public class SpawnProtectionListener implements Listener {
     private final DTM dtm;

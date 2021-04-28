@@ -1,10 +1,11 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import dtmproject.common.DTM;
 
 @SuppressWarnings("unused")
 public class SetMonumentCommand implements CommandExecutor {

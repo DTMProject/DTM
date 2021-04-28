@@ -1,10 +1,11 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMMap;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMMap;
 
 public class DTMCommand implements CommandExecutor {
     private final DTM pl;

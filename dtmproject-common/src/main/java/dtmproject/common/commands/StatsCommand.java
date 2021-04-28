@@ -1,11 +1,12 @@
 package dtmproject.common.commands;
 
-import dtmproject.common.DTM;
-import dtmproject.common.data.DTMPlayerData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
 
 public class StatsCommand implements CommandExecutor {
     private final DTM pl;

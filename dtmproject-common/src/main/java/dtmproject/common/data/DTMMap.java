@@ -2,11 +2,19 @@ package dtmproject.common.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -20,9 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import dtmproject.api.IWorldlessLocation;
 import dtmproject.common.DTM;
@@ -33,33 +38,33 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-@DatabaseTable(tableName = "Maps")
+@Entity(name = "Map")
 public class DTMMap implements IDTMMap<DTMTeam> {
     public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
 
     private final DTM pl;
 
-    @NonNull
     @Getter
-    @DatabaseField(columnName = "MapID", id = true, canBeNull = false)
+    @Id
+    @Column(name = "MapID", nullable = false)
     private final String id;
 
     @NonNull
     @Getter
     @Setter
-    @DatabaseField(columnName = "DisplayName", canBeNull = false)
+    @Column(name = "DisplayName", nullable = false)
     private String displayName;
 
-    @DatabaseField(columnName = "Lobby", foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+    @Column(name = "Lobby")
     private WorldlessLocation lobby;
 
     @Getter
     @Setter
-    @DatabaseField(columnName = "Ticks", canBeNull = false)
+    @Column(name = "Ticks", nullable = false)
     private int ticks;
 
-    @Getter
-    private final LinkedHashSet<DTMTeam> teams;
+    @OneToMany(fetch = FetchType.EAGER)
+    private final Set<DTMTeam> teams;
 
     @Getter
     @Setter
@@ -67,7 +72,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Getter
     @Setter
-    @DatabaseField(columnName = "Kit", dataType = DataType.SERIALIZABLE)
+    @Column(name = "Kit")
     private ItemStack[] kit;
 
     @Getter
@@ -88,7 +93,9 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	this.ticks = ticks;
 	this.kit = kit;
 	this.teams = teams;
+
 	this.contributionPoints = new HashMap<>();
+
     }
 
     /**
@@ -284,5 +291,10 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Override
     public Optional<IWorldlessLocation> getLobby() {
 	return Optional.ofNullable(lobby);
+    }
+
+    @Override
+    public LinkedHashSet<? extends IDTMTeam<?>> getTeams() {
+	return new LinkedHashSet<DTMTeam> teams = new LinkedHashSet<>(this.teams) ;
     }
 }

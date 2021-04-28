@@ -3,18 +3,11 @@ package dtmproject.common;
 import java.util.List;
 import java.util.Optional;
 
-import dtmproject.api.DTMAPI;
-import dtmproject.common.data.DTMDataHandler;
-import dtmproject.common.data.DefaultMapLoader;
-import dtmproject.common.events.*;
-import dtmproject.common.logic.CountdownHandler;
-import dtmproject.common.logic.DTMLogicHandler;
-import dtmproject.common.shop.ShopCommand;
-import dtmproject.common.shop.ShopHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import dtmproject.api.DTMAPI;
 import dtmproject.common.commands.DTMCommand;
 import dtmproject.common.commands.EditModeCommand;
 import dtmproject.common.commands.GetposCommand;
@@ -28,7 +21,22 @@ import dtmproject.common.commands.StartCommand;
 import dtmproject.common.commands.StatsCommand;
 import dtmproject.common.commands.TopCommand;
 import dtmproject.common.commands.WorldsCommand;
+import dtmproject.common.data.DTMDataHandler;
+import dtmproject.common.data.DefaultMapLoader;
+import dtmproject.common.events.AnvilPlaceListener;
+import dtmproject.common.events.ChatHandler;
+import dtmproject.common.events.ConnectionListener;
+import dtmproject.common.events.DeathHandler;
+import dtmproject.common.events.DestroyMonumentListener;
+import dtmproject.common.events.LoggingHandler;
+import dtmproject.common.events.SpawnProtectionListener;
+import dtmproject.common.events.TNTListener;
+import dtmproject.common.events.TeamSpleefListener;
+import dtmproject.common.logic.CountdownHandler;
+import dtmproject.common.logic.DTMLogicHandler;
 import dtmproject.common.scoreboard.ScoreboardHandler;
+import dtmproject.common.shop.ShopCommand;
+import dtmproject.common.shop.ShopHandler;
 import lombok.Getter;
 
 public final class DTM extends JavaPlugin implements DTMAPI {

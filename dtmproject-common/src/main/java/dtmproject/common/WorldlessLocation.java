@@ -1,7 +1,5 @@
 package dtmproject.common;
 
-import java.io.Serializable;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 

@@ -1,6 +1,5 @@
 package dtmproject.common.shop;
 
-import dtmproject.api.IShopHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import dtmproject.api.IShopHandler;
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMPlayerData;
 

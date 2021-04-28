@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import dtmproject.common.DTM;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import dtmproject.common.DTM;
 import lombok.Getter;
 
 public class EditModeCommand implements CommandExecutor {
