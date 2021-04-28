@@ -170,9 +170,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     public void onDisable() {
 	// Save playerdata
 	Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
-
-	// Empty playerdata saving queue
-	dataHandler.getDataSaver().emptyQueueSync();
     }
 
     public int getSeason() {

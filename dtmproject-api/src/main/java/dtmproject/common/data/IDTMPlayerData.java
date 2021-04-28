@@ -1,7 +1,7 @@
 package dtmproject.common.data;
 
-import java.util.HashMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ public interface IDTMPlayerData<T extends IDTMTeam<?>, SS extends IDTMSeasonStat
 
     public void setAutoJoin(boolean autoJoin);
 
-    public HashMap<Integer, SS> getAllSeasonStats();
+    public Set<SS> getAllSeasonStats();
 
     public SS getSeasonStats();
 

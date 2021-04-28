@@ -1,7 +1,7 @@
 package dtmproject.common.data;
 
-import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -29,7 +29,7 @@ public interface IDTMMap<T extends IDTMTeam<?>> {
 
     public void setTicks(int ticks);
 
-    public LinkedHashSet<? extends IDTMTeam<?>> getTeams();
+    public Set<? extends IDTMTeam<?>> getTeams();
 
     public long getStartTime();
 

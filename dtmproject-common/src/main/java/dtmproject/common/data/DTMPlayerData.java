@@ -1,83 +1,94 @@
 package dtmproject.common.data;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import dtmproject.common.DTM;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
-@DatabaseTable(tableName = "PlayerDataTest")
+@Entity
+@Table(name = "PlayerData")
 public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
+
+    @Transient
     @Getter
     private DTM pl;
 
+    @Id
     @Getter
-    @DatabaseField(columnName = "UUID", canBeNull = false, id = true)
+    @Column(name = "UUID", nullable = false)
     private UUID UUID;
 
     @Getter
     @Setter
-    @DatabaseField(columnName = "LastSeenName", canBeNull = false)
+    @Column(name = "LastSeenName", nullable = false)
     private String lastSeenName;
 
     @Setter
-    @DatabaseField(columnName = "Prefix")
+    @Column(name = "Prefix")
     private String prefix;
 
     @Setter
+    @Transient
     private UUID lastDamager, lastMessager;
 
     @Getter
     @Setter
+    @Transient
     private DTMTeam team;
 
     @Getter
-    @DatabaseField(columnName = "Emeralds", canBeNull = false)
+    @Column(name = "Emeralds", nullable = false)
     private int emeralds;
 
     @Getter
-    @DatabaseField(columnName = "KillStreak", canBeNull = false)
+    @Column(name = "KillStreak", nullable = false)
     private int killStreak;
 
     // TODO: autojoin not implemented properly
     @Getter
     @Setter
+    @Transient
     private boolean autoJoin;
 
     @Getter
-    @DatabaseField(columnName = "EloRating", canBeNull = false)
+    @Column(name = "EloRating", nullable = false)
     private int eloRating;
 
     /**
      * Maps season number to stats.
      */
-    protected HashMap<Integer, DTMSeasonStats> seasonStats;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "playerUUID")
+    private Set<DTMSeasonStats> seasonStats;
 
     @Getter
     @Setter
+    @Transient
     private long lastRespawn;
 
-    DTMPlayerData() {
-	// Constructor for ORMLite
-    }
-
     public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
-	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashMap<>());
+	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashSet<>());
     }
 
-    // TODO: injektaa plugin instanssi
     public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
-	    int eloRating, HashMap<Integer, DTMSeasonStats> seasonStats) {
+	    int eloRating, HashSet<DTMSeasonStats> seasonStats) {
 	this.pl = dtm;
 	this.UUID = uuid;
 	this.lastSeenName = lastSeenName;
@@ -88,10 +99,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	this.eloRating = eloRating;
 
 	if (getSeasonStats() == null)
-	    this.seasonStats.put(dtm.getSeason(), new DTMSeasonStats(uuid, dtm.getSeason()));
+	    this.seasonStats.add(new DTMSeasonStats(this, dtm.getSeason()));
     }
 
-    public HashMap<Integer, DTMSeasonStats> getAllSeasonStats() {
+    public Set<DTMSeasonStats> getAllSeasonStats() {
 	return seasonStats;
     }
 
@@ -100,7 +111,11 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     }
 
     public DTMSeasonStats getSeasonStats(int season) {
-	return seasonStats.get(season);
+	for (DTMSeasonStats stats : seasonStats) {
+	    if (stats.getSeason() == season)
+		return stats;
+	}
+	return null;
     }
 
     public DTMTotalStats getTotalStats() {

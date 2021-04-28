@@ -2,66 +2,69 @@ package dtmproject.common.data;
 
 import java.util.UUID;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@DatabaseTable(tableName = "SeasonStats")
+@Entity
+@Table(name = "SeasonStats")
 public class DTMSeasonStats implements IDTMSeasonStats {
-
     @Getter
-    @DatabaseField(columnName = "UUID", canBeNull = false)
-    private final UUID UUID;
+    @Column(name = "UUID", nullable = false)
+    private final DTMPlayerData playerData;
 
+    @Id
+    @Column(name = "Season", nullable = false)
     @Getter
-    @DatabaseField(columnName = "Season", id = true, canBeNull = false)
     private final int season;
 
     @Getter
-    @DatabaseField(columnName = "Kills")
+    @Column(name = "Kills", nullable = false)
     private int kills;
 
     @Getter
-    @DatabaseField(columnName = "Deaths")
+    @Column(name = "Deaths", nullable = false)
     private int deaths;
 
     @Getter
-    @DatabaseField(columnName = "Wins")
+    @Column(name = "Wins", nullable = false)
     private int wins;
 
     @Getter
-    @DatabaseField(columnName = "Losses")
+    @Column(name = "Losses", nullable = false)
     private int losses;
 
     @Getter
     @Setter
-    @DatabaseField(columnName = "LongestKillStreak")
+    @Column(name = "LongestKillStreak", nullable = false)
     private int longestKillStreak;
 
     @Getter
-    @DatabaseField(columnName = "PlayTimeWon")
+    @Column(name = "PlayTimeWon", nullable = false)
     private long playTimeWon;
 
     @Getter
-    @DatabaseField(columnName = "PlayTimeLost")
+    @Column(name = "PlayTimeLost", nullable = false)
     private long playTimeLost;
 
     @Getter
-    @DatabaseField(columnName = "MonumentsDestroyed")
+    @Column(name = "MonumentsDestroyed", nullable = false)
     private int monumentsDestroyed;
 
     /**
      * Default constructor. Set's everything to 0.
      */
-    public DTMSeasonStats(UUID uuid, int season) {
-	this(uuid, season, 0, 0, 0, 0, 0, 0, 0, 0);
+    public DTMSeasonStats(DTMPlayerData data, int season) {
+	this(data, season, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
-    public DTMSeasonStats(UUID uuid, int season, int kills, int deaths, int wins, int losses, int longestKillStreak,
-	    long playTimeWon, long playTimeLost, int monumentsDestroyed) {
-	this.UUID = uuid;
+    public DTMSeasonStats(DTMPlayerData data, int season, int kills, int deaths, int wins, int losses,
+	    int longestKillStreak, long playTimeWon, long playTimeLost, int monumentsDestroyed) {
+	this.playerData = data;
 	this.season = season;
 	this.kills = kills;
 	this.deaths = deaths;
@@ -122,6 +125,11 @@ public class DTMSeasonStats implements IDTMSeasonStats {
 
     public void increaseMonumentsDestroyed() {
 	monumentsDestroyed++;
+    }
+
+    @Override
+    public UUID getUUID() {
+	return this.playerData.getUUID();
     }
 
 }

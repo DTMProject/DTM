@@ -4,12 +4,18 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import dtmproject.api.IWorldlessLocation;
 import dtmproject.common.DTM;
@@ -19,25 +25,31 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
-@DatabaseTable(tableName = "Teams")
+@Entity
+@Table(name = "Teams")
 @AllArgsConstructor
 public class DTMTeam implements IDTMTeam<DTMMonument> {
+    @Transient
     private final DTM pl;
 
     @Getter
-    @DatabaseField(id = true, columnName = "MapID", canBeNull = false)
+    @Id
+    @Column(name = "MapID", nullable = false)
     private final String Id;
 
     @Getter
     @Setter
-    @DatabaseField(columnName = "DisplayName", canBeNull = false)
+    @Column(name = "DisplayName", nullable = false)
     private String displayName;
 
     @Getter
     @Setter
+    @Column(name = "TeamColor", nullable = false)
     private ChatColor teamColor;
 
     @Getter
+    @Column(name = "Spawn")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private WorldlessLocation spawn;
 
     @Getter

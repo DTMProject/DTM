@@ -1,32 +1,23 @@
 package dtmproject.common.data;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.io.IOUtils;
+import javax.persistence.EntityManager;
+
 import org.apache.commons.lang.NotImplementedException;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 import com.google.common.base.Joiner;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
-import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.common.DTM;
-import lombok.Getter;
 
 public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
@@ -45,25 +36,10 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
     private Double[] cachedWinLossDistribution;
 
-    @Getter
-    private final QueueDataSaver dataSaver;
-
-    @Getter
-    private final HikariDataSource HDS;
-
-    @Getter
-    public Dao<DTMPlayerData, UUID> playerDataDAO;
-
-    @Getter
-    public Dao<DTMMap, UUID> mapDAO;
-
-    @Getter
-    public Dao<DTMSeasonStats, UUID> seasonStatsDAO;
+    private EntityManager em;
 
     public DTMDataHandler(DTM pl) {
 	this.pl = pl;
-	this.dataSaver = new QueueDataSaver(pl);
-	this.HDS = new HikariDataSource();
     }
 
     public void init() {
@@ -75,55 +51,28 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
 	System.out.println("Connecting to " + server + "/" + db + " as user " + user);
 
-	// Initialize HikariCP connection pooling
-	String url = "jdbc:mysql://" + server + "/" + db;
-
-	HDS.setPassword(pw);
-	HDS.setUsername(user);
-	HDS.setJdbcUrl(url);
-	HDS.addDataSourceProperty("cachePrepStmts", "true");
-	HDS.addDataSourceProperty("prepStmtCacheSize", "250");
-	HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-	HDS.addDataSourceProperty("useSSL", "false");
-	HDS.addDataSourceProperty("verifyServerCertificate", "false");
-	HDS.setConnectionTimeout(10000);
-	HDS.setLeakDetectionThreshold(5000);
-	HDS.setMinimumIdle(5);
-	HDS.setMaximumPoolSize(15);
-
-	// Create tables
-	try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
-	    String createTables = IOUtils.toString(pl.getResource("create-tables.sql"), Charset.forName("UTF-8"));
-	    String[] sqlStatements = createTables.split(";");
-	    for (String sql : sqlStatements) {
-		stmt.addBatch(sql);
-	    }
-	    stmt.executeBatch();
-	} catch (SQLException | IOException e) {
-	    e.printStackTrace();
-	    for (Player p : Bukkit.getOnlinePlayers()) {
-		p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
-	    }
-	    Bukkit.shutdown();
-	}
-
-	dataSaver.init();
-
 	updateWinLossDistributionCache();
 
-	JdbcPooledConnectionSource connectionSource = null;
-	try {
-	    connectionSource = new JdbcPooledConnectionSource(url, user, pw);
+	// Initialize Hibernate
+	Configuration hibernateConf = new Configuration();
+	Properties prop = new Properties();
+	prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+	prop.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+	prop.setProperty("hibernate.connection.url", "jdbc:mysql://" + server + "/" + db);
+	prop.setProperty("hibernate.connection.username", user);
+	prop.setProperty("hibernate.connection.password", pw);
+	prop.setProperty("hibernate.hbm2ddl.auto", "update");
 
-	    this.playerDataDAO = DaoManager.createDao(connectionSource, DTMPlayerData.class);
-	    this.mapDAO = DaoManager.createDao(connectionSource, DTMMap.class);
-	    this.seasonStatsDAO = DaoManager.createDao(connectionSource, DTMSeasonStats.class);
+	hibernateConf.addProperties(prop);
 
-	} catch (Exception e) {
-	    System.err.println("DTM failed to connect to database.");
-	    Bukkit.shutdown();
-	    return;
-	}
+	hibernateConf.addAnnotatedClass(DTMPlayerData.class);
+	hibernateConf.addAnnotatedClass(DTMSeasonStats.class);
+	hibernateConf.addAnnotatedClass(DTMMap.class);
+	hibernateConf.addAnnotatedClass(DTMTeam.class);
+	hibernateConf.addAnnotatedClass(DTMMonument.class);
+
+	SessionFactory sf = hibernateConf.buildSessionFactory();
+	this.em = sf.createEntityManager();
 
     }
 
@@ -148,14 +97,21 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	return loadedPlayerdata.get(uuid);
     }
 
+    public void savePlayerData(DTMPlayerData data) {
+	em.persist(data);
+    }
+
     public void savePlayerData(UUID uuid) {
-	dataSaver.queue(this.getPlayerData(uuid));
+	// TODO tx
+
+	em.persist(Objects.requireNonNull(loadedPlayerdata.get(uuid)));
     }
 
     public void unloadPlayerdata(UUID uuid, boolean save) {
 	if (save)
-	    this.savePlayerData(uuid);
-	this.unloadPlayerdata(uuid);
+	    savePlayerData(uuid);
+
+	this.loadedPlayerdata.remove(uuid);
     }
 
     public void unloadPlayerdata(UUID uuid) {
@@ -176,39 +132,8 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     }
 
     public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {
-	LinkedList<DTMPlayerData> allStats = new LinkedList<>();
-
-	try (Connection conn = HDS.getConnection();
-		PreparedStatement stmt = conn.prepareStatement(GET_LEADERBOARD_QUERY)) {
-	    stmt.setInt(1, season);
-	    stmt.setInt(2, count);
-	    try (ResultSet rs = stmt.executeQuery()) {
-		while (rs.next()) {
-		    UUID uuid = UUID.fromString(rs.getString("UUID"));
-		    int kills = rs.getInt("Kills");
-		    int deaths = rs.getInt("Deaths");
-		    int monuments = rs.getInt("MonumentsDestroyed");
-		    int wins = rs.getInt("Wins");
-		    int losses = rs.getInt("Losses");
-		    long playTimeWon = rs.getLong("PlayTimeWon");
-		    long playTimeLost = rs.getLong("PlayTimeLost");
-		    int longestKillStreak = rs.getInt("LongestKillStreak");
-
-		    String lastSeenName = rs.getString("LastSeenName");
-		    DTMSeasonStats stats = new DTMSeasonStats(uuid, season, kills, deaths, wins, losses,
-			    longestKillStreak, playTimeWon, playTimeLost, monuments);
-
-		    // Emeralds and such isn't even loaded. We don't need that.
-		    DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName);
-		    data.seasonStats.put(stats.getSeason(), stats);
-
-		    allStats.add(data);
-		}
-	    }
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-	return allStats;
+	// TODO
+	return null;
     }
 
     public boolean mapExists(String req) {
@@ -223,21 +148,13 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	return cachedWinLossDistribution;
     }
 
+    // TODO rewrite and implement properly
     public void updateWinLossDistributionCache() {
 	LinkedList<Double> allScores = new LinkedList<>();
-	try (Connection conn = HDS.getConnection(); PreparedStatement stmt = conn.prepareStatement(GET_WIN_LOSS_DIST)) {
-	    stmt.setInt(1, pl.getSeason());
-	    try (ResultSet rs = stmt.executeQuery()) {
-		while (rs.next()) {
-		    int wins = rs.getInt("Wins");
-		    int losses = rs.getInt("Losses");
 
-		    allScores.add((double) wins / (double) losses);
-		}
-	    }
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
+	// For all entities
+	// ---- allScores.add((double) wins / (double) losses);
+
 	Double[] levels = new Double[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d };
 
 	int size = allScores.size();
@@ -248,7 +165,6 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	    }
 
 	this.cachedWinLossDistribution = levels;
-
     }
 
 }

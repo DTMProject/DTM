@@ -1,7 +1,7 @@
 package dtmproject.common.data;
 
 import java.text.NumberFormat;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 import lombok.Getter;
@@ -10,17 +10,16 @@ public class DTMTotalStats {
     @Getter
     private final UUID uuid;
 
-    private final HashMap<Integer, ? extends DTMSeasonStats> allStats;
+    private final Set<DTMSeasonStats> allStats;
 
-    public DTMTotalStats(UUID uuid, HashMap<Integer, DTMSeasonStats> allStats) {
+    public DTMTotalStats(UUID uuid, Set<DTMSeasonStats> seasonStats) {
 	this.uuid = uuid;
-	this.allStats = allStats;
-
+	this.allStats = seasonStats;
     }
 
     public int getMonuments() {
 	int sum = 0;
-	for (DTMSeasonStats s : allStats.values()) {
+	for (DTMSeasonStats s : allStats) {
 	    sum += s.getMonumentsDestroyed();
 	}
 	return sum;
@@ -28,7 +27,7 @@ public class DTMTotalStats {
 
     public int getSum() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += ((DTMSeasonStats) stats).getSum();
 	}
 	return sum;
@@ -36,7 +35,7 @@ public class DTMTotalStats {
 
     public int getKills() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += stats.getKills();
 	}
 	return sum;
@@ -44,7 +43,7 @@ public class DTMTotalStats {
 
     public int getBiggestKillStreak() {
 	int biggest = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    biggest = Math.max(biggest, stats.getLongestKillStreak());
 	}
 	return biggest;
@@ -52,7 +51,7 @@ public class DTMTotalStats {
 
     public int getDeaths() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += stats.getDeaths();
 	}
 	return sum;
@@ -60,7 +59,7 @@ public class DTMTotalStats {
 
     public int getWins() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += stats.getWins();
 	}
 	return sum;
@@ -68,7 +67,7 @@ public class DTMTotalStats {
 
     public int getLosses() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += stats.getLosses();
 	}
 	return sum;
@@ -76,7 +75,7 @@ public class DTMTotalStats {
 
     public long getPlayTimeWon() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += stats.getPlayTimeWon();
 	}
 	return sum;
@@ -84,7 +83,7 @@ public class DTMTotalStats {
 
     public long getPlayTimeLost() {
 	int sum = 0;
-	for (DTMSeasonStats stats : allStats.values()) {
+	for (DTMSeasonStats stats : allStats) {
 	    sum += stats.getPlayTimeLost();
 	}
 	return sum;

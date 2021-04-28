@@ -2,7 +2,6 @@ package dtmproject.common.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -15,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -42,6 +42,7 @@ import lombok.Setter;
 public class DTMMap implements IDTMMap<DTMTeam> {
     public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
 
+    @Transient
     private final DTM pl;
 
     @Getter
@@ -63,11 +64,13 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Column(name = "Ticks", nullable = false)
     private int ticks;
 
+    @Getter
     @OneToMany(fetch = FetchType.EAGER)
     private final Set<DTMTeam> teams;
 
     @Getter
     @Setter
+    @Transient
     private long startTime;
 
     @Getter
@@ -77,11 +80,13 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Getter
     @Setter
+    @Transient
     private World world;
 
     /**
      * Stores the time each player spent in each team.
      */
+    // TODO
     private final HashMap<UUID, HashMap<DTMTeam, Integer>> contributionPoints;
 
     public DTMMap(DTM pl, @NonNull String id, @NonNull String displayName, WorldlessLocation lobby, int ticks,
@@ -291,10 +296,5 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Override
     public Optional<IWorldlessLocation> getLobby() {
 	return Optional.ofNullable(lobby);
-    }
-
-    @Override
-    public LinkedHashSet<? extends IDTMTeam<?>> getTeams() {
-	return new LinkedHashSet<DTMTeam> teams = new LinkedHashSet<>(this.teams) ;
     }
 }
