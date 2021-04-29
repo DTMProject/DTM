@@ -186,8 +186,15 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     }
 
     public void saveMap(DTMMap map) {
-	// TODO Auto-generated method stub
-	throw new NotImplementedException();
+	try (Connection conn = HDS.getConnection();
+		PreparedStatement stmt = conn.prepareStatement(SAVE_MAP_SQL)) {
+	    stmt.setInt(1, season);
+	    stmt.setInt(2, count);
+	  
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+
     }
 
     public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {

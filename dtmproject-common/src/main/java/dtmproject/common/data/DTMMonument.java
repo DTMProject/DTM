@@ -8,9 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class DTMMonument implements IDTMMonument {
-    @Getter
-    @Setter
-    private WorldlessBlockLocation block;
 
     @Getter
     @Setter
@@ -19,6 +16,10 @@ public class DTMMonument implements IDTMMonument {
     @Getter
     @Setter
     private String customName;
+
+    @Getter
+    @Setter
+    private WorldlessBlockLocation block;
 
     @Getter
     @Setter
