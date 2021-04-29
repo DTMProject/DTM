@@ -75,7 +75,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     /**
      * Maps season number to stats.
      */
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "playerUUID")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "playerData")
     private Set<DTMSeasonStats> seasonStats;
 
     @Getter

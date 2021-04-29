@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.io.FileUtils;
@@ -38,7 +39,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-@Entity(name = "Map")
+@Entity
+@Table(name = "Maps")
 public class DTMMap implements IDTMMap<DTMTeam> {
     public static final WorldlessLocation DEFAULT_LOBBY = new WorldlessLocation(0, 100, 0);
 
@@ -50,7 +52,6 @@ public class DTMMap implements IDTMMap<DTMTeam> {
     @Column(name = "MapID", nullable = false)
     private final String id;
 
-    @NonNull
     @Getter
     @Setter
     @Column(name = "DisplayName", nullable = false)

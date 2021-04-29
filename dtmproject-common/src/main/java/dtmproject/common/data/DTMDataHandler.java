@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.hibernate.SessionFactory;
@@ -18,10 +19,11 @@ import org.hibernate.cfg.Configuration;
 import com.google.common.base.Joiner;
 
 import dtmproject.common.DTM;
+import dtmproject.common.WorldlessLocation;
 
 public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
-    private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
-    private static final String GET_WIN_LOSS_DIST = "SELECT Wins, Losses FROM SeasonStats WHERE Season = ? AND Wins + Losses > 10 ORDER BY Wins / Losses DESC";
+//    private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
+//    private static final String GET_WIN_LOSS_DIST = "SELECT Wins, Losses FROM SeasonStats WHERE Season = ? AND Wins + Losses > 10 ORDER BY Wins / Losses DESC";
 
     private final DTM pl;
 
@@ -49,19 +51,17 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	String server = conf.getString("mysql.server");
 	String db = conf.getString("mysql.database");
 
-	System.out.println("Connecting to " + server + "/" + db + " as user " + user);
-
 	updateWinLossDistributionCache();
 
 	// Initialize Hibernate
 	Configuration hibernateConf = new Configuration();
 	Properties prop = new Properties();
-	prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+	prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
 	prop.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
 	prop.setProperty("hibernate.connection.url", "jdbc:mysql://" + server + "/" + db);
 	prop.setProperty("hibernate.connection.username", user);
 	prop.setProperty("hibernate.connection.password", pw);
-	prop.setProperty("hibernate.hbm2ddl.auto", "update");
+	prop.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 
 	hibernateConf.addProperties(prop);
 
@@ -70,9 +70,15 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	hibernateConf.addAnnotatedClass(DTMMap.class);
 	hibernateConf.addAnnotatedClass(DTMTeam.class);
 	hibernateConf.addAnnotatedClass(DTMMonument.class);
+	hibernateConf.addAnnotatedClass(WorldlessLocation.class);
 
-	SessionFactory sf = hibernateConf.buildSessionFactory();
-	this.em = sf.createEntityManager();
+	try {
+	    SessionFactory sf = hibernateConf.buildSessionFactory();
+	    this.em = sf.createEntityManager();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    Bukkit.shutdown();
+	}
 
     }
 
@@ -86,7 +92,6 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     }
 
     public void loadPlayerData(UUID uuid, String lastSeenName) {
-
     }
 
     public DTMPlayerData getPlayerData(Player p) {
@@ -165,6 +170,10 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	    }
 
 	this.cachedWinLossDistribution = levels;
+    }
+
+    public void close() {
+	this.em.close();
     }
 
 }

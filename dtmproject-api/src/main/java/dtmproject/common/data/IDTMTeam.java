@@ -1,6 +1,5 @@
 package dtmproject.common.data;
 
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.bukkit.Color;
@@ -24,9 +23,9 @@ public interface IDTMTeam<M extends IDTMMonument> {
 
     public void setSpawn(IWorldlessLocation spawn);
 
-    public LinkedList<M> getMonuments();
+    public Set<M> getMonuments();
 
-    public void setMonuments(LinkedList<M> monuments);
+    public void setMonuments(Set<M> monuments);
 
     public Set<Player> getPlayers();
 

@@ -4,7 +4,9 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -13,8 +15,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "SeasonStats")
 public class DTMSeasonStats implements IDTMSeasonStats {
+
     @Getter
-    @Column(name = "UUID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private final DTMPlayerData playerData;
 
     @Id
@@ -130,6 +133,21 @@ public class DTMSeasonStats implements IDTMSeasonStats {
     @Override
     public UUID getUUID() {
 	return this.playerData.getUUID();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (obj instanceof DTMSeasonStats)
+	    return false;
+
+	DTMSeasonStats that = (DTMSeasonStats) obj;
+	return this.playerData == that.playerData && this.season == that.season;
+    }
+
+    @Override
+    public int hashCode() {
+	// TODO Auto-generated method stub
+	return super.hashCode();
     }
 
 }

@@ -1,6 +1,6 @@
 package dtmproject.common.data;
 
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -20,14 +21,12 @@ import org.bukkit.entity.Player;
 import dtmproject.api.IWorldlessLocation;
 import dtmproject.common.DTM;
 import dtmproject.common.WorldlessLocation;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 
 @Entity
 @Table(name = "Teams")
-@AllArgsConstructor
 public class DTMTeam implements IDTMTeam<DTMMonument> {
     @Transient
     private final DTM pl;
@@ -35,7 +34,12 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
     @Getter
     @Id
     @Column(name = "MapID", nullable = false)
-    private final String Id;
+    private DTMMap map;
+
+    @Getter
+    @Id
+    @Column(name = "TeamID", nullable = false)
+    private final String id;
 
     @Getter
     @Setter
@@ -53,8 +57,18 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
     private WorldlessLocation spawn;
 
     @Getter
-    @Setter
-    private LinkedList<DTMMonument> monuments;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "team")
+    private LinkedHashSet<DTMMonument> monuments;
+
+    public DTMTeam(DTM pl, String id, String displayName, ChatColor teamColor, WorldlessLocation spawn,
+	    LinkedHashSet<DTMMonument> monuments) {
+	this.pl = pl;
+	this.id = id;
+	this.displayName = displayName;
+	this.teamColor = teamColor;
+	this.spawn = spawn;
+	this.monuments = monuments;
+    }
 
     public Set<Player> getPlayers() {
 	return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)
@@ -102,4 +116,12 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
 	this.spawn = (WorldlessLocation) spawn;
     }
 
+    @Override
+    public void setMonuments(Set<DTMMonument> monuments) {
+	this.monuments = (LinkedHashSet<DTMMonument>) monuments;
+    }
+
+    public void setMap(DTMMap map) {
+	this.map = map;
+    }
 }

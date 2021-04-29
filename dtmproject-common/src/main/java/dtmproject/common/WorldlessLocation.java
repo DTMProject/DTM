@@ -1,9 +1,6 @@
 package dtmproject.common;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,6 +13,7 @@ import lombok.Setter;
  * A class to replace org.bukkit.Location in some cases, where a reference to a
  * World is not necessary.
  */
+@Entity(name = "Location")
 public class WorldlessLocation implements IWorldlessLocation {
     private static final long serialVersionUID = 6025759660753086901L;
 

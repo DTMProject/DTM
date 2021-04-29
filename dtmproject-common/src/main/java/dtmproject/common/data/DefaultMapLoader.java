@@ -44,6 +44,15 @@ public class DefaultMapLoader {
 		DEFAULT_KIT, getTeams(DefaultMapID.HK4)));
 
 	alreadyOnceLoaded = true;
+
+	// Update references
+	maps.forEach(map -> map.getTeams().forEach(team -> {
+	    team.setMap(map);
+	    team.getMonuments().forEach(mon -> {
+		mon.setMap(map);
+		mon.setTeam(team);
+	    });
+	}));
 	return maps;
     }
 
@@ -76,6 +85,7 @@ public class DefaultMapLoader {
 		    new WorldlessLocation(0.5, 101.0, 65, 180, 0), getMonuments(id, DefaultTeamID.MUSTIKKA)));
 	    break;
 	}
+
 	return teams;
     }
 
