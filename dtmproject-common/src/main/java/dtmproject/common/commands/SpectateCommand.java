@@ -30,6 +30,11 @@ public class SpectateCommand implements CommandExecutor {
 	    return true;
 	}
 
+	if (!sender.isOp()) {
+	    sender.sendMessage("§cSinulla ei ole oopee-permejä.");
+	    return true;
+	}
+
 	Player target = Bukkit.getPlayer(args[0]);
 	if (target == null) {
 	    sender.sendMessage("§3>§b> §8+ §7Pelaajaa ei löytynyt.");
