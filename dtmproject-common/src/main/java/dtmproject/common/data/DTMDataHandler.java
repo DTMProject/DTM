@@ -2,6 +2,7 @@ package dtmproject.common.data;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,12 +29,15 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 
+import dtmproject.api.WorldlessBlockLocation;
+import dtmproject.api.WorldlessLocation;
 import dtmproject.common.DTM;
 import lombok.Getter;
 
 public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
+
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
     private static final String GET_WIN_LOSS_DIST = "SELECT Wins, Losses FROM SeasonStats WHERE Season = ? AND Wins + Losses > 10 ORDER BY Wins / Losses DESC";
 
@@ -205,9 +209,82 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	return Objects.requireNonNull(loadedMaps.get(mapID));
     }
 
+    private static final String SAVE_MAP_SQL = "INSERT INTO Maps (MapID, DisplayName, LobbyX, LobbyY, LobbyZ, LobbyYaw, LobbyPitch, Ticks, KitContents), VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE SET DisplayName = VALUES(DisplayName), LobbyX = VALUES(LobbyX), LobbyY = VALUES(LobbyY), LobbyZ = VALUES(LobbyZ), LobbyYaw = VALUES(LobbyYaw), LobbyPitch = VALUES(LobbyPitch), Ticks = VALUES(Ticks), KitContents = VALUES(KitContents)";
+    private static final String SAVE_TEAMS_SQL = "INSERT INTO Teams (MapID, TeamID, DisplayName, TeamColor, SpawnX, SpawnY, SpawnZ, SpawnYaw, SpawnPitch), VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE SET DisplayName = VALUES(DisplayName), TeamColor = VALUES(TeamColor), SpawnX = VALUES(SpawnX), SpawnY = VALUES(SpawnY), SpawnZ = VALUES(SpawnZ), SpawnYaw = VALUES(SpawnYaw), SpawnPitch = VALUES(SpawnPitch)";
+    private static final String SAVE_MONUMENTS_SQL = "INSERT INTO Monuments (MapID, TeamID, Position, CustomName, LocationX, LocationY, LocationZ, LocationYaw, LocationPitch), VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE SET Position = VALUES(Position), CustomName = VALUES(CustomName), LocationX = VALUES(LocationX), LocationY = VALUES(LocationY), LocationZ = VALUES(LocationZ), LocationYaw = VALUES(LocationYaw), LocationPitch = VALUES(LocationPitch)";
+
     public void saveMap(DTMMap map) {
-	// TODO Auto-generated method stub
-	throw new NotImplementedException();
+	try (Connection conn = HDS.getConnection()) {
+	    conn.setAutoCommit(false);
+
+	    // Maps
+	    try (PreparedStatement stmt = conn.prepareStatement(SAVE_MAP_SQL)) {
+		stmt.setString(1, map.getId());
+		stmt.setString(2, map.getDisplayName());
+		stmt.setDouble(3, map.getLobby().get().getX());
+		stmt.setDouble(4, map.getLobby().get().getY());
+		stmt.setDouble(5, map.getLobby().get().getZ());
+		stmt.setDouble(6, map.getLobby().get().getYaw());
+		stmt.setDouble(7, map.getLobby().get().getPitch());
+		stmt.setInt(8, map.getTicks());
+		// TODO Also save the kit -- if exists
+		stmt.setBlob(9, (Blob) null);
+		stmt.execute();
+	    } catch (Exception e) {
+		e.printStackTrace();
+		conn.rollback();
+		return;
+	    }
+
+	    // Teams
+	    try (PreparedStatement stmt = conn.prepareStatement(SAVE_TEAMS_SQL)) {
+		for (DTMTeam team : map.getTeams()) {
+		    stmt.setString(1, map.getId());
+		    stmt.setString(2, team.getId());
+		    stmt.setString(3, team.getDisplayName());
+		    stmt.setString(4, team.getTeamColor().name());
+
+		    WorldlessLocation spawn = team.getSpawn();
+		    stmt.setDouble(5, spawn.getX());
+		    stmt.setDouble(6, spawn.getY());
+		    stmt.setDouble(7, spawn.getZ());
+		    stmt.setDouble(8, spawn.getYaw());
+		    stmt.setDouble(9, spawn.getPitch());
+
+		    stmt.addBatch();
+		}
+		stmt.executeBatch();
+	    } catch (Exception e) {
+		e.printStackTrace();
+		conn.rollback();
+		return;
+	    }
+
+	    // Monuments
+	    try (PreparedStatement stmt = conn.prepareStatement(SAVE_MONUMENTS_SQL)) {
+		for (DTMTeam team : map.getTeams()) {
+		    for (DTMMonument mon : team.getMonuments()) {
+			stmt.setString(1, map.getId());
+			stmt.setString(2, team.getId());
+			stmt.setString(3, mon.getPosition());
+
+			WorldlessBlockLocation loc = mon.getBlock();
+			stmt.setDouble(4, loc.getX());
+			stmt.setDouble(5, loc.getY());
+			stmt.setDouble(6, loc.getZ());
+			stmt.addBatch();
+		    }
+		}
+		stmt.executeBatch();
+	    } catch (Exception e) {
+		e.printStackTrace();
+		conn.rollback();
+		return;
+	    }
+	    conn.commit();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
     }
 
     public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {

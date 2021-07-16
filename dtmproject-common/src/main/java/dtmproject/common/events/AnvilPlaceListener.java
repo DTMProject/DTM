@@ -10,7 +10,7 @@ public class AnvilPlaceListener implements Listener {
     public void onAnvilPlace(BlockPlaceEvent e) {
 	if (e.getBlock().getType() == Material.ANVIL) {
 	    e.setCancelled(true);
-	    e.getPlayer().sendMessage("4>§c> §8- §7Alasimet on estetty DTM:ssä spawnin tukkimisen vuoksi.");
+	    e.getPlayer().sendMessage("§4>§c> §8- §7Alasimet on estetty DTM:ssä spawnin tukkimisen vuoksi.");
 	}
     }
 }
