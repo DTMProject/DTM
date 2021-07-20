@@ -140,13 +140,32 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
     @Override
     public void end(DTMTeam winner) {
+	DTMTeam loser = pl.getLogicHandler().getCurrentMap().getTeams().stream().filter(t -> t != winner).findFirst()
+		.get();
 	String winnerList = Joiner.on(", ").join(winner.getPlayers().stream().map(p -> p.getDisplayName()).iterator());
 	Bukkit.broadcastMessage("§ePelin voittajat: " + winnerList);
 	Bukkit.broadcastMessage(winner.getTeamColor() + "§l" + winner.getDisplayName() + " §e§lvoitti pelin!");
 	Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
-	// 50 points to the winner team, 15 to losers -- weighted by played time in winnerteam
-	pl.getLogicHandler().getCurrentMap().getTeams().forEach(team -> {
+	// 50 points to the winner team, 15 to losers -- weighted by played time in
+	// winnerteam
+
+	System.out.println(winner == loser);
+
+	double winnerRating = winner.getAvgEloRating();
+	double loserRating = loser.getAvgEloRating();
+	double diffEloForWinner = winnerRating - loserRating;
+
+	// Recalculate elo rating
+	double probWinner = (1.0 / (1.0 + Math.pow(10, (diffEloForWinner / 400))));
+	double probLoser = (1.0 / (1.0 + Math.pow(10, (-diffEloForWinner / 400))));
+
+	System.out.println("Elo diff for winner " + diffEloForWinner);
+
+	System.out.println("Winner chance of victory " + (int) (probWinner * 100));
+
+	for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
+
 	    team.getPlayers().forEach(p -> {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
 
@@ -160,15 +179,16 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 		long timeForTeam = Math.min(MAX_PLAY_TIME,
 			pl.getContributionCounter().getTimePlayedForTeam(p.getUniqueId(), team));
 
-		double factor = (double) timeForTeam / (double) matchTime;
+		double timeForTeamFactor = (double) timeForTeam / (double) matchTime;
 
-		int winnerPoints = (int) (factor * minutesPlayed * 25);
-		int loserPoints = (int) ((1 - factor) * minutesPlayed * 5);
+		int winnerPoints = (int) (timeForTeamFactor * minutesPlayed * 25);
+		int loserPoints = (int) ((1 - timeForTeamFactor) * minutesPlayed * 5);
 
 		int totalPoints = winnerPoints + loserPoints;
 
-		System.out.println(p.getName() + "'s time for team: " + timeForTeam);
+		// System.out.println(p.getName() + "'s time for team: " + timeForTeam);
 		if (pd.getTeam() == winner) {
+
 		    p.sendTitle("§a§lVoitto", "§aSait " + totalPoints + " pistettä!");
 
 		    stats.increaseWins();
@@ -176,6 +196,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 		    stats.increasePlayTimeWon(timeForTeam);
 		    stats.increasePlayTimeLost(matchTime - timeForTeam);
 		} else {
+
 		    p.sendTitle("§c§lHäviö", "§aSait " + totalPoints + " pistettä!");
 
 		    stats.increaseLosses();
@@ -185,8 +206,39 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 		}
 
 		pd.setLastGamePlayed(System.currentTimeMillis());
+
+		// Update elo rating individually
+		if (loser.getPlayers().size() > 0 && winner.getPlayers().size() > 0) {
+		    double eloAdjustmentForPlayer = adjustEloForPlayer(pd.getEloRating(), winner == pd.getTeam());
+		    pd.adjustEloRating(eloAdjustmentForPlayer);
+
+		}
 	    });
-	});
+	}
+    }
+
+    private double adjustEloForPlayer(double eloRating, boolean winner) {
+	double distanceFromMiddle = Math.abs(eloRating - 1000);
+
+	if (distanceFromMiddle > 1000)
+	    throw new IllegalArgumentException();
+
+	// Elo ratings capped to 0 -- 2000
+	double distanceMultiplier = Math.pow(-1 / 1000 * distanceFromMiddle + 1, 2);
+
+	if (winner && eloRating > 1000)
+	    return winnerAdjustment / distanceMultiplier;
+
+	if (winner && eloRating < 1000)
+	    return winnerAdjustment * distanceMultiplier;
+
+	if (!winner && eloRating < 1000)
+	    return winnerAdjustment / distanceMultiplier;
+
+	if (!winner && eloRating > 1000)
+	    return winnerAdjustment * distanceMultiplier;
+
+	return winnerAdjustment;
     }
 
     @Override

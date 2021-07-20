@@ -55,8 +55,8 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Setter
     private long lastRespawn;
 
-    public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
-	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000d, new HashMap<>());
+    public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, double eloRating) {
+	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, eloRating, new HashMap<>());
     }
 
     // TODO: injektaa plugin instanssi
@@ -107,8 +107,11 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	this.emeralds -= amount;
     }
 
-    public void adjustEloRating(int amount) {
-	this.eloRating += amount;
+    /**
+     * Adds the argument to the elo rating.
+     */
+    public void adjustEloRating(double loserAdjusted) {
+	this.eloRating += loserAdjusted;
     }
 
     public void increaseKillStreak() {

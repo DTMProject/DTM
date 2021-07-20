@@ -206,17 +206,18 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
     public DTMTeam getWorstTeam() {
 	Iterator<DTMTeam> teams = this.currentMap.getTeams().iterator();
 	DTMTeam worst = teams.next();
-	double avgWorstElo = getTeamEloRating(worst);
+	double worstElo = getTeamEloRating(worst);
 	while (teams.hasNext()) {
 	    DTMTeam anotherTeam = teams.next();
 
-	    double anotherAvgRating = getTeamEloRating(anotherTeam);
+	    double anotherRating = getTeamEloRating(anotherTeam);
 
-	    if (avgWorstElo > anotherAvgRating) {
+	    if (worstElo > anotherRating) {
 		worst = anotherTeam;
-		avgWorstElo = anotherAvgRating;
+		worstElo = anotherRating;
 	    }
 	}
+	System.out.println("Worst team rating: " + worstElo);
 	return worst;
     }
 
@@ -230,10 +231,10 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	for (Player p : players) {
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
-	    int rating = pd.getRatingLevel();
+	    double rating = pd.getEloRating();
 	    total += rating;
 	}
-	return total / players.size();
+	return total;
     }
 
     @Deprecated

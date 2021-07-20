@@ -78,4 +78,32 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
 	}
 	return null;
     }
+
+    /**
+     * Sum all the eloratings of the players in the team.
+     */
+    public double getTeamEloRating() {
+	double val = 0;
+	Set<Player> players = getPlayers();
+	for (Player p : players) {
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	    val += pd.getEloRating();
+	}
+	return val;
+    }
+
+    public double getAvgEloRating() {
+	double val = 0;
+	Set<Player> players = getPlayers();
+
+	if (players.size() == 0)
+	    return 1000;
+
+	for (Player p : players) {
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	    val += pd.getEloRating();
+	}
+
+	return val / getPlayers().size();
+    }
 }
