@@ -160,9 +160,19 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	double probWinner = (1.0 / (1.0 + Math.pow(10, (diffEloForWinner / 400))));
 	double probLoser = (1.0 / (1.0 + Math.pow(10, (-diffEloForWinner / 400))));
 
-	System.out.println("Elo diff for winner " + diffEloForWinner);
+	double eloMultiplier = 1;
 
-	System.out.println("Winner chance of victory " + (int) (probWinner * 100));
+	if (winnerRating > loserRating)
+	    eloMultiplier = 1 / (diffEloForWinner - 400);
+
+	if (winnerRating <= loserRating)
+	    eloMultiplier = diffEloForWinner / 400;
+
+	System.out.println("Winner rating multiplier: " + eloMultiplier * 100 + "%");
+
+	System.out.println("Elo difference: " + diffEloForWinner);
+
+	System.out.println("Winner chance of victory: " + (int) (probWinner * 100) + "%");
 
 	for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
 
@@ -209,36 +219,11 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 		// Update elo rating individually
 		if (loser.getPlayers().size() > 0 && winner.getPlayers().size() > 0) {
-		    double eloAdjustmentForPlayer = adjustEloForPlayer(pd.getEloRating(), winner == pd.getTeam());
-		    pd.adjustEloRating(eloAdjustmentForPlayer);
+		    pd.adjustEloRating(eloRating);
 
 		}
 	    });
 	}
-    }
-
-    private double adjustEloForPlayer(double eloRating, boolean winner) {
-	double distanceFromMiddle = Math.abs(eloRating - 1000);
-
-	if (distanceFromMiddle > 1000)
-	    throw new IllegalArgumentException();
-
-	// Elo ratings capped to 0 -- 2000
-	double distanceMultiplier = Math.pow(-1 / 1000 * distanceFromMiddle + 1, 2);
-
-	if (winner && eloRating > 1000)
-	    return winnerAdjustment / distanceMultiplier;
-
-	if (winner && eloRating < 1000)
-	    return winnerAdjustment * distanceMultiplier;
-
-	if (!winner && eloRating < 1000)
-	    return winnerAdjustment / distanceMultiplier;
-
-	if (!winner && eloRating > 1000)
-	    return winnerAdjustment * distanceMultiplier;
-
-	return winnerAdjustment;
     }
 
     @Override
