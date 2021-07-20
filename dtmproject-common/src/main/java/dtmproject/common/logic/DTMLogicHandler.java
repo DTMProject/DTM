@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -200,23 +201,42 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
     }
 
     /**
-     * Rates the teams by the levels of the players in them.
+     * Rates the teams by the elo points of the players in them.
      */
     public DTMTeam getWorstTeam() {
 	Iterator<DTMTeam> teams = this.currentMap.getTeams().iterator();
 	DTMTeam worst = teams.next();
+	double avgWorstElo = getTeamEloRating(worst);
 	while (teams.hasNext()) {
 	    DTMTeam anotherTeam = teams.next();
 
-	    double worstCumulative = getCumulativeRating(worst);
-	    double anotherCumulative = getCumulativeRating(anotherTeam);
+	    double anotherAvgRating = getTeamEloRating(anotherTeam);
 
-	    if (worstCumulative > anotherCumulative)
+	    if (avgWorstElo > anotherAvgRating) {
 		worst = anotherTeam;
+		avgWorstElo = anotherAvgRating;
+	    }
 	}
 	return worst;
     }
 
+    /**
+     * Returns the average Elo count for the team.
+     */
+    public double getTeamEloRating(DTMTeam team) {
+	double total = 0;
+
+	Set<Player> players = team.getPlayers();
+	for (Player p : players) {
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
+
+	    int rating = pd.getRatingLevel();
+	    total += rating;
+	}
+	return total / players.size();
+    }
+
+    @Deprecated
     public double getCumulativeRating(DTMTeam team) {
 	double total = 0;
 
