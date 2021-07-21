@@ -33,8 +33,13 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
 
-    private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
-    private static final String GET_WIN_LOSS_DIST = "SELECT Wins, Losses FROM SeasonStats WHERE Season = ? AND Wins + Losses > 10 ORDER BY Wins / Losses DESC";
+    // private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID,
+    // LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon,
+    // PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON
+    // PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY EloRating DESC
+    // LIMIT ?";
+    private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, PlayerData.EloRating, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
+    private static final String GET_WIN_LOSS_DIST = "SELECT EloRating FROM PlayerData WHERE EloRating != -1 ORDER BY EloRating DESC";
 
     private final DTM pl;
 
@@ -150,7 +155,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 		    loadedPlayerdata.put(uuid,
 			    new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, stats));
 		} else {
-		    loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName));
+		    loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, 1000));
 		}
 
 	    }
@@ -277,6 +282,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	    try (ResultSet rs = stmt.executeQuery()) {
 		while (rs.next()) {
 		    UUID uuid = UUID.fromString(rs.getString("UUID"));
+		    double eloRating = rs.getDouble("EloRating");
 		    int kills = rs.getInt("Kills");
 		    int deaths = rs.getInt("Deaths");
 		    int monuments = rs.getInt("MonumentsDestroyed");
@@ -285,13 +291,13 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 		    long playTimeWon = rs.getLong("PlayTimeWon");
 		    long playTimeLost = rs.getLong("PlayTimeLost");
 		    int longestKillStreak = rs.getInt("LongestKillStreak");
-
 		    String lastSeenName = rs.getString("LastSeenName");
+
 		    DTMSeasonStats stats = new DTMSeasonStats(uuid, season, kills, deaths, wins, losses,
 			    longestKillStreak, playTimeWon, playTimeLost, monuments);
 
 		    // Emeralds and such isn't even loaded. We don't need that.
-		    DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName);
+		    DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName, eloRating);
 		    data.seasonStats.put(stats.getSeason(), stats);
 
 		    allStats.add(data);
@@ -318,13 +324,11 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     public void updateWinLossDistributionCache() {
 	LinkedList<Double> allScores = new LinkedList<>();
 	try (Connection conn = HDS.getConnection(); PreparedStatement stmt = conn.prepareStatement(GET_WIN_LOSS_DIST)) {
-	    stmt.setInt(1, pl.getSeason());
 	    try (ResultSet rs = stmt.executeQuery()) {
 		while (rs.next()) {
-		    int wins = rs.getInt("Wins");
-		    int losses = rs.getInt("Losses");
+		    double rating = rs.getDouble("EloRating");
 
-		    allScores.add((double) wins / (double) losses);
+		    allScores.add(rating);
 		}
 	    }
 	} catch (SQLException e) {

@@ -1,6 +1,5 @@
 package dtmproject.common.data;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -29,7 +28,6 @@ public class ContributionCounter {
 	    return 0;
 
 	LinkedList<Long> timestamps = map.get(team);
-	System.out.println(Arrays.toString(timestamps.toArray()));
 
 	if (timestamps == null || timestamps.size() == 0)
 	    return 0;
