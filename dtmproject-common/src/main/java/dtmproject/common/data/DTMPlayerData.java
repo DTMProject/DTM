@@ -39,8 +39,12 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Setter
     private boolean autoJoin;
 
+    /**
+     * Elo rating of -1 means unranked. This is a temporary measure for the
+     * prevention of a playerdata reset.
+     */
     @Getter
-    private int eloRating;
+    private double eloRating;
 
     @Setter
     @Getter
@@ -55,13 +59,13 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Setter
     private long lastRespawn;
 
-    public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName) {
-	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, 1000, new HashMap<>());
+    public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, double eloRating) {
+	this(dtm, uuid, lastSeenName, 0, DTM.DEFAULT_PREFIX, 0, eloRating, new HashMap<>());
     }
 
     // TODO: injektaa plugin instanssi
     public DTMPlayerData(DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
-	    int eloRating, HashMap<Integer, DTMSeasonStats> seasonStats) {
+	    double eloRating, HashMap<Integer, DTMSeasonStats> seasonStats) {
 	this.pl = dtm;
 	this.UUID = uuid;
 	this.lastSeenName = lastSeenName;
@@ -107,8 +111,14 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	this.emeralds -= amount;
     }
 
-    public void adjustEloRating(int amount) {
-	this.eloRating += amount;
+    /**
+     * Adds the argument to the elo rating.
+     */
+    public void adjustEloRating(double loserAdjusted) {
+	if (this.eloRating == -1)
+	    this.eloRating = 1000;
+
+	this.eloRating += loserAdjusted;
     }
 
     public void increaseKillStreak() {
@@ -156,17 +166,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
      * Returns 0 if player has played less than 10 games
      */
     public double getRatingScore() {
-	DTMSeasonStats stats = getSeasonStats();
-
-	// Don't get anything if less than 10 games
-	if (stats.getWins() + stats.getLosses() < 10)
-	    return 0;
-
-	// Some nerd wins 10 games in a row so let's have them be level 10
-	if (stats.getLosses() == 0)
-	    return 1E6;
-
-	return (double) stats.getPlayTimeWon() / (double) stats.getPlayTimeLost();
+	return this.getEloRating();
     }
 
     /**

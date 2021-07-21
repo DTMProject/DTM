@@ -16,8 +16,8 @@ public class QueueDataSaver {
     private final DTM dtm;
     private Runnable saveTask;
 
-    public static final String SAVE_STATS_SQL = "INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed= VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)";
-    public static final String SAVE_PLAYERDATA_SQL = "INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak)";
+    public static final String SAVE_STATS_SQL = "INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed = VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)";
+    public static final String SAVE_PLAYERDATA_SQL = "INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak, EloRating) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak), EloRating = VALUES(EloRating)";
 
     public QueueDataSaver(DTM dtm) {
 	this.dtm = dtm;
@@ -38,6 +38,7 @@ public class QueueDataSaver {
 			stmt1.setString(3, data.getPrefix().orElse(null));
 			stmt1.setInt(4, data.getEmeralds());
 			stmt1.setInt(5, data.getKillStreak());
+			stmt1.setDouble(6, data.getEloRating());
 			stmt1.addBatch();
 
 			// TODO: Only saves current season
