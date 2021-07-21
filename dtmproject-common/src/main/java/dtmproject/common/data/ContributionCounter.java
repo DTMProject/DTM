@@ -29,7 +29,6 @@ public class ContributionCounter {
 	    return 0;
 
 	LinkedList<Long> timestamps = map.get(team);
-	System.out.println(Arrays.toString(timestamps.toArray()));
 
 	if (timestamps == null || timestamps.size() == 0)
 	    return 0;

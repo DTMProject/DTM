@@ -28,7 +28,7 @@ public class StatsCommand implements CommandExecutor {
 	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    sender.sendMessage("§3>§b> §8+ §7§l    Kausi");
 	    sender.sendMessage(pd.getSeasonStats().toString());
-
+	    sender.sendMessage("§eElo-arviointi: " + (int) pd.getEloRating());
 	    // TODO: all stats have to be loaded from db if they want to be shown
 //			sender.sendMessage("§e§l Yhteensä");
 //			sender.sendMessage(pd.getTotalStats().toString());

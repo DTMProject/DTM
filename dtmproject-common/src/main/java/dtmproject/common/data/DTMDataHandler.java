@@ -31,7 +31,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
 //    private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY EloRating DESC LIMIT ?";
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, PlayerData.EloRating, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
-    private static final String GET_WIN_LOSS_DIST = "SELECT EloRating FROM PlayerData WHERE EloRating != 1000 ORDER BY EloRating DESC";
+    private static final String GET_WIN_LOSS_DIST = "SELECT EloRating FROM PlayerData WHERE EloRating != -1 ORDER BY EloRating DESC";
 
     private final DTM pl;
 
@@ -266,23 +266,4 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
     }
 
-    // Tässä pitää käyttää exponentiaalista funktiota jossai kohtaa
-    public double eloTowardsMiddle(double eloRating, double eloChange, boolean winner) {
-	double distanceToMiddle = Math.abs(1000 - eloRating);
-	double exponentialDistance = Math.pow(distanceToMiddle, 1.2);
-
-	if (eloRating < 800 && winner)
-	    return eloChange * 2;
-
-	if (eloRating > 1200 && winner)
-	    return eloChange / 2;
-
-	if (eloRating < 800 && !winner)
-	    return eloChange / 2;
-
-	if (eloRating > 1200 && !winner)
-	    return eloChange * 2;
-
-	return eloChange;
-    }
 }

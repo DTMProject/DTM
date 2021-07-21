@@ -150,29 +150,18 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	// 50 points to the winner team, 15 to losers -- weighted by played time in
 	// winnerteam
 
-	System.out.println(winner == loser);
-
 	double winnerRating = winner.getAvgEloRating();
 	double loserRating = loser.getAvgEloRating();
-	double diffEloForWinner = winnerRating - loserRating;
+	double eloDiff = winnerRating - loserRating;
 
 	// Recalculate elo rating
-	double probWinner = (1.0 / (1.0 + Math.pow(10, (diffEloForWinner / 400))));
-	double probLoser = (1.0 / (1.0 + Math.pow(10, (-diffEloForWinner / 400))));
+	double probWinner = (1.0 / (1.0 + Math.pow(10, (-eloDiff / 400))));
 
-	double eloMultiplier = 1;
+	double eloAdjustment = 30 * (1 - probWinner);
 
-	if (winnerRating > loserRating)
-	    eloMultiplier = 1 / (diffEloForWinner - 400);
-
-	if (winnerRating <= loserRating)
-	    eloMultiplier = diffEloForWinner / 400;
-
-	System.out.println("Winner rating multiplier: " + eloMultiplier * 100 + "%");
-
-	System.out.println("Elo difference: " + diffEloForWinner);
-
+	System.out.println("Elo difference: " + eloDiff);
 	System.out.println("Winner chance of victory: " + (int) (probWinner * 100) + "%");
+	System.out.println("Elo adjustment for everyone: " + eloAdjustment);
 
 	for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
 
@@ -219,8 +208,10 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 
 		// Update elo rating individually
 		if (loser.getPlayers().size() > 0 && winner.getPlayers().size() > 0) {
-		    pd.adjustEloRating(eloRating);
-
+		    if (pd.getTeam() == winner)
+			pd.adjustEloRating(timeForTeamFactor * eloAdjustment);
+		    else
+			pd.adjustEloRating(timeForTeamFactor * -eloAdjustment);
 		}
 	    });
 	}

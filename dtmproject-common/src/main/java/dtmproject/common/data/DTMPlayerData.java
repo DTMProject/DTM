@@ -39,6 +39,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     @Setter
     private boolean autoJoin;
 
+    /**
+     * Elo rating of -1 means unranked. This is a temporary measure for the
+     * prevention of a playerdata reset.
+     */
     @Getter
     private double eloRating;
 
@@ -111,6 +115,9 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
      * Adds the argument to the elo rating.
      */
     public void adjustEloRating(double loserAdjusted) {
+	if (this.eloRating == -1)
+	    this.eloRating = 1000;
+
 	this.eloRating += loserAdjusted;
     }
 

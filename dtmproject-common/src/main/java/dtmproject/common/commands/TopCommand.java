@@ -65,10 +65,10 @@ public class TopCommand implements CommandExecutor {
 		    sender.sendMessage("§e" + i + ". " + entry.getLastSeenName() + ": §a" + stats.getSum() + " §c"
 			    + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
 		else {
+		    String rating = "/";
+		    if (entry.getEloRating() != -1)
+			rating = "" + entry.getRatingLevel();
 
-		    String rating = "" + entry.getRatingLevel();
-		    if (rating.equals("0"))
-			rating = "/";
 		    sender.sendMessage("§4[" + rating + "]§e " + entry.getLastSeenName() + ": §a" + stats.getSum()
 			    + " §c" + stats.getKills() + " §4" + stats.getDeaths() + " §7" + stats.getKDRatio());
 		}
