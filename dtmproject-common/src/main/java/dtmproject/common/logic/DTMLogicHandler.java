@@ -207,10 +207,16 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	Iterator<DTMTeam> teams = this.currentMap.getTeams().iterator();
 	DTMTeam worst = teams.next();
 	double worstElo = getTeamEloRating(worst);
+
+	if (worstElo == -1)
+		worstElo = 1000;
+
 	while (teams.hasNext()) {
 	    DTMTeam anotherTeam = teams.next();
 
 	    double anotherRating = getTeamEloRating(anotherTeam);
+		if (anotherRating == -1)
+			anotherRating = 1000;
 
 	    if (worstElo > anotherRating) {
 		worst = anotherTeam;
