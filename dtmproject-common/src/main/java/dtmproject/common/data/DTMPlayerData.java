@@ -114,11 +114,11 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     /**
      * Adds the argument to the elo rating.
      */
-    public void adjustEloRating(double loserAdjusted) {
+    public void adjustEloRating(double adjust) {
 	if (this.eloRating == -1)
 	    this.eloRating = 1000;
 
-	this.eloRating += loserAdjusted;
+	this.eloRating += adjust;
     }
 
     public void increaseKillStreak() {
