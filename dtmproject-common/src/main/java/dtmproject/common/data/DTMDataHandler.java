@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
@@ -31,7 +32,10 @@ import lombok.Getter;
 
 public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
+    private static final String LOAD_PLAYERDATA_WITH_NAME_QUERY = "SELECT * FROM PlayerData WHERE LastSeenName = ?";
+
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
+    private static final String LOAD_PLAYERDATA_STATS_WITH_NAME_QUERY = "SELECT PD.UUID, SS.* FROM SeasonStats AS SS JOIN PlayerData AS PD ON SS.UUID = PD.UUID WHERE PD.LastSeenName = ?";
 
     private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, PlayerData.EloRating, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY (Kills *  3 + Deaths + MonumentsDestroyed * 10 + PlayTimeWon/1000/60*5 + PlayTimeLost/1000/60) DESC LIMIT ?";
     private static final String GET_WIN_LOSS_DIST = "SELECT EloRating FROM PlayerData WHERE EloRating != -1 ORDER BY EloRating DESC";
@@ -119,6 +123,12 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     }
 
     public void loadPlayerData(UUID uuid, String lastSeenName) {
+	if (loadedPlayerdata.contains(uuid)) {
+	    pl.getLogger()
+		    .info("Playerdata for player " + lastSeenName + " was already loaded! Possible bug incoming.");
+	    return;
+	}
+
 	try (Connection conn = HDS.getConnection()) {
 	    // Load stats
 	    HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
@@ -160,6 +170,104 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+    }
+
+    /**
+     * A bit unsafe method for loading data for a player with their name. Use
+     * {@link #loadPlayerData(UUID, String)}, if possible. <br>
+     * 
+     * @return null if playerdata doesn't exist with the name.
+     */
+    public UUID loadPlayerData(String lastSeenName) {
+	synchronized (loadedPlayerdata) {
+	    for (DTMPlayerData pd : loadedPlayerdata.values()) {
+		if (pd.getLastSeenName().equals(lastSeenName)) {
+		    pl.getLogger().info(
+			    "Playerdata for player " + lastSeenName + " was already loaded! Possible bug incoming.");
+		    return pd.getUUID();
+		}
+	    }
+	}
+
+	UUID firstUUIDFound = null;
+	try (Connection conn = HDS.getConnection()) {
+	    // Load stats
+	    HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
+
+	    try (PreparedStatement stmt = conn.prepareStatement(LOAD_PLAYERDATA_STATS_WITH_NAME_QUERY)) {
+		stmt.setString(1, lastSeenName);
+		try (ResultSet rs = stmt.executeQuery()) {
+		    while (rs.next()) {
+			UUID uuid = UUID.fromString(rs.getString("UUID"));
+			if (uuid != firstUUIDFound)// && firstUUIDFound != null)
+			    throw new SQLException("Many stats were found with the same name. Possibly a name change?");
+
+			int season = rs.getInt("Season");
+			int kills = rs.getInt("Kills");
+			int deaths = rs.getInt("Deaths");
+			int monuments = rs.getInt("MonumentsDestroyed");
+			int wins = rs.getInt("Wins");
+			int losses = rs.getInt("Losses");
+			long playTimeWon = rs.getLong("PlayTimeWon");
+			long playTimeLost = rs.getLong("PlayTimeLost");
+			int longestKillStreak = rs.getInt("LongestKillStreak");
+
+			stats.put(season, new DTMSeasonStats(firstUUIDFound, season, kills, deaths, wins, losses,
+				longestKillStreak, playTimeWon, playTimeLost, monuments));
+		    }
+
+		    if (stats.size() == 0)
+			return null;
+		}
+	    }
+
+	    try (PreparedStatement stmt = conn.prepareStatement(LOAD_PLAYERDATA_WITH_NAME_QUERY)) {
+		stmt.setString(1, lastSeenName);
+		ResultSet rs = stmt.executeQuery();
+		if (rs.next()) {
+		    if (firstUUIDFound == UUID.fromString(rs.getString("UUID")))
+			throw new SQLException(
+				"Many playerdata entries were found with the same name. Possibly a name change?");
+
+		    String prefix = rs.getString("Prefix");
+		    int emeralds = rs.getInt("Emeralds");
+		    int killStreak = rs.getInt("KillStreak");
+		    int eloRating = rs.getInt("EloRating");
+
+		    loadedPlayerdata.put(firstUUIDFound, new DTMPlayerData(pl, firstUUIDFound, lastSeenName, emeralds,
+			    prefix, killStreak, eloRating, stats));
+		} else {
+		    return null;
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return firstUUIDFound;
+    }
+
+    /**
+     * Gets the offline player's stats with the last seen name.
+     */
+    public CompletableFuture<DTMPlayerData> getOfflineData(String lastSeenName) {
+	CompletableFuture<DTMPlayerData> future = new CompletableFuture<>();
+
+	// First search already cached data
+	synchronized (loadedPlayerdata) {
+	    for (DTMPlayerData data : loadedPlayerdata.values()) {
+		if (data.getLastSeenName() == lastSeenName) {
+		    return CompletableFuture.completedFuture(data);
+		}
+	    }
+	}
+
+	// Load data
+	Bukkit.getScheduler().runTaskAsynchronously(pl, () -> {
+	    UUID uuid = loadPlayerData(lastSeenName);
+	    future.complete(getPlayerData(uuid));
+	});
+
+	return future;
     }
 
     public DTMPlayerData getPlayerData(Player p) {
@@ -345,81 +453,12 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
     }
 
-    /**
-	 * Gets the offline player's stats with the last seen name.
-	 * 
-	 */
-	public DTMPlayerData getOfflineData(String lastSeenName) {
-//		try (Connection conn = HDS.getConnection();
-//				PreparedStatement stmt = conn.prepareStatement("SELECT * FROM PlayerData WHERE LastSeenName = ? LIMIT 1")) {
-//			stmt.setString(1, lastSeenName);
-//			try (ResultSet rs = stmt.executeQuery()) {
-//				if (rs.next()) {
-//					UUID uuid = UUID.fromString(rs.getString("UUID"));
-//					double eloRating = rs.getDouble("EloRating");
-//					
-//					
-//					DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName, eloRating, seasonStats);
-//					// DTM dtm, UUID uuid, String lastSeenName, int emeralds, String prefix, int killStreak,
-////				    double eloRating, HashMap<Integer, DTMSeasonStats> seasonStats
-//					return data;
-//				}
-//				
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-		try (Connection conn = HDS.getConnection()) {
-			// Load stats
-			HashMap<Integer, DTMSeasonStats> stats = new HashMap<>(1);
-			try (PreparedStatement stmt = conn
-					.prepareStatement("SELECT DISTINCT (Season), Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats, PlayerData WHERE SeasonStats.UUID = PlayerData.UUID AND LastSeenName = ?  Season")) {
-				stmt.setString(1, uuid.toString());
-				try (ResultSet rs = stmt.executeQuery()) {
-					while (rs.next()) {
-						int season = rs.getInt("Season");
-						int kills = rs.getInt("Kills");
-						int deaths = rs.getInt("Deaths");
-						int monuments = rs.getInt("MonumentsDestroyed");
-						int wins = rs.getInt("Wins");
-						int losses = rs.getInt("Losses");
-						long playTimeWon = rs.getLong("PlayTimeWon");
-						long playTimeLost = rs.getLong("PlayTimeLost");
-						int longestKillStreak = rs.getInt("LongestKillStreak");
-
-						stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, wins, losses,
-								longestKillStreak, playTimeWon, playTimeLost, monuments));
-					}
-				}
-			}
-
-			try (PreparedStatement stmt = conn
-					.prepareStatement("SELECT * FROM PlayerData WHERE LastSeenName = ? LIMIT 1")) {
-				stmt.setString(1, lastSeenName);
-				ResultSet rs = stmt.executeQuery();
-				if (rs.next()) {
-					String uuid = rs.getString("UUID");
-					String prefix = rs.getString("Prefix");
-					int emeralds = rs.getInt("Emeralds");
-					int killStreak = rs.getInt("KillStreak");
-					int eloRating = rs.getInt("EloRating");
-					return 							new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, stats));
-				} else {
-					loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, 1000));
-				}
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
     public void shutdown() {
-	for (DTMPlayerData data : loadedPlayerdata.values()) {
-	    this.savePlayerData(data.getUUID());
+	synchronized (loadedPlayerdata) {
+	    for (DTMPlayerData data : loadedPlayerdata.values()) {
+		this.savePlayerData(data.getUUID());
+	    }
 	}
-
 	dataSaver.emptyQueueSync();
 	pl.getLogger().info("All loaded playerdata saved.");
     }
