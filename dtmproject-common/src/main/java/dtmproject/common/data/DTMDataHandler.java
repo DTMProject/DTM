@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.sql.PooledConnection;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
@@ -24,9 +22,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.api.WorldlessBlockLocation;
@@ -43,9 +38,6 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String GET_WIN_LOSS_DIST = "SELECT EloRating FROM PlayerData WHERE EloRating != -1 ORDER BY EloRating DESC";
 
     private final DTM pl;
-
-    @Getter
-    private final WinRecordDao winRecordDao;
 
     private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
 
@@ -92,18 +84,6 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 	HDS.setLeakDetectionThreshold(5000);
 	HDS.setMinimumIdle(5);
 	HDS.setMaximumPoolSize(15);
-
-	try {
-	    JdbcPooledConnectionSource jdbcConnectionSource = new JdbcPooledConnectionSource(
-		    "jdbc:mysql://" + server + "/" + db);
-	    jdbcConnectionSource.setUsername(user);
-	    jdbcConnectionSource.setPassword(pw);
-
-	    DaoManager.createDao(jdbcConnectionSource, DTMMap.class);
-	} catch (SQLException e1) {
-	    // TODO Auto-generated catch block
-	    e1.printStackTrace();
-	}
 
 	// Create tables
 	try (Connection conn = HDS.getConnection(); Statement stmt = conn.createStatement()) {
