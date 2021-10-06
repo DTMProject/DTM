@@ -2,7 +2,7 @@
 DTM is a minimalistic team vs team Minecraft pvp minigame. The point is to destroy the other team's monuments (obsidians). Teams can attack, defend and strategize to win the game most effectively. In all of its simplicity there's a lot of space for players to experiment and be flexible.
 
 # History
-This section is written by the original author Juho Tapio AKA Juubes. There have been a lot of developers and players making DTM the game i t is today. More about them in the Thanks-section.
+This section is written by the original author Juho Tapio AKA Juubes. There have been a lot of developers and players making DTM the game it is today. More about them in the Thanks-section.
 
 DTM got its start from a popular server avic.us somewhere in 2014. I used to play the game for hours and it's still nostalgic to think about the times. At some point I decided I wanted to code the game myself. It proved to be a long and forever evolving process.
 
@@ -28,6 +28,7 @@ for helping with the actual coding and coming up with ideas.
 - PärinäCraft
 - Motimaa
 - FlexPlex
+- Gahvila
 - Quut.io
 
 for giving the project amazing platforms to test it in practise. The players these servers provided have propably had the biggest impact on development.
