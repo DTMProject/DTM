@@ -2,6 +2,7 @@ main: dtmproject.common.DTM
 name: DTM
 version: 6.0.0
 author: Juubes
+website: https://github.com/DTMProject/DTM
 depend:
 - ProtocolLib
 database: true
