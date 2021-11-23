@@ -158,7 +158,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	// Recalculate elo rating
 	double probWinner = (1.0 / (1.0 + Math.pow(10, (-eloDiff / 400))));
 
-	double eloAdjustment = 30 * (1 - probWinner);
+	double eloAdjustment = 5 * (1 - probWinner);
 
 	System.out.println("Elo difference: " + eloDiff);
 	System.out.println("Winner chance of victory: " + (int) (probWinner * 100) + "%");
