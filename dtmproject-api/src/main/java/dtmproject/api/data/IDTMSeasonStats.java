@@ -1,4 +1,4 @@
-package dtmproject.common.data;
+package dtmproject.api.data;
 
 import java.text.NumberFormat;
 import java.util.UUID;

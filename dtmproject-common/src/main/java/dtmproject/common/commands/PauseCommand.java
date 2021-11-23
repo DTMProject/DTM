@@ -4,8 +4,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
-import dtmproject.common.logic.GameState;
 
 public class PauseCommand implements CommandExecutor {
     private final DTM pl;

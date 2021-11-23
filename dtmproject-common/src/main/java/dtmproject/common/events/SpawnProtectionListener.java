@@ -8,9 +8,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
+import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMTeam;
-import dtmproject.common.logic.GameState;
 
 public class SpawnProtectionListener implements Listener {
     private final DTM dtm;

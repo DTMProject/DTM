@@ -20,9 +20,10 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.base.Joiner;
 
 import dtmproject.api.WorldlessLocation;
+import dtmproject.api.data.IDTMMap;
+import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
 import dtmproject.common.TeamArmorUtils;
-import dtmproject.common.logic.GameState;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

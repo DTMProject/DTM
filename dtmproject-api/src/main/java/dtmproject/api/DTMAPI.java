@@ -2,8 +2,8 @@ package dtmproject.api;
 
 import java.util.Collection;
 
-import dtmproject.common.logic.IDTMLogicHandler;
-import dtmproject.common.data.IDTMDataHandler;
+import dtmproject.api.data.IDTMDataHandler;
+import dtmproject.api.logic.IDTMLogicHandler;
 
 public interface DTMAPI {
     public IShopHandler getShopHandler();

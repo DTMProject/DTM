@@ -2,6 +2,7 @@ package dtmproject.common.data;
 
 import java.util.UUID;
 
+import dtmproject.api.data.IDTMSeasonStats;
 import lombok.Getter;
 
 public class DTMSeasonStats implements IDTMSeasonStats {

@@ -14,11 +14,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMMonument;
 import dtmproject.common.data.DTMPlayerData;
 import dtmproject.common.data.DTMTeam;
-import dtmproject.common.logic.GameState;
 
 public class DestroyMonumentListener implements Listener {
     private final DTM dtm;

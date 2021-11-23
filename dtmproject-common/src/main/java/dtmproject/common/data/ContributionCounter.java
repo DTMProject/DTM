@@ -1,9 +1,10 @@
 package dtmproject.common.data;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
+
+import dtmproject.api.data.IDTMTeam;
 
 public class ContributionCounter {
     /**

@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import dtmproject.api.events.ILoggingHandler;
+import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
-import dtmproject.common.logic.GameState;
 
 /**
  * Logs various information about games and events.

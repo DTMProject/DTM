@@ -12,6 +12,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import dtmproject.api.logic.GameState;
+import dtmproject.api.logic.IDTMLogicHandler;
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMMap;
 import dtmproject.common.data.DTMPlayerData;

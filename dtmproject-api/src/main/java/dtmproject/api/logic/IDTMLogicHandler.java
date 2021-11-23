@@ -1,11 +1,12 @@
-package dtmproject.common.logic;
+package dtmproject.api.logic;
 
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
-import dtmproject.common.data.IDTMMap;
-import dtmproject.common.data.IDTMTeam;
+import dtmproject.api.data.IDTMMap;
+import dtmproject.api.data.IDTMTeam;
+
 
 public interface IDTMLogicHandler<M extends IDTMMap<?>, T extends IDTMTeam<?>> {
     public M getCurrentMap();

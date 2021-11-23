@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import dtmproject.api.data.IDTMPlayerData;
 import dtmproject.common.DTM;
 import lombok.Getter;
 import lombok.Setter;

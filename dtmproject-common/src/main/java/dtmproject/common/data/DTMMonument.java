@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 
 import dtmproject.api.WorldlessBlockLocation;
+import dtmproject.api.data.IDTMMonument;
 import lombok.Getter;
 import lombok.Setter;
 

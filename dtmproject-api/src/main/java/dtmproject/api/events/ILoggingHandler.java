@@ -1,9 +1,9 @@
-package dtmproject.common.events;
+package dtmproject.api.events;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-import dtmproject.common.logic.GameState;
+import dtmproject.api.logic.GameState;
 
 public interface ILoggingHandler {
     public void logGameStart(String mapId, HashMap<String, Integer> teamPlayerCounts);

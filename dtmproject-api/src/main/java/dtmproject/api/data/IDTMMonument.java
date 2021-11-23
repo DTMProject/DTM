@@ -1,4 +1,4 @@
-package dtmproject.common.data;
+package dtmproject.api.data;
 
 import org.bukkit.World;
 
