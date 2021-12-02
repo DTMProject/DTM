@@ -39,7 +39,7 @@ public class InstakillTNTHandler implements Listener {
 	if (b.getType() != Material.TNT)
 	    return;
 
-	DTMPlayerData pd = dtm.getDataHandler().getPlayerData(e.getPlayer());
+	DTMPlayerData pd = dtm.getDataHandler().getPlayerData(e.getPlayer().getUniqueId());
 
 	DTMTeam team = pd.getTeam();
 	if (team == null) {

@@ -3,8 +3,6 @@ package dtmproject.common.events;
 import java.util.HashMap;
 import java.util.UUID;
 
-import com.zaxxer.hikari.HikariDataSource;
-
 import dtmproject.api.events.ILoggingHandler;
 import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
@@ -14,11 +12,9 @@ import dtmproject.common.DTM;
  */
 public class LoggingHandler implements ILoggingHandler {
     private final DTM pl;
-    private final HikariDataSource HDS;
 
     public LoggingHandler(DTM pl) {
 	this.pl = pl;
-	this.HDS = pl.getDataHandler().getHDS();
     }
 
     @Override

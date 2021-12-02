@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
 public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTMMap<?>> {
     /**
      * Initializes possible database connections and prepares for loading maps.
@@ -20,7 +18,10 @@ public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTM
      */
     public void loadPlayerData(UUID uuid, String lastSeenName);
 
-    public PD getPlayerData(Player p);
+    /**
+     * Support for offline playerdata is implementation specific.
+     */
+    public PD getPlayerData(UUID uuid);
 
     public void savePlayerData(UUID uuid);
 
@@ -46,4 +47,14 @@ public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTM
      * @return the ids of the loaded maps.
      */
     public Set<String> getLoadedMaps();
+
+    /**
+     * Should be called on plugin disable
+     */
+    public void shutdown();
+
+    public void updateWinLossDistributionCache();
+
+    public Double[] getWinLossDistribution();
+
 }

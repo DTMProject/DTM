@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dtmproject.api.DTMAPI;
+import dtmproject.api.data.IDTMDataHandler;
 import dtmproject.common.commands.DTMCommand;
 import dtmproject.common.commands.EditModeCommand;
 import dtmproject.common.commands.GetposCommand;
@@ -22,7 +23,10 @@ import dtmproject.common.commands.StatsCommand;
 import dtmproject.common.commands.TopCommand;
 import dtmproject.common.commands.WorldsCommand;
 import dtmproject.common.data.ContributionCounter;
+import dtmproject.common.data.DTMMap;
+import dtmproject.common.data.DTMPlayerData;
 import dtmproject.common.data.DefaultMapLoader;
+import dtmproject.common.data.impl.MongoDBDatabaseImpl;
 import dtmproject.common.data.impl.MySQLDatabaseImpl;
 import dtmproject.common.events.AnvilPlaceListener;
 import dtmproject.common.events.ChatHandler;
@@ -57,7 +61,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     private final ScoreboardHandler scoreboardHandler;
 
     @Getter
-    private final MySQLDatabaseImpl dataHandler;
+    private IDTMDataHandler<DTMPlayerData, DTMMap> dataHandler;
 
     @Getter
     private final DTMLogicHandler logicHandler;
@@ -90,7 +94,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     public DTM() {
 	this.scoreboardHandler = new ScoreboardHandler(this);
 	this.shopHandler = new ShopHandler(this);
-	this.dataHandler = new MySQLDatabaseImpl(this);
 	this.logicHandler = new DTMLogicHandler(this);
 	this.editModeHandler = new EditModeCommand(this);
 	this.deathHandler = new DeathHandler(this);
@@ -104,6 +107,12 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     @Override
     public void onEnable() {
 	this.saveDefaultConfig();
+
+	String databaseSetting = getConfig().getString("database");
+	if (databaseSetting.equalsIgnoreCase("MongoDB"))
+	    this.dataHandler = new MongoDBDatabaseImpl(this);
+	else if (databaseSetting.equalsIgnoreCase("MySQL"))
+	    this.dataHandler = new MySQLDatabaseImpl(this);
 
 	// Events
 	PluginManager pm = Bukkit.getPluginManager();
@@ -180,7 +189,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId()));
 
 	// Empty playerdata saving queue
-	dataHandler.getDataSaver().emptyQueueSync();
+	dataHandler.shutdown();
     }
 
     public int getSeason() {

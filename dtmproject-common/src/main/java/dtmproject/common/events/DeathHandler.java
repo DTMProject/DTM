@@ -168,8 +168,8 @@ public class DeathHandler implements Listener {
 	Player shooter = (Player) arrow.getShooter();
 	Player target = (Player) e.getEntity();
 
-	DTMPlayerData shooterData = pl.getDataHandler().getPlayerData(shooter);
-	DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target);
+	DTMPlayerData shooterData = pl.getDataHandler().getPlayerData(shooter.getUniqueId());
+	DTMPlayerData targetData = pl.getDataHandler().getPlayerData(target.getUniqueId());
 
 	// Shot one of their teammate -> cancel event
 	if (shooterData.getTeam() == targetData.getTeam()) {

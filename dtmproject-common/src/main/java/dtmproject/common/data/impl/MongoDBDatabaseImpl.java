@@ -4,13 +4,16 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
 import dtmproject.api.data.IDTMDataHandler;
+import dtmproject.common.DTM;
 import dtmproject.common.data.DTMMap;
 import dtmproject.common.data.DTMPlayerData;
 
 public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap> {
+
+    public MongoDBDatabaseImpl(DTM dtm) {
+	// TODO Auto-generated constructor stub
+    }
 
     @Override
     public void init() {
@@ -31,7 +34,7 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
     }
 
     @Override
-    public DTMPlayerData getPlayerData(Player p) {
+    public DTMPlayerData getPlayerData(UUID uuid) {
 	// TODO Auto-generated method stub
 	return null;
     }
@@ -83,4 +86,21 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
 	// TODO Auto-generated method stub
 	return null;
     }
-}
+
+    @Override
+    public void shutdown() {
+	// TODO Auto-generated method stub
+	
+    }
+
+    @Override
+    public Double[] getWinLossDistribution() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public void updateWinLossDistributionCache() {
+	// TODO Auto-generated method stub
+	
+    }}

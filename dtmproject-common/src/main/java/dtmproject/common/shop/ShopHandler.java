@@ -92,7 +92,7 @@ public class ShopHandler implements IShopHandler, Listener {
 
 	int slot = e.getSlot();
 	ShopItem shopItem = itemsInShop[slot];
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 	// TODO: Nullpointer below
 	if (shopItem.getPrice() > pd.getEmeralds()) {
@@ -139,7 +139,7 @@ public class ShopHandler implements IShopHandler, Listener {
 
     @Override
     public void openShop(Player p) {
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	Inventory inv = Bukkit.createInventory(null, 27, shopInventory.getName());
 	inv.setContents(shopInventory.getContents());
 

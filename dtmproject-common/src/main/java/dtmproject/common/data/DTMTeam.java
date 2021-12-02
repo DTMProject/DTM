@@ -40,7 +40,8 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
     private LinkedList<DTMMonument> monuments;
 
     public Set<Player> getPlayers() {
-	return Bukkit.getOnlinePlayers().stream().filter(p -> pl.getDataHandler().getPlayerData(p).getTeam() == this)
+	return Bukkit.getOnlinePlayers().stream()
+		.filter(p -> pl.getDataHandler().getPlayerData(p.getUniqueId()).getTeam() == this)
 		.collect(Collectors.toSet());
     }
 
@@ -87,7 +88,7 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
 	double val = 0;
 	Set<Player> players = getPlayers();
 	for (Player p : players) {
-	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    val += pd.getEloRating();
 	}
 	return val;
@@ -101,7 +102,7 @@ public class DTMTeam implements IDTMTeam<DTMMonument> {
 	    return 1000;
 
 	for (Player p : players) {
-	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 	    val += pd.getEloRating();
 	}
 

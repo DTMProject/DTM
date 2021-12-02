@@ -167,7 +167,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
 
 	    team.getPlayers().forEach(p -> {
-		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 		final int MAX_PLAY_TIME = 90 * 1000 * 60;
 

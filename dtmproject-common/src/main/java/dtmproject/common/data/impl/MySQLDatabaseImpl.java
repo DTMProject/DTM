@@ -28,7 +28,6 @@ import dtmproject.common.DTM;
 import dtmproject.common.data.DTMMap;
 import dtmproject.common.data.DTMPlayerData;
 import dtmproject.common.data.DTMSeasonStats;
-import dtmproject.common.data.QueueDataSaver;
 import lombok.Getter;
 
 public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap> {
@@ -52,14 +51,14 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
     private Double[] cachedWinLossDistribution;
 
     @Getter
-    private final QueueDataSaver dataSaver;
+    private final MySQLQueueDataSaver dataSaver;
 
     @Getter
     private final HikariDataSource HDS;
 
     public MySQLDatabaseImpl(DTM pl) {
 	this.pl = pl;
-	this.dataSaver = new QueueDataSaver(pl);
+	this.dataSaver = new MySQLQueueDataSaver(pl, this);
 	this.HDS = new HikariDataSource();
     }
 
@@ -269,6 +268,11 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
 
 	this.cachedWinLossDistribution = levels;
 
+    }
+
+    @Override
+    public void shutdown() {
+	getDataSaver().emptyQueueSync();
     }
 
 }

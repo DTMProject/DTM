@@ -1,9 +1,12 @@
 season: 1
-mysql:
-   server: localhost:3306
-   database: DTM
+
+# Supports types MongoDB and MySQL
+database:
+   type: mongodb
+   url: localhost:27017
    user: DTM
    password: password
+   
 maps:
 - HK1
 - HK2

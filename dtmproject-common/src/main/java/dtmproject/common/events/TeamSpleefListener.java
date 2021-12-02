@@ -27,7 +27,7 @@ public class TeamSpleefListener implements Listener {
     public void stopSpleef(BlockBreakEvent e) {
 	Player p = e.getPlayer();
 	Location blockBroken = e.getBlock().getLocation();
-	DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p.getUniqueId());
 
 	if (pd.getTeam() == null)
 	    return;
@@ -56,7 +56,8 @@ public class TeamSpleefListener implements Listener {
 	    p.sendMessage("§3>§b> §8+ §7Et voi rikkoa palikoita omien tiimiläisten alta.");
 	    if (p.getHealth() <= 6) {
 		dtm.getDeathHandler().fakeKillPlayer(p);
-		Bukkit.broadcastMessage("§3>§b> §8+ §7" + p.getDisplayName() + " §7kuoli yrittäessään sabotoida omaa tiimiänsä!");
+		Bukkit.broadcastMessage(
+			"§3>§b> §8+ §7" + p.getDisplayName() + " §7kuoli yrittäessään sabotoida omaa tiimiänsä!");
 	    } else {
 		p.setHealth(p.getHealth() - 5);
 		p.damage(-1);

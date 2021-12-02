@@ -149,7 +149,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    gameState = GameState.PAUSED;
 
 	    Bukkit.getOnlinePlayers().forEach(p -> {
-		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 		if (!pd.isSpectator()) {
 		    p.setGameMode(GameMode.SPECTATOR);
 		    p.sendMessage(
@@ -166,7 +166,7 @@ public class DTMLogicHandler implements IDTMLogicHandler<DTMMap, DTMTeam> {
 	    // If game was on, continue from spawn
 	    case RUNNING:
 		Bukkit.getOnlinePlayers().forEach(p -> {
-		    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+		    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 		    if (!pd.isSpectator()) {
 			p.teleport(pd.getTeam().getSpawn().toLocation(currentMap.getWorld()));
 			p.setGameMode(GameMode.SURVIVAL);

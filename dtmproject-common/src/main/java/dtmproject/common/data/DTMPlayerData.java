@@ -185,6 +185,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
 	if (ratingScore == 0)
 	    return 0;
 
+	// TODO: abstraction for the win-loss distr
 	Double[] winLossDist = pl.getDataHandler().getWinLossDistribution();
 
 	for (int i = 0; i < winLossDist.length; i++) {

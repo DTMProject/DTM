@@ -1,4 +1,4 @@
-package dtmproject.common.data;
+package dtmproject.common.data.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,24 +10,28 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.bukkit.Bukkit;
 
 import dtmproject.common.DTM;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMSeasonStats;
 
-public class QueueDataSaver {
+public class MySQLQueueDataSaver {
     private Queue<DTMPlayerData> queuedData = new LinkedBlockingQueue<>();
     private final DTM dtm;
     private Runnable saveTask;
+    private final MySQLDatabaseImpl dataHandler;
 
     public static final String SAVE_STATS_SQL = "INSERT INTO `SeasonStats`(`UUID`, `Season`, `Kills`, `Deaths`, `MonumentsDestroyed`, `Wins`, `Losses`, `PlayTimeWon`, `PlayTimeLost`, `LongestKillStreak`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Kills = VALUES(Kills), Deaths = VALUES(Deaths), MonumentsDestroyed = VALUES(MonumentsDestroyed), Wins = VALUES(Wins), Losses = VALUES(Losses), PlayTimeWon = VALUES(PlayTimeWon), PlayTimeLost = VALUES(PlayTimeLost), LongestKillStreak = VALUES(LongestKillStreak)";
     public static final String SAVE_PLAYERDATA_SQL = "INSERT INTO PlayerData (UUID, LastSeenName, Prefix, Emeralds, KillStreak, EloRating) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE LastSeenName = VALUES(LastSeenName), Emeralds = VALUES(Emeralds), Prefix = VALUES(Prefix), KillStreak = VALUES(KillStreak), EloRating = VALUES(EloRating)";
 
-    public QueueDataSaver(DTM dtm) {
+    public MySQLQueueDataSaver(DTM dtm, MySQLDatabaseImpl dataHandler) {
 	this.dtm = dtm;
+	this.dataHandler = dataHandler;
     }
 
     public void init() {
 	this.saveTask = () -> {
 	    if (queuedData.size() == 0)
 		return;
-	    try (Connection conn = dtm.getDataHandler().getHDS().getConnection()) {
+	    try (Connection conn = dataHandler.getHDS().getConnection()) {
 		DTMPlayerData data;
 		try (PreparedStatement stmt1 = conn.prepareStatement(SAVE_PLAYERDATA_SQL);
 			PreparedStatement stmt2 = conn.prepareStatement(SAVE_STATS_SQL)) {

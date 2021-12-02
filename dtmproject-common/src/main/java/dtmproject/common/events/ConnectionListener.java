@@ -40,7 +40,7 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
 	Player p = e.getPlayer();
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 	if (pd == null) {
 	    p.kickPlayer("§ewtf, null playerdata");
@@ -70,7 +70,7 @@ public class ConnectionListener implements Listener {
     public void onQuit(PlayerQuitEvent e) {
 	Player p = e.getPlayer();
 	p.getActivePotionEffects().clear();
-	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p);
+	DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
 	if (Bukkit.getOnlinePlayers().size() <= 15) {
 	    e.setQuitMessage("§8[§c-§8] §e" + pd.getLastSeenName());
