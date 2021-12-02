@@ -64,17 +64,16 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
 
     public void init() {
 	FileConfiguration conf = pl.getConfig();
-	String pw = conf.getString("mysql.password");
-	String user = conf.getString("mysql.user");
-	String server = conf.getString("mysql.server");
-	String db = conf.getString("mysql.database");
+	String pw = conf.getString("database.password");
+	String user = conf.getString("database.user");
+	String url = conf.getString("database.url");
 
-	System.out.println("Connecting to " + server + "/" + db + " as user " + user);
+	System.out.println("Connecting to " + url + " as user " + user);
 
 	// Initialize HikariCP connection pooling
 	HDS.setPassword(pw);
 	HDS.setUsername(user);
-	HDS.setJdbcUrl("jdbc:mysql://" + server + "/" + db);
+	HDS.setJdbcUrl("jdbc:mysql://" + url);
 	HDS.addDataSourceProperty("cachePrepStmts", "true");
 	HDS.addDataSourceProperty("prepStmtCacheSize", "250");
 	HDS.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

@@ -108,11 +108,16 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     public void onEnable() {
 	this.saveDefaultConfig();
 
-	String databaseSetting = getConfig().getString("database");
+	String databaseSetting = getConfig().getString("database.type");
 	if (databaseSetting.equalsIgnoreCase("MongoDB"))
 	    this.dataHandler = new MongoDBDatabaseImpl(this);
 	else if (databaseSetting.equalsIgnoreCase("MySQL"))
 	    this.dataHandler = new MySQLDatabaseImpl(this);
+	else {
+	    this.getLogger().severe("DTM cannot enable without database configuration.");
+	    this.setEnabled(false);
+	    return;
+	}
 
 	// Events
 	PluginManager pm = Bukkit.getPluginManager();
