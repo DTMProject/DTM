@@ -22,8 +22,8 @@ import dtmproject.common.commands.StatsCommand;
 import dtmproject.common.commands.TopCommand;
 import dtmproject.common.commands.WorldsCommand;
 import dtmproject.common.data.ContributionCounter;
-import dtmproject.common.data.DTMDataHandler;
 import dtmproject.common.data.DefaultMapLoader;
+import dtmproject.common.data.impl.MySQLDatabaseImpl;
 import dtmproject.common.events.AnvilPlaceListener;
 import dtmproject.common.events.ChatHandler;
 import dtmproject.common.events.ConnectionListener;
@@ -57,7 +57,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     private final ScoreboardHandler scoreboardHandler;
 
     @Getter
-    private final DTMDataHandler dataHandler;
+    private final MySQLDatabaseImpl dataHandler;
 
     @Getter
     private final DTMLogicHandler logicHandler;
@@ -90,7 +90,7 @@ public final class DTM extends JavaPlugin implements DTMAPI {
     public DTM() {
 	this.scoreboardHandler = new ScoreboardHandler(this);
 	this.shopHandler = new ShopHandler(this);
-	this.dataHandler = new DTMDataHandler(this);
+	this.dataHandler = new MySQLDatabaseImpl(this);
 	this.logicHandler = new DTMLogicHandler(this);
 	this.editModeHandler = new EditModeCommand(this);
 	this.deathHandler = new DeathHandler(this);

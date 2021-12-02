@@ -54,7 +54,7 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     /**
      * Maps season number to stats.
      */
-    protected final HashMap<Integer, DTMSeasonStats> seasonStats;
+    private final HashMap<Integer, DTMSeasonStats> seasonStats;
 
     @Getter
     @Setter
@@ -81,6 +81,10 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     }
 
     public HashMap<Integer, DTMSeasonStats> getAllSeasonStats() {
+	return seasonStats;
+    }
+
+    public HashMap<Integer, DTMSeasonStats> getRawSeasonStats() {
 	return seasonStats;
     }
 

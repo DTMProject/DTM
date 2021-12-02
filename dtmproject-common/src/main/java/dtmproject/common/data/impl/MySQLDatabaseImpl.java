@@ -1,4 +1,4 @@
-package dtmproject.common.data;
+package dtmproject.common.data.impl;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -25,9 +25,13 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.api.data.IDTMDataHandler;
 import dtmproject.common.DTM;
+import dtmproject.common.data.DTMMap;
+import dtmproject.common.data.DTMPlayerData;
+import dtmproject.common.data.DTMSeasonStats;
+import dtmproject.common.data.QueueDataSaver;
 import lombok.Getter;
 
-public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
+public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     private static final String LOAD_PLAYERDATA_QUERY = "SELECT * FROM PlayerData WHERE UUID = ?";
     private static final String LOAD_PLAYERDATA_STATS_QUERY = "SELECT * FROM SeasonStats WHERE UUID = ?";
 //    private static final String GET_LEADERBOARD_QUERY = "SELECT PlayerData.UUID, LastSeenName, Kills, Deaths, MonumentsDestroyed, Wins, Losses, PlayTimeWon, PlayTimeLost, LongestKillStreak FROM SeasonStats INNER JOIN PlayerData ON PlayerData.UUID = SeasonStats.UUID WHERE Season = ? ORDER BY EloRating DESC LIMIT ?";
@@ -53,7 +57,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
     @Getter
     private final HikariDataSource HDS;
 
-    public DTMDataHandler(DTM pl) {
+    public MySQLDatabaseImpl(DTM pl) {
 	this.pl = pl;
 	this.dataSaver = new QueueDataSaver(pl);
 	this.HDS = new HikariDataSource();
@@ -218,7 +222,7 @@ public class DTMDataHandler implements IDTMDataHandler<DTMPlayerData, DTMMap> {
 
 		    // Emeralds and such isn't even loaded. We don't need that.
 		    DTMPlayerData data = new DTMPlayerData(pl, uuid, lastSeenName, eloRating);
-		    data.seasonStats.put(stats.getSeason(), stats);
+		    data.getRawSeasonStats().put(stats.getSeason(), stats);
 
 		    allStats.add(data);
 		}
