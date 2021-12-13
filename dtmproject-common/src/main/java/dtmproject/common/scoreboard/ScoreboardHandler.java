@@ -88,7 +88,7 @@ public class ScoreboardHandler implements IScoreboardHandler, Listener {
 
 	team.setPrefix("Yeet " + teamName);
 	team.addPlayer(p);
-	
+
 	team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 
 	p.setScoreboard(globalScoreboard);

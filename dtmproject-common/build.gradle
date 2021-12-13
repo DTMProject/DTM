@@ -28,12 +28,13 @@ repositories {
 
 dependencies {
     implementation project(":dtmproject-api")
-
+  
     compileOnly 'com.destroystokyo.paper:paper-api:1.12.2-R0.1-SNAPSHOT'
 
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'org.slf4j:slf4j-api:1.7.7'
     implementation 'commons-io:commons-io:2.8.0'
+	implementation 'org.mongodb:mongodb-driver-sync:4.4.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'

@@ -21,17 +21,17 @@ import dtmproject.common.data.DTMPlayerData;
 import dtmproject.common.data.DTMTeam;
 
 public class DestroyMonumentListener implements Listener {
-    private final DTM dtm;
+    private final DTM pl;
 
     public DestroyMonumentListener(DTM dtm) {
-	this.dtm = dtm;
+	this.pl = dtm;
     }
 
     @EventHandler
     public void onDestroy(BlockBreakEvent e) {
 	Player p = e.getPlayer();
-	DTMPlayerData data = dtm.getDataHandler().getPlayerData(p.getUniqueId());
-	if (dtm.getLogicHandler().getGameState() != GameState.RUNNING) {
+	DTMPlayerData data = pl.getDataHandler().getPlayerData(p.getUniqueId());
+	if (pl.getLogicHandler().getGameState() != GameState.RUNNING) {
 	    // Can't break if not op, not running, and no creativemode
 	    if (!p.isOp() && p.getGameMode() != GameMode.CREATIVE)
 		e.setCancelled(true);
@@ -46,7 +46,7 @@ public class DestroyMonumentListener implements Listener {
 	    } else {
 		if (p.getGameMode() != GameMode.CREATIVE) {
 		    p.sendMessage(
-                    "§3>§b> §8+ §7Et ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
+			    "§3>§b> §8+ §7Et ole tiimissä. Ole hyvä, ja laita gamemode 1, jos haluat muokata mappia, kun peli on käynnissä.");
 		    e.setCancelled(true);
 		}
 	    }
@@ -54,12 +54,12 @@ public class DestroyMonumentListener implements Listener {
 	}
 
 	Block b = e.getBlock();
-	if (b.getWorld() != dtm.getLogicHandler().getCurrentMap().getWorld())
+	if (b.getWorld() != pl.getLogicHandler().getCurrentMap().getWorld())
 	    return;
 
 	if (!e.getBlock().getType().equals(Material.OBSIDIAN))
 	    return;
-	for (DTMTeam nt : dtm.getLogicHandler().getCurrentMap().getTeams()) {
+	for (DTMTeam nt : pl.getLogicHandler().getCurrentMap().getTeams()) {
 	    DTMTeam team = (DTMTeam) nt;
 	    for (DTMMonument mon : team.getMonuments()) {
 		if (!e.getBlock().equals(mon.getBlock().getBlock(e.getBlock().getWorld())))
@@ -81,12 +81,12 @@ public class DestroyMonumentListener implements Listener {
 
 		if (!mon.isBroken()) {
 		    // Give points to breaker and announce
-		    DTMPlayerData pd = dtm.getDataHandler().getPlayerData(p.getUniqueId());
+		    DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 		    announcePlayerWhoBrokeTheMonument(p, pd, mon, team);
 
 		    // Also give points to closeby teammates
 		    for (Player closeByPlayer : getCloseByTeammates(p, pd)) {
-			DTMPlayerData closeByPlayerData = dtm.getDataHandler()
+			DTMPlayerData closeByPlayerData = pl.getDataHandler()
 				.getPlayerData(closeByPlayer.getUniqueId());
 			announcePlayerWhoBrokeTheMonument(closeByPlayer, closeByPlayerData, mon, team);
 		    }
@@ -96,6 +96,11 @@ public class DestroyMonumentListener implements Listener {
 			player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 		    }
 		    handleBrokenMonument(mon);
+
+		    // Log event
+		    pl.getDataHandler().logMonumentDestroyed(pl.getLogicHandler().getCurrentMap().getId(), team.getId(),
+			    mon.getPosition(), pd.getUUID());
+
 		} else {
 		    p.sendMessage("§3>§b> §8+ §7Tämä monumentti on jo kerran tuhottu.");
 		}
@@ -109,14 +114,14 @@ public class DestroyMonumentListener implements Listener {
     private void announcePlayerWhoBrokeTheMonument(Player p, DTMPlayerData pd, DTMMonument mon, DTMTeam team) {
 	pd.getSeasonStats().increaseMonumentsDestroyed();
 	pd.increaseEmeralds(5);
-	Bukkit.broadcastMessage(
-            "§3>§b> §8+ §7" + p.getDisplayName() + " §7tuhosi monumentin " + team.getTeamColor() + mon.getCustomName());
+	Bukkit.broadcastMessage("§3>§b> §8+ §7" + p.getDisplayName() + " §7tuhosi monumentin " + team.getTeamColor()
+		+ mon.getCustomName());
     }
 
     private Set<Player> getCloseByTeammates(Player p, DTMPlayerData pd) {
 	Set<Player> val = new HashSet<>();
 	Set<Player> teamPlayers = Bukkit.getOnlinePlayers().stream()
-		.filter(player -> dtm.getDataHandler().getPlayerData(player.getUniqueId()).getTeam() == pd.getTeam())
+		.filter(player -> pl.getDataHandler().getPlayerData(player.getUniqueId()).getTeam() == pd.getTeam())
 		.collect(Collectors.toSet());
 
 	for (Player p2 : teamPlayers) {
@@ -130,14 +135,15 @@ public class DestroyMonumentListener implements Listener {
 
     private void handleBrokenMonument(DTMMonument monument) {
 	monument.setBroken(true);
-	dtm.getScoreboardHandler().updateScoreboard();
+
+	pl.getScoreboardHandler().updateScoreboard();
 	DTMTeam winner = getWinner();
 
 	// If two or more teams alive winner != null
 	if (winner == null)
 	    return;
 
-	dtm.getLogicHandler().endGame(winner);
+	pl.getLogicHandler().endGame(winner);
     }
 
     /**
@@ -148,7 +154,7 @@ public class DestroyMonumentListener implements Listener {
 	DTMTeam onlyOneAlive = null;
 
 	// Iterate teams and test for solid monuments
-	for (DTMTeam team : dtm.getLogicHandler().getCurrentMap().getTeams()) {
+	for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
 	    boolean hasMonuments = false;
 	    for (DTMMonument mon : team.getMonuments()) {
 		if (!mon.isBroken())

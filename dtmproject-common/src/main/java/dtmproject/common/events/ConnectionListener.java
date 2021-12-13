@@ -64,6 +64,9 @@ public class ConnectionListener implements Listener {
 	}
 
 	pl.getLogicHandler().getCurrentMap().sendToSpectate(p);
+
+	// Log join
+	pl.getDataHandler().logPlayerJoin(e.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -80,5 +83,9 @@ public class ConnectionListener implements Listener {
 
 	pl.getDeathHandler().clearLastHits(p);
 	pl.getDataHandler().unloadPlayerdata(p.getUniqueId(), true);
+
+	DTMMap map = pl.getLogicHandler().getCurrentMap();
+	pl.getDataHandler().logPlayerLeave(p.getUniqueId(), map.getId(), map.getTimePlayed(),
+		pl.getLogicHandler().getGameState());
     }
 }

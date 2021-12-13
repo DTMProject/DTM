@@ -1,14 +1,18 @@
 package dtmproject.api.data;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
+import dtmproject.api.logic.GameState;
+
 public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTMMap<?>> {
     /**
      * Initializes possible database connections and prepares for loading maps.
+     * @throws Exception 
      */
-    public void init();
+    public void init() throws Exception;
 
     public void loadMaps();
 
@@ -56,5 +60,15 @@ public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTM
     public void updateWinLossDistributionCache();
 
     public Double[] getWinLossDistribution();
+
+    public void logGameEnd(String mapId, String winnerTeamId, HashMap<String, Integer> teamPlayerCounts);
+
+    public void logGameStart(String mapId, HashMap<String, Integer> teamPlayerCounts);
+
+    public void logMonumentDestroyed(String mapId, String teamId, String monumentPos, UUID player);
+
+    public void logPlayerJoin(UUID playerUUID);
+
+    public void logPlayerLeave(UUID playerUUID, String mapId, long timeAfterStart, GameState gameState);
 
 }

@@ -2,6 +2,7 @@ package dtmproject.common.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -137,6 +138,13 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	// Title for everyone
 	Bukkit.getOnlinePlayers()
 		.forEach(p -> p.sendTitle("§eTuhoa monumentit!", "§eNopein tiimi voittaa!", 0, 5 * 20, 3 * 20));
+
+	HashMap<String, Integer> teamPlayerCounts = new HashMap<>();
+	for (DTMTeam team : this.getTeams()) {
+	    teamPlayerCounts.put(team.getId(), team.getPlayers().size());
+	}
+
+	pl.getDataHandler().logGameStart(this.getId(), teamPlayerCounts);
     }
 
     @Override
@@ -164,8 +172,8 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	System.out.println("Winner chance of victory: " + (int) (probWinner * 100) + "%");
 	System.out.println("Elo adjustment for everyone: " + eloAdjustment);
 
-	for (DTMTeam team : pl.getLogicHandler().getCurrentMap().getTeams()) {
-
+	HashMap<String, Integer> teamPlayerCounts = new HashMap<>();
+	for (DTMTeam team : this.getTeams()) {
 	    team.getPlayers().forEach(p -> {
 		DTMPlayerData pd = pl.getDataHandler().getPlayerData(p.getUniqueId());
 
@@ -215,7 +223,11 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 			pd.adjustEloRating(timeForTeamFactor * -eloAdjustment);
 		}
 	    });
+
+	    teamPlayerCounts.put(team.getId(), team.getPlayers().size());
 	}
+
+	pl.getDataHandler().logGameEnd(this.getId(), winner.getId(), teamPlayerCounts);
     }
 
     @Override
@@ -280,6 +292,7 @@ public class DTMMap implements IDTMMap<DTMTeam> {
 	p.setHealthScale(20);
 	p.setHealth(p.getHealthScale());
 	p.setFoodLevel(20);
+
 	p.teleport(pd.getTeam().getSpawn().toLocation(this.world));
 	p.setGameMode(GameMode.SURVIVAL);
 

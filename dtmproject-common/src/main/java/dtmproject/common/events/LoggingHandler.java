@@ -19,26 +19,26 @@ public class LoggingHandler implements ILoggingHandler {
 
     @Override
     public void logGameStart(String mapId, HashMap<String, Integer> teamPlayerCounts) {
-
+	pl.getDataHandler().logGameStart(mapId, teamPlayerCounts);
     }
 
     @Override
     public void logGameEnd(String mapId, String winnerTeamId, HashMap<String, Integer> teamPlayerCounts) {
-	
+	pl.getDataHandler().logGameEnd(mapId, winnerTeamId, teamPlayerCounts);
     }
 
     @Override
     public void logMonumentDestroyed(String mapId, String teamId, String monumentPos, UUID player) {
-
+	pl.getDataHandler().logMonumentDestroyed(mapId, teamId, monumentPos, player);
     }
 
     @Override
-    public void logPlayerJoin(UUID player) {
-
+    public void logPlayerJoin(UUID playerUUID) {
+	pl.getDataHandler().logPlayerJoin(playerUUID);
     }
 
     @Override
-    public void logPlayerLeave(UUID player, String mapId, long timeAfterStart, GameState gameState) {
-
+    public void logPlayerLeave(UUID playerUUID, String mapId, long timeAfterStart, GameState gameState) {
+	pl.getDataHandler().logPlayerLeave(playerUUID, mapId, timeAfterStart, gameState);
     }
 }

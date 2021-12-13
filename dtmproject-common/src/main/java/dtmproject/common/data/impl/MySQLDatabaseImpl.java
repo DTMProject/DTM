@@ -1,14 +1,19 @@
 package dtmproject.common.data.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -16,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -24,6 +28,7 @@ import com.google.common.base.Joiner;
 import com.zaxxer.hikari.HikariDataSource;
 
 import dtmproject.api.data.IDTMDataHandler;
+import dtmproject.api.logic.GameState;
 import dtmproject.common.DTM;
 import dtmproject.common.data.DTMMap;
 import dtmproject.common.data.DTMPlayerData;
@@ -40,6 +45,7 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
     private final DTM pl;
 
     private final ConcurrentHashMap<UUID, DTMPlayerData> loadedPlayerdata = new ConcurrentHashMap<>(20);
+    private PrintWriter logger;
 
     /**
      * Loaded maps and active maps are a different thing. Active maps must be loaded
@@ -60,15 +66,28 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
 	this.pl = pl;
 	this.dataSaver = new MySQLQueueDataSaver(pl, this);
 	this.HDS = new HikariDataSource();
+
+	try {
+	    Date date = new Date();
+	    String dateStr = date.getYear() + "-" + date.getMonth() + "-" + date.getDay() + ""
+		    + System.currentTimeMillis() + ".log";
+
+	    File logFile = new File(pl.getDataFolder(), "logs/" + dateStr);
+	    this.logger = new PrintWriter(new FileOutputStream(logFile, true), true);
+
+	    pl.getLogger().info("Initialized logging");
+	} catch (Exception e) {
+	    pl.getLogger().severe("Couldn't initiate logging: " + e.getLocalizedMessage());
+	}
     }
 
-    public void init() {
+    public void init() throws SQLException, IOException {
 	FileConfiguration conf = pl.getConfig();
 	String pw = conf.getString("database.password");
 	String user = conf.getString("database.user");
 	String url = conf.getString("database.url");
 
-	System.out.println("Connecting to " + url + " as user " + user);
+	pl.getLogger().info("Connecting to " + url + " as user " + user);
 
 	// Initialize HikariCP connection pooling
 	HDS.setPassword(pw);
@@ -93,11 +112,7 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
 	    }
 	    stmt.executeBatch();
 	} catch (SQLException | IOException e) {
-	    e.printStackTrace();
-	    for (Player p : Bukkit.getOnlinePlayers()) {
-		p.kickPlayer("§e§lDTM\n§b      Palvelin uudelleenkäynnistyy teknisistä syistä.");
-	    }
-	    Bukkit.shutdown();
+	    throw e;
 	}
 
 	dataSaver.init();
@@ -174,10 +189,7 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
     public void unloadPlayerdata(UUID uuid, boolean save) {
 	if (save)
 	    this.savePlayerData(uuid);
-	this.unloadPlayerdata(uuid);
-    }
 
-    public void unloadPlayerdata(UUID uuid) {
 	this.loadedPlayerdata.remove(uuid);
     }
 
@@ -271,7 +283,52 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
 
     @Override
     public void shutdown() {
+	logger.flush();
+	logger.close();
+
 	getDataSaver().emptyQueueSync();
+    }
+
+    /**
+     * @return the delim infront of the string
+     */
+    private static String playerCountsToString(HashMap<String, Integer> teamPlayerCounts) {
+	// Serialize hashmap
+	String playerCountsStr = "";
+	for (Entry<String, Integer> entry : teamPlayerCounts.entrySet()) {
+	    playerCountsStr += "¤" + entry.getKey() + "/" + entry.getValue();
+	}
+	return playerCountsStr;
+    }
+
+    @Override
+    public void logGameEnd(String mapId, String winnerTeamId, HashMap<String, Integer> teamPlayerCounts) {
+
+	logger.println(System.currentTimeMillis() + "¤gameEnd¤" + mapId + "¤" + winnerTeamId + "¤"
+		+ playerCountsToString(teamPlayerCounts));
+    }
+
+    @Override
+    public void logGameStart(String mapId, HashMap<String, Integer> teamPlayerCounts) {
+	logger.println(
+		System.currentTimeMillis() + "¤gameStart¤" + mapId + "¤" + playerCountsToString(teamPlayerCounts));
+    }
+
+    @Override
+    public void logMonumentDestroyed(String mapId, String teamId, String monumentPos, UUID player) {
+	logger.println(System.currentTimeMillis() + "¤monumentDestroyed¤" + mapId + "¤" + teamId + "¤" + monumentPos
+		+ "¤" + player);
+    }
+
+    @Override
+    public void logPlayerJoin(UUID playerUUID) {
+	logger.println(System.currentTimeMillis() + "¤playerJoin¤" + playerUUID);
+    }
+
+    @Override
+    public void logPlayerLeave(UUID playerUUID, String mapId, long timeAfterStart, GameState gameState) {
+	logger.println(System.currentTimeMillis() + "¤playerLeave¤" + playerUUID + "¤" + mapId + "¤" + timeAfterStart
+		+ "¤" + gameState.name());
     }
 
 }

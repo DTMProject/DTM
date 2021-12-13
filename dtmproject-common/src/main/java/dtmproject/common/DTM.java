@@ -151,18 +151,37 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 	getCommand("worlds").setExecutor(worldsCommand);
 	getCommand("world").setExecutor(worldsCommand);
 
-	// HikariCP init and other stuff
-	dataHandler.init();
+	// Database and connections init
+	try {
+	    dataHandler.init();
+	} catch (Exception e) {
+	    getLogger().severe("Database initialization failed: " + e.getLocalizedMessage());
+	    Bukkit.shutdown();
+	    return;
+	}
 
 	// Load playerdata; only runs after reloads
-	Bukkit.getOnlinePlayers().forEach(p -> dataHandler.loadPlayerData(p.getUniqueId(), p.getName()));
+	try {
+	    Bukkit.getOnlinePlayers().forEach(p -> dataHandler.loadPlayerData(p.getUniqueId(), p.getName()));
+	} catch (Exception e) {
+	    getLogger().severe("Playerdata loading failed " + e.getLocalizedMessage());
+	    Bukkit.shutdown();
+	    return;
+	}
 
 	// Load maps to cache
 	defaultMapLoader.copyDefaultMapFiles();
 	dataHandler.loadMaps();
 
-	// Load first map ingame
-	logicHandler.loadNextGame(true, Optional.empty());
+	// Load first map
+	try {
+
+	    logicHandler.loadNextGame(true, Optional.empty());
+	} catch (Exception e) {
+	    getLogger().severe("Loading the first map failed " + e.getLocalizedMessage());
+	    Bukkit.shutdown();
+	    return;
+	}
 
 	// Initialize and update the scoreboard
 	scoreboardHandler.loadGlobalScoreboard();
