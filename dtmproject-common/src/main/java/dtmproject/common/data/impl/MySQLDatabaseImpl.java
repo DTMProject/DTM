@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -118,6 +119,11 @@ public class MySQLDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMap>
 	dataSaver.init();
 
 	updateWinLossDistributionCache();
+
+	// Reload winlossdistrcache every 3 minutes
+	final int MINUTE_IN_TICKS = 60 * 20;
+	Bukkit.getScheduler().runTaskTimerAsynchronously(pl, this::updateWinLossDistributionCache, 3 * MINUTE_IN_TICKS,
+		3 * MINUTE_IN_TICKS);
 
     }
 

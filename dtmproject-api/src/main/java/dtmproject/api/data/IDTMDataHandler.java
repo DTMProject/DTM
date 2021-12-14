@@ -10,7 +10,8 @@ import dtmproject.api.logic.GameState;
 public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTMMap<?>> {
     /**
      * Initializes possible database connections and prepares for loading maps.
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     public void init() throws Exception;
 
@@ -57,8 +58,8 @@ public interface IDTMDataHandler<PD extends IDTMPlayerData<?, ?>, M extends IDTM
      */
     public void shutdown();
 
-    public void updateWinLossDistributionCache();
-
+    /**
+     * */
     public Double[] getWinLossDistribution();
 
     public void logGameEnd(String mapId, String winnerTeamId, HashMap<String, Integer> teamPlayerCounts);

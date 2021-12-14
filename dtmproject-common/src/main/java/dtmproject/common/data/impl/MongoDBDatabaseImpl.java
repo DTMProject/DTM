@@ -1,7 +1,10 @@
 package dtmproject.common.data.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -9,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.common.base.Joiner;
@@ -53,6 +57,12 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
 	// Initialize collection reference
 	MongoClient client = MongoClients.create(connectionString);
 	this.collection = client.getDatabase("DTM").getCollection("players");
+
+	// Reload winlossdistrcache every 3 minutes
+	final int MINUTE_IN_TICKS = 60 * 20;
+	Bukkit.getScheduler().runTaskTimerAsynchronously(pl, this::updateWinLossDistributionCache, 3 * MINUTE_IN_TICKS,
+		3 * MINUTE_IN_TICKS);
+
     }
 
     @Override
@@ -68,7 +78,7 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
 
     @Override
     public void loadPlayerData(UUID uuid, String lastSeenName) {
-	Document doc = collection.find(Filters.eq("_id", uuid)).first();
+	Document doc = collection.find(Filters.eq("_id", uuid.toString())).first();
 
 	if (doc == null) {
 	    loadedPlayerdata.put(uuid, new DTMPlayerData(pl, uuid, lastSeenName, 1000));
@@ -78,26 +88,34 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
 	int emeralds = doc.getInteger("Emeralds");
 	String prefix = doc.getString("Prefix");
 	int killStreak = doc.getInteger("KillStreak");
-	int eloRating = doc.getInteger("EloRating");
+	double eloRating = doc.getDouble("EloRating");
 
-	@SuppressWarnings("unchecked")
-	HashMap<Integer, DTMSeasonStats> seasonStats = (HashMap<Integer, DTMSeasonStats>) doc.get("SeasonStats");
+	HashMap<Integer, DTMSeasonStats> stats = new HashMap<>();
+	ArrayList<?> seasonStatsArray = (ArrayList<?>) doc.get("SeasonStats");
+	for (Object rawDoc : seasonStatsArray) {
+	    Document statsDoc = (Document) rawDoc;
+
+	    int season = statsDoc.getInteger("Season");
+	    int kills = statsDoc.getInteger("Kills");
+	    int deaths = statsDoc.getInteger("Deaths");
+	    int monuments = statsDoc.getInteger("MonumentsDestroyed");
+	    int wins = statsDoc.getInteger("Wins");
+	    int losses = statsDoc.getInteger("Losses");
+	    long playTimeWon = statsDoc.getLong("PlayTimeWon");
+	    long playTimeLost = statsDoc.getLong("PlayTimeLost");
+	    int longestKillStreak = statsDoc.getInteger("LongestKillStreak");
+
+	    stats.put(season, new DTMSeasonStats(uuid, season, kills, deaths, wins, losses, longestKillStreak,
+		    playTimeWon, playTimeLost, monuments));
+	}
 
 	loadedPlayerdata.put(uuid,
-		new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, seasonStats));
+		new DTMPlayerData(pl, uuid, lastSeenName, emeralds, prefix, killStreak, eloRating, stats));
     }
 
     @Override
     public DTMPlayerData getPlayerData(UUID uuid) {
-	Document data = collection.find(Filters.eq("_id", uuid)).first();
-
-	if (data == null)
-	    throw new NullPointerException("Cannot load playerdata for UUID: " + uuid.toString());
-
-	String name = data.getString("LastSeenName");
-	Double eloRating = data.getDouble("EloRating");
-
-	return new DTMPlayerData(pl, uuid, name, eloRating);
+	return loadedPlayerdata.get(uuid);
     }
 
     @Override
@@ -105,16 +123,35 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
 	DTMPlayerData data = getPlayerData(uuid);
 
 	Document doc = new Document();
-	doc.put("_id", uuid);
+	doc.put("_id", uuid.toString());
 	doc.put("LastSeenName", data.getLastSeenName());
-	doc.put("Prefix", data.getPrefix());
+	doc.put("Prefix", data.getPrefix().orElse(null));
 	doc.put("Emeralds", data.getEmeralds());
 	doc.put("KillStreak", data.getKillStreak());
 	doc.put("EloRating", data.getEloRating());
 
-	doc.put("SeasonStats", data.getRawSeasonStats());
+	List<Document> seasonStatsDocs = new ArrayList<>();
+	for (Entry<Integer, DTMSeasonStats> e : data.getRawSeasonStats().entrySet()) {
+	    Document statsDoc = new Document();
+	    DTMSeasonStats stats = e.getValue();
 
-	collection.insertOne(doc);
+	    statsDoc.put("_id", stats.getSeason());
+	    statsDoc.put("Season", stats.getSeason());
+	    statsDoc.put("Kills", stats.getKills());
+	    statsDoc.put("Deaths", stats.getDeaths());
+	    statsDoc.put("MonumentsDestroyed", stats.getMonumentsDestroyed());
+	    statsDoc.put("Wins", stats.getWins());
+	    statsDoc.put("Losses", stats.getLosses());
+	    statsDoc.put("PlayTimeWon", stats.getPlayTimeWon());
+	    statsDoc.put("PlayTimeLost", stats.getPlayTimeLost());
+	    statsDoc.put("LongestKillStreak", stats.getLongestKillStreak());
+
+	    seasonStatsDocs.add(statsDoc);
+	}
+
+	doc.put("SeasonStats", seasonStatsDocs);
+
+	collection.replaceOne(Filters.eq("_id", uuid.toString()), doc);
     }
 
     @Override
@@ -142,74 +179,66 @@ public class MongoDBDatabaseImpl implements IDTMDataHandler<DTMPlayerData, DTMMa
 
     @Override
     public LinkedList<DTMPlayerData> getLeaderboard(int count, int season) {
-	LinkedList<DTMPlayerData> allStats = new LinkedList<>();
+//	LinkedList<DTMPlayerData> allStats = new LinkedList<>();
+//
+//	FindIterable<Document> allData = collection.find();
+//
+//	for (Document doc : allData) {
+//
+//	}
+//
+//	return null;
 
-	FindIterable<Document> allData = collection.find();
+	throw new NotImplementedException();
 
-	for (Document doc : allData) {
-
-	}
-
-	return null;
     }
 
     @Override
     public boolean mapExists(String req) {
-	// TODO Auto-generated method stub
-	return false;
+	return loadedMaps.containsKey(req);
     }
 
     @Override
     public Set<String> getLoadedMaps() {
-	// TODO Auto-generated method stub
-	return null;
+	return loadedMaps.keySet();
     }
 
     @Override
     public void shutdown() {
-	// TODO Auto-generated method stub
-
     }
 
     @Override
     public Double[] getWinLossDistribution() {
-	// TODO Auto-generated method stub
-	return null;
+	// TODO: implement
+	return new Double[] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d };
     }
 
-    @Override
     public void updateWinLossDistributionCache() {
-	// TODO Auto-generated method stub
-
+	throw new NotImplementedException();
     }
 
     @Override
     public void logGameEnd(String mapId, String winnerTeamId, HashMap<String, Integer> teamPlayerCounts) {
-	// TODO Auto-generated method stub
-
+	throw new NotImplementedException();
     }
 
     @Override
     public void logGameStart(String mapId, HashMap<String, Integer> teamPlayerCounts) {
-	// TODO Auto-generated method stub
-
+	throw new NotImplementedException();
     }
 
     @Override
     public void logMonumentDestroyed(String mapId, String teamId, String monumentPos, UUID player) {
-	// TODO Auto-generated method stub
-
+	throw new NotImplementedException();
     }
 
     @Override
     public void logPlayerJoin(UUID playerUUID) {
-	// TODO Auto-generated method stub
-
+	throw new NotImplementedException();
     }
 
     @Override
     public void logPlayerLeave(UUID playerUUID, String mapId, long timeAfterStart, GameState gameState) {
-	// TODO Auto-generated method stub
-
+	throw new NotImplementedException();
     }
 }

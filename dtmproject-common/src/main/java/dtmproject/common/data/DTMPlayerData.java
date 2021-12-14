@@ -168,28 +168,21 @@ public class DTMPlayerData implements IDTMPlayerData<DTMTeam, DTMSeasonStats> {
     }
 
     /**
-     * Returns 0 if player has played less than 10 games
-     */
-    public double getRatingScore() {
-	return this.getEloRating();
-    }
-
-    /**
      * @return a number from 1 to 10, indicating the players relative skill level.
      * 
      *         0 indicates unranked -- the player's skill level can't be evaluated.
      */
     public int getRatingLevel() {
-	double ratingScore = getRatingScore();
+	double eloRating = this.getEloRating();
 
-	if (ratingScore == 0)
+	if (eloRating == 0)
 	    return 0;
 
 	// TODO: abstraction for the win-loss distr
 	Double[] winLossDist = pl.getDataHandler().getWinLossDistribution();
 
 	for (int i = 0; i < winLossDist.length; i++) {
-	    if (ratingScore >= winLossDist[i])
+	    if (eloRating >= winLossDist[i])
 		return 10 - i;
 	}
 

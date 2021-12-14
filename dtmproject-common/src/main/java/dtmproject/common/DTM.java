@@ -200,10 +200,6 @@ public final class DTM extends JavaPlugin implements DTMAPI {
 		() -> Bukkit.getOnlinePlayers().forEach(p -> this.getDataHandler().savePlayerData(p.getUniqueId())),
 		3 * MINUTE_IN_TICKS, 3 * MINUTE_IN_TICKS);
 
-	// Reload winlossdistrcache
-	Bukkit.getScheduler().runTaskTimerAsynchronously(this, dataHandler::updateWinLossDistributionCache,
-		3 * MINUTE_IN_TICKS, 3 * MINUTE_IN_TICKS);
-
 	countdownHandler.startScheduling();
     }
 
